@@ -26,8 +26,8 @@
 
 ## 4. Identidad visual
 - Colores predominantes: rojo, blanco y negro (los del logo del taller).
-- Paleta inicial (ajustar extrayendo los colores reales del logo en `/assets`):
-  - Rojo: `#D90429`
+- Paleta final (extraída de `assets/logo.jpg` en el Módulo 0):
+  - Rojo: `#D11A21` (extraído del logo; hover `#A8141A`)
   - Negro: `#0B0B0B`
   - Blanco: `#FFFFFF`
   - Gris apoyo: `#F2F2F2`
