@@ -36,7 +36,17 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 ### Paleta (extraída de `assets/logo.jpg`)
 - Rojo Rivera `#D11A21` (hover `#A8141A`) · Negro `#0B0B0B` · Carbón `#1A1A1A` · Blanco `#FFFFFF` · Gris apoyo `#F2F2F2`
 
+- Teléfono, WhatsApp y SINPE Móvil: **8702-6760**.
+- Comprobante: el cliente lo sube SOLO en la web (página de seguimiento).
+- Plazo de pago: 48 h; luego se cancela y se libera stock.
+- Logo: `assets/logo.jpg` (engrane + R) es el oficial; en el header va el símbolo + texto "RIVERA / Grupo Automotriz".
+
+### Decisiones sobre el prototipo (delegadas por el dueño)
+- SÍ: filtros categoría + marca + rango de precio; etiquetas "Oferta" (campo `precio_anterior`) y "Destacado"; banner promocional editable; barra inferior móvil (Inicio, Tienda, Carrito, Mi pedido); franja de beneficios.
+- NO (MVP): reseñas/estrellas, cuentas de cliente (checkout sin registro), newsletter (Fase 3).
+- Precios siempre en ₡ (el prototipo muestra €, se corrige).
+
 ### Pendiente de confirmar
-- Teléfono: dueño indicó 87626760; el rótulo muestra 8702-6760. ¿Es WhatsApp el mismo?
+- Titular del SINPE; datos bancarios (IBAN, banco, titular) — el dueño los enviará.
 - ¿Precios con IVA incluido?
-- Grupos 2–5: pagos/SINPE, ubicación/horarios/servicios, envíos, Hostinger/dominio/admin.
+- Grupos 3–5: ubicación/horarios/servicios, envíos, Hostinger/dominio/admin.
