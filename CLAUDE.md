@@ -5,7 +5,7 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 
 ## Stack
 - PHP 8.2 + MySQL (Hostinger), Tailwind CSS, JS ligero
-- Imágenes en `/uploads`, assets del negocio en `/assets`
+- Fotos de productos en `/public/uploads/productos`, comprobantes en `/storage/comprobantes` (privado), assets del negocio en `/assets`
 
 ## Reglas importantes
 - **LEE `REQUISITOS.md` al inicio de cada sesión.**
@@ -21,12 +21,14 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 ## Convenciones
 - Archivos y carpetas en minúsculas con guiones.
 - Consultas SQL solo con PDO preparado.
-- Estructura: `/public` (web), `/app` (lógica), `/admin`, `/uploads`, `/assets`, `/database`, `/docs`
+- Estructura: `/public` (raíz web; incluye `/public/uploads`), `/app` (lógica), `/admin`, `/storage` (privado), `/assets`, `/database`, `/docs`
+- Toda página empieza con `require .../app/config/config.php`. Usar `db()`, `ajuste()`, `e()`, `colones()`, `url()`, `csrf_campo()` / `verificar_csrf()`.
 
 ## Estado actual del proyecto
 - **Fase:** MVP
-- **Último módulo completado:** 0 — análisis de assets, preguntas al dueño, stack y plan aprobados (2026-10-22)
-- **Próximo módulo:** 1 — estructura, base de datos y configuración. Plan aprobado en `docs/plan-modulo-1.md`.
+- **Último módulo completado:** 1 — estructura, base de datos (12 tablas) y configuración (2026-10-22). Probado con PHP 8.2 y MariaDB 10.11: schema + seed importan sin errores, `public/index.php` muestra la revisión de instalación en verde.
+- **Próximo módulo:** 2 — diseño base (layout, header, footer, paleta, componentes, Tailwind). Proponer plan y esperar confirmación.
+- Admin: se crea con `php database/crear-admin.php` (no hay usuarios en `seed.sql`). Números de pedido: prefijo en `settings.prefijo_pedido` (TAL) + tabla `order_sequences`.
 - **Repositorio:** https://github.com/Carlos2002234/taller (rama `main`). Cada commit se sube con `git push`.
 
 ### Datos del negocio (confirmados)

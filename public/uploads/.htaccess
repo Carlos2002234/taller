@@ -1,0 +1,15 @@
+# Carpeta de fotos de productos: solo se sirven imágenes.
+# Aunque alguien lograra subir un .php, nunca se ejecutaría.
+
+Options -Indexes -ExecCGI
+
+<IfModule mod_mime.c>
+    RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phar .pl .py .cgi .sh
+    RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8 .phar .pl .py .cgi .sh
+</IfModule>
+
+# Denegar todo, excepto imágenes
+Require all denied
+<FilesMatch "\.(jpe?g|png|webp)$">
+    Require all granted
+</FilesMatch>

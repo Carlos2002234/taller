@@ -1,0 +1,3 @@
+# Carpeta privada (comprobantes de pago y logs).
+# Nunca debe quedar dentro de la carpeta pública; esto es una protección extra.
+Require all denied

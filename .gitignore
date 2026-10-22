@@ -5,10 +5,15 @@
 *.pem
 *.key
 
-# Archivos subidos por usuarios (productos y comprobantes de pago)
-/uploads/*
-!/uploads/.htaccess
-!/uploads/.gitkeep
+# Archivos subidos (fotos de productos) — solo se versiona la estructura
+/public/uploads/productos/*
+!/public/uploads/productos/.gitkeep
+
+# Comprobantes de pago y logs (privados, NUNCA al repositorio)
+/storage/comprobantes/*
+!/storage/comprobantes/.gitkeep
+/storage/logs/*
+!/storage/logs/.gitkeep
 
 # Dependencias y compilados
 /vendor/
@@ -22,7 +27,6 @@
 
 # Logs y temporales
 *.log
-/storage/logs/
 /tmp/
 
 # Sistema / editor
