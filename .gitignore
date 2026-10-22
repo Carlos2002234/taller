@@ -1,0 +1,33 @@
+# Credenciales y configuración local (NUNCA subir)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Archivos subidos por usuarios (productos y comprobantes de pago)
+/uploads/*
+!/uploads/.htaccess
+!/uploads/.gitkeep
+
+# Dependencias y compilados
+/vendor/
+/node_modules/
+/public/css/*.min.css.map
+
+# Respaldos y volcados de base de datos
+*.sql.gz
+/backups/
+*.bak
+
+# Logs y temporales
+*.log
+/storage/logs/
+/tmp/
+
+# Sistema / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
