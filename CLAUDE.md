@@ -39,6 +39,9 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 - Teléfono, WhatsApp y SINPE Móvil: **8702-6760**.
 - Comprobante: el cliente lo sube SOLO en la web (página de seguimiento).
 - Plazo de pago: 48 h; luego se cancela y se libera stock.
+- Dirección: 150 m oeste de la plaza de deportes de La Puebla, antes de llegar a los semáforos.
+- Horario: lunes a sábado, 8:00 a.m. – 5:00 p.m.
+- Servicios del taller: sin precios en la web; botón "Cotizar por WhatsApp".
 - Logo: `assets/logo.jpg` (engrane + R) es el oficial; en el header va el símbolo + texto "RIVERA / Grupo Automotriz".
 
 ### Decisiones sobre el prototipo (delegadas por el dueño)
@@ -49,4 +52,7 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 ### Pendiente de confirmar
 - Titular del SINPE; datos bancarios (IBAN, banco, titular) — el dueño los enviará.
 - ¿Precios con IVA incluido?
-- Grupos 3–5: ubicación/horarios/servicios, envíos, Hostinger/dominio/admin.
+- Provincia/cantón de La Puebla y enlace de Google Maps/Waze.
+- Lista completa de servicios del taller (el dueño la enviará).
+- Redes sociales (el dueño las enviará).
+- Grupos 4–5: envíos, Hostinger/dominio/admin.
