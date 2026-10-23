@@ -7,6 +7,8 @@
 $meta['titulo'] = 'Contacto y ubicación';
 $meta['descripcion'] = 'Visítanos: ' . ajuste('direccion') . ' Horario: ' . ajuste('horario') . '. Teléfono y WhatsApp ' . ajuste('telefono') . '.';
 
+$meta['datos'][] = datos_negocio();
+
 $telefono = preg_replace('/\D/', '', ajuste('telefono'));
 $redes = array_filter(['Facebook' => ajuste('facebook_url'), 'Instagram' => ajuste('instagram_url'), 'TikTok' => ajuste('tiktok_url')]);
 ?>
@@ -21,7 +23,7 @@ $redes = array_filter(['Facebook' => ajuste('facebook_url'), 'Instagram' => ajus
                 <div>
                     <h2 class="font-sans text-base font-semibold">Dirección</h2>
                     <p class="mt-1 text-neutral-300"><?= e(ajuste('direccion')) ?></p>
-                    <a href="<?= e(mapa_url()) ?>" target="_blank" rel="noopener" class="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-rivera-rojo hover:underline">
+                    <a href="<?= e(mapa_url()) ?>" target="_blank" rel="noopener" class="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-rivera-rojo-claro hover:underline">
                         Cómo llegar (Google Maps) <?= icono('flecha', 'h-4 w-4') ?>
                     </a>
                 </div>

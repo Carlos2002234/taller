@@ -11,6 +11,8 @@ require_once RAIZ . '/app/modelos/servicios.php';
 $meta['descripcion'] = ajuste('negocio_nombre', 'Rivera Grupo Automotriz')
     . ': taller mecánico y tienda de accesorios y repuestos. Paga por SINPE Móvil o transferencia y retira en el taller o recibe en la GAM.';
 
+$meta['datos'][] = datos_negocio();
+
 $categorias = array_slice(array_filter(categorias_activas(), fn ($c) => (int) $c['total_productos'] > 0), 0, 6);
 $destacados = productos_destacados(8);
 $servicios = servicios_activos(true);

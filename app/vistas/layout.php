@@ -37,6 +37,7 @@ $urlActual = url(ruta_actual());
     <link rel="stylesheet" href="<?= e(asset('css/app.css')) ?>">
     <script src="<?= e(asset('js/app.js')) ?>" defer></script>
     <script src="<?= e(asset('js/carrito.js')) ?>" defer></script>
+    <?php if ($meta['datos']) { componente('datos-estructurados', ['bloques' => $meta['datos']]); } ?>
 </head>
 <body class="flex min-h-screen flex-col bg-rivera-negro font-sans text-white antialiased">
     <a href="#contenido" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-rivera-negro">

@@ -8,7 +8,7 @@
 <div data-galeria>
     <div class="tarjeta-clara relative">
         <?php if ($imagenes): ?>
-            <div class="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none]" data-galeria-pista>
+            <div class="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none]" data-galeria-pista tabindex="0" aria-label="Fotos de <?= e($nombre) ?> (desliza o usa las flechas)">
                 <?php foreach ($imagenes as $i => $ruta): ?>
                     <img src="<?= e(url_foto($ruta)) ?>"
                          alt="<?= e($nombre) ?><?= count($imagenes) > 1 ? ' — foto ' . ($i + 1) : '' ?>"

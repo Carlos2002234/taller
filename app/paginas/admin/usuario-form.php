@@ -86,10 +86,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input id="email" name="email" type="email" class="campo-claro" required maxlength="150" autocomplete="off" value="<?= e($campo['email']) ?>">
     </div>
     <fieldset>
-        <legend class="etiqueta-campo">Rol</legend>
+        <legend class="etiqueta-campo">Rol<?= $esYo ? ' <span class="font-normal text-neutral-600">(no puedes cambiar tu propio rol)</span>' : '' ?></legend>
         <div class="grid gap-2 sm:grid-cols-2">
             <?php foreach (['empleado' => 'Ve y atiende pedidos', 'duenio' => 'Todo, incluido aprobar pagos'] as $rol => $descripcion): ?>
-                <label class="flex cursor-pointer gap-3 rounded-lg border-2 border-neutral-200 p-3 has-[:checked]:border-rivera-rojo <?= $esYo ? 'pointer-events-none opacity-60' : '' ?>">
+                <label class="flex cursor-pointer gap-3 rounded-lg border-2 border-neutral-200 p-3 has-[:checked]:border-rivera-rojo <?= $esYo ? 'pointer-events-none bg-neutral-50' : '' ?>">
                     <input type="radio" name="rol" value="<?= $rol ?>" class="mt-0.5 h-4 w-4 accent-rivera-rojo" <?= $campo['rol'] === $rol ? 'checked' : '' ?>>
                     <span><span class="block text-sm font-semibold"><?= e(ROLES[$rol]) ?></span><span class="block text-xs text-neutral-500"><?= e($descripcion) ?></span></span>
                 </label>
@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input id="clave" name="clave" type="password" class="campo-claro" minlength="<?= CLAVE_MINIMA ?>" autocomplete="new-password" <?= $usuario ? '' : 'required' ?>>
         <p class="mt-1 text-xs text-neutral-500">Mínimo <?= CLAVE_MINIMA ?> caracteres.</p>
     </div>
-    <label class="flex cursor-pointer items-center gap-3 text-sm <?= $esYo ? 'pointer-events-none opacity-60' : '' ?>">
+    <label class="flex cursor-pointer items-center gap-3 text-sm <?= $esYo ? 'pointer-events-none bg-neutral-50' : '' ?>">
         <input type="checkbox" name="activo" class="h-4 w-4 accent-rivera-rojo" <?= $campo['activo'] ? 'checked' : '' ?>>
         <span><span class="font-semibold">Activo</span> <span class="text-neutral-500">— si lo desmarcas, no podrá ingresar.</span></span>
     </label>

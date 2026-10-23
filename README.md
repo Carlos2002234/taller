@@ -18,6 +18,7 @@ public/     Carpeta pública del sitio (raíz web)
   uploads/  Fotos de productos
 storage/    Archivos privados: comprobantes de pago y logs
 database/   schema.sql, seed.sql y script para crear el admin
+tests/      Prueba automática del flujo completo
 assets/     Logo, fotos del taller y prototipo de diseño
 docs/       Guías y planes
 ```
@@ -25,6 +26,16 @@ docs/       Guías y planes
 ## Empezar
 
 Sigue [docs/instalacion-local.md](docs/instalacion-local.md).
+
+## Pruebas
+
+Con el sitio corriendo (local o de pruebas, nunca en la tienda real con clientes):
+
+```bash
+BASE=http://taller.test ADMIN_EMAIL=tu@correo ADMIN_CLAVE='tu-clave' bash tests/flujo-completo.sh
+```
+
+Seguridad y lista antes de publicar: [docs/seguridad.md](docs/seguridad.md).
 
 ## Reglas clave
 

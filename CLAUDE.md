@@ -30,8 +30,13 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 
 ## Estado actual del proyecto
 - **Fase:** MVP
-- **Último módulo completado:** 8 — Inicio completo, Servicios, Contacto y servicios editables (2026-10-22).
-- **Próximo módulo:** 9 — seguridad, pruebas y optimización (revisión general, .htaccess en Apache real, encabezados, rendimiento, SEO básico: sitemap.xml). Proponer plan y esperar confirmación.
+- **Último módulo completado:** 9 — seguridad, pruebas y optimización (2026-10-22). Probado en Apache 2.4 real con .htaccess: rutas, HTTPS, archivos ocultos, carpeta de fotos (se corrigió ejecución de `foto.php.jpg`), CSP sin violaciones, caché/compresión, accesibilidad WCAG AA (axe) en 17 páginas, `tests/flujo-completo.sh` 29/29.
+- **Próximo módulo:** 10 — guía de despliegue en Hostinger (hPanel, base de datos, subir archivos, .env, dominio, SSL, cron, respaldos). Proponer plan y esperar confirmación.
+- Seguridad: encabezados (CSP estricta, HSTS, etc.) en `encabezados_seguridad()` del router; NO usar JS ni `style=` dentro del HTML (rompería la CSP). `APP_ENV=produccion` fuerza debug apagado. Ver `docs/seguridad.md`.
+- Colores: `rivera-rojo-claro` (#F04A4F) SOLO para texto pequeño sobre fondo oscuro (contraste); el rojo de marca para botones, títulos grandes e íconos.
+- `componente()` usa variables internas `$__componente`/`$__datos` para no chocar con los datos (ej. 'nombre').
+- SEO: `/sitemap.xml` y `/robots.txt` dinámicos; datos estructurados (AutoRepair y Product) vía `$meta['datos']`.
+- Pruebas: `BASE=... ADMIN_EMAIL=... ADMIN_CLAVE=... bash tests/flujo-completo.sh` (solo local o sitio de pruebas).
 - Servicios (decisión del dueño): editables en Admin → Servicios (tabla `services`, sin precios, botón "Cotizar por WhatsApp"). Se cargaron 6 de las fotos para que el dueño los revise.
 - Mapa: NO se incrusta un mapa (riesgo de ubicación equivocada: "La Puebla" existe en varios lugares). Botón "Cómo llegar" = `mapa_url()` (enlace de Configuración o búsqueda del negocio). El dueño aún no tiene el enlace de Google Maps.
 - Pedidos admin (`app/modelos/pedidos-admin.php`): todo cambio pasa por `transicion_pedido()` (FOR UPDATE + estados permitidos + historial). **JAMÁS aprobar sin comprobante** (decisión del dueño): `aprobar_pago()` exige dueño, estado `comprobante_enviado`, comprobante `pendiente` y casilla "verifiqué el ingreso".

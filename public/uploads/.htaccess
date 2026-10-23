@@ -1,15 +1,22 @@
-# Carpeta de fotos de productos: solo se sirven imágenes.
-# Aunque alguien lograra subir un .php, nunca se ejecutaría.
+# Carpeta de fotos de productos y categorías.
+# Aquí SOLO deben existir las fotos que genera el sitio: nombre aleatorio hexadecimal + .webp
+# (ej. 3f9a0c...e1.webp y 3f9a0c...e1-mini.webp). Cualquier otro archivo se bloquea,
+# y nada de esta carpeta se ejecuta nunca como código.
 
 Options -Indexes -ExecCGI
 
+# 1. Nada se ejecuta: ni .php ni trucos de doble extensión como "foto.php.jpg"
+SetHandler none
 <IfModule mod_mime.c>
     RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phar .pl .py .cgi .sh
     RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8 .phar .pl .py .cgi .sh
 </IfModule>
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
 
-# Denegar todo, excepto imágenes
+# 2. Lista blanca: denegar todo excepto las fotos con el nombre exacto que genera el sitio
 Require all denied
-<FilesMatch "\.(jpe?g|png|webp)$">
+<FilesMatch "^[a-f0-9]{16,64}(-mini)?\.webp$">
     Require all granted
 </FilesMatch>

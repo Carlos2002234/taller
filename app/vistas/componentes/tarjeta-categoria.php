@@ -17,7 +17,7 @@
     </span>
     <span class="block p-3">
         <span class="block text-sm font-semibold"><?= e($categoria['nombre']) ?></span>
-        <span class="mt-1 inline-flex items-center gap-0.5 text-xs font-medium text-rivera-rojo">
+        <span class="mt-1 inline-flex items-center gap-0.5 text-xs font-medium text-rivera-rojo-claro">
             Ver productos <?= icono('flecha', 'h-3.5 w-3.5') ?>
         </span>
     </span>

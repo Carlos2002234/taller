@@ -23,6 +23,8 @@ $tipos = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'application/pdf' => 'pdf
 $mime = isset($tipos[$comprobante['mime']]) ? $comprobante['mime'] : 'application/octet-stream';
 $nombre = 'comprobante-' . strtolower($comprobante['numero_pedido']) . '.' . ($tipos[$mime] ?? 'bin');
 
+// La política de seguridad de las páginas puede impedir que el navegador muestre el PDF
+header_remove('Content-Security-Policy');
 header('Content-Type: ' . $mime);
 header('Content-Length: ' . filesize($archivo));
 header('Content-Disposition: inline; filename="' . $nombre . '"');

@@ -83,6 +83,28 @@ function mapa_url(): string
 }
 
 /**
+ * Datos del negocio para Google (schema.org AutoRepair = taller mecánico).
+ * El horario no se incluye porque es texto libre en Configuración y podría quedar desactualizado.
+ */
+function datos_negocio(): array
+{
+    $redes = array_values(array_filter([ajuste('facebook_url'), ajuste('instagram_url'), ajuste('tiktok_url')]));
+    return array_filter([
+        '@context'           => 'https://schema.org',
+        '@type'              => 'AutoRepair',
+        'name'               => ajuste('negocio_nombre', 'Rivera Grupo Automotriz'),
+        'url'                => url(),
+        'image'              => url('img/og-imagen.jpg'),
+        'logo'               => url('img/logo.png'),
+        'telephone'          => '+506 ' . ajuste('telefono'),
+        'address'            => ['@type' => 'PostalAddress', 'streetAddress' => ajuste('direccion'), 'addressCountry' => 'CR'],
+        'currenciesAccepted' => 'CRC',
+        'paymentAccepted'    => 'SINPE Móvil, transferencia bancaria',
+        'sameAs'             => $redes ?: null,
+    ]);
+}
+
+/**
  * Enlace para que el dueño le escriba a un cliente por WhatsApp (lo abre una persona; no es automático).
  */
 function whatsapp_cliente_url(string $telefono, string $mensaje): string

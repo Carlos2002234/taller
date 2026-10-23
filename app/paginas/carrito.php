@@ -64,7 +64,7 @@ $meta['fondo_claro'] = true;
     <!-- Plantilla de cada producto (la usa carrito.js; los textos se insertan con textContent) -->
     <template data-carrito-plantilla>
         <li class="tarjeta-clara flex gap-3 p-3 sm:gap-4 sm:p-4" data-carrito-item>
-            <a data-campo="enlace" class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md bg-neutral-50 text-neutral-300 sm:h-24 sm:w-24">
+            <a data-campo="enlace" tabindex="-1" aria-hidden="true" class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md bg-neutral-50 text-neutral-300 sm:h-24 sm:w-24">
                 <img data-campo="imagen" alt="" class="hidden h-full w-full object-contain p-1">
                 <span data-campo="sin-imagen"><?= icono('llave', 'h-8 w-8') ?></span>
             </a>

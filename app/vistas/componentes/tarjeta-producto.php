@@ -12,9 +12,9 @@ $enlace = url('producto/' . $producto['slug']);
 $descuento = $oferta ? (int) round(100 - $producto['precio'] * 100 / $producto['precio_anterior']) : 0;
 ?>
 <article class="<?= $tono === 'claro' ? 'tarjeta-clara' : 'tarjeta' ?> group flex flex-col">
-    <a href="<?= e($enlace) ?>" class="relative block aspect-square overflow-hidden <?= $tono === 'claro' ? 'bg-white' : 'bg-neutral-900' ?>">
+    <a href="<?= e($enlace) ?>" tabindex="-1" aria-hidden="true" class="relative block aspect-square overflow-hidden <?= $tono === 'claro' ? 'bg-white' : 'bg-neutral-900' ?>">
         <?php if (!empty($producto['imagen'])): ?>
-            <img src="<?= e(url_foto($producto['imagen'], true)) ?>" alt="<?= e($producto['nombre']) ?>"
+            <img src="<?= e(url_foto($producto['imagen'], true)) ?>" alt=""
                  loading="lazy" class="h-full w-full object-contain p-4 transition-transform duration-300 group-hover:scale-105">
         <?php else: ?>
             <span class="flex h-full w-full items-center justify-center <?= $tono === 'claro' ? 'text-neutral-300' : 'text-neutral-700' ?>">
@@ -44,7 +44,7 @@ $descuento = $oferta ? (int) round(100 - $producto['precio'] * 100 / $producto['
         <div class="mt-2 flex flex-wrap items-baseline gap-x-2">
             <span class="font-display text-lg font-bold"><?= colones($producto['precio']) ?></span>
             <?php if ($oferta): ?>
-                <span class="text-xs text-neutral-500 line-through"><?= colones($producto['precio_anterior']) ?></span>
+                <span class="text-xs line-through <?= $tono === 'claro' ? 'text-neutral-500' : 'text-neutral-400' ?>"><?= colones($producto['precio_anterior']) ?></span>
             <?php endif; ?>
         </div>
 

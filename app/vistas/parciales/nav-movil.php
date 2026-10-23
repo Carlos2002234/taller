@@ -16,7 +16,7 @@ $accesos = [
             <?php $activo = ruta_actual() === $ruta; ?>
             <li>
                 <a href="<?= e(url($ruta)) ?>"
-                   class="relative flex h-full flex-col items-center justify-center gap-1 text-[11px] font-medium <?= $activo ? 'text-rivera-rojo' : 'text-neutral-400' ?>"
+                   class="relative flex h-full flex-col items-center justify-center gap-1 text-[11px] font-medium <?= $activo ? 'text-rivera-rojo-claro' : 'text-neutral-400' ?>"
                    <?= $activo ? 'aria-current="page"' : '' ?>>
                     <?= icono($icono, 'h-6 w-6') ?>
                     <?= e($texto) ?>

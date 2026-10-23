@@ -51,6 +51,8 @@ function rutas(): array
         'mi-pedido'          => ['mi-pedido', false, 'html'],
         'mi-pedido/{numero}' => ['pedido-detalle', false, 'html'],
         'api/carrito'        => ['api-carrito', false, 'json'],
+        'sitemap.xml'        => ['sitemap', false, 'archivo'],
+        'robots.txt'         => ['robots', false, 'archivo'],
 
         // Panel de administración ("nuevo"/"nueva" deben ir antes de {id})
         'admin'                  => ['admin/inicio', false, 'html'],
@@ -112,8 +114,29 @@ function buscar_ruta(string $url): ?array
     return null;
 }
 
+/**
+ * Encabezados de seguridad para las páginas:
+ * - CSP: el navegador solo carga scripts, estilos, fuentes e imágenes del propio sitio.
+ *   (No hay JavaScript ni estilos escritos dentro del HTML; los datos JSON-LD no se ejecutan.)
+ * - HSTS: una vez visto por HTTPS, el navegador nunca vuelve a usar HTTP.
+ */
+function encabezados_seguridad(): void
+{
+    header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; "
+        . "font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'");
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: SAMEORIGIN');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()');
+    if (es_https()) {
+        header('Strict-Transport-Security: max-age=31536000');
+    }
+}
+
 function despachar(): void
 {
+    encabezados_seguridad();
+
     $encontrada = buscar_ruta(ruta_actual());
 
     // Las páginas de desarrollo no existen en producción
@@ -159,6 +182,7 @@ function mostrar_pagina(string $pagina, int $codigo = 200, array $parametros = [
         'fondo_claro' => false,
         'noindex'     => false,
         'layout'      => 'layout',   // 'admin/layout' para el panel
+        'datos'       => [],         // datos estructurados para Google (JSON-LD)
     ];
 
     // Se fija antes de ejecutar la página para que ella pueda cambiarlo (ej. 422 en formularios con errores)
@@ -184,8 +208,10 @@ function mostrar_pagina(string $pagina, int $codigo = 200, array $parametros = [
 /**
  * Incluye un componente reutilizable con sus datos: componente('aviso', ['tipo' => 'exito', ...])
  */
-function componente(string $nombre, array $datos = []): void
+function componente(string $__componente, array $__datos = []): void
 {
-    extract($datos, EXTR_SKIP);
-    require RAIZ . '/app/vistas/componentes/' . $nombre . '.php';
+    // Nombres internos con "__" para que nunca choquen con los datos del componente
+    // (ej. un componente que recibe 'nombre' o 'datos').
+    extract($__datos);
+    require RAIZ . '/app/vistas/componentes/' . $__componente . '.php';
 }

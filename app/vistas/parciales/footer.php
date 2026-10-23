@@ -66,6 +66,6 @@ $redes = array_filter([
     </div>
 
     <div class="border-t border-white/10">
-        <p class="contenedor py-5 text-xs text-neutral-500">© <?= date('Y') ?> <?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?>. Costa Rica.</p>
+        <p class="contenedor py-5 text-xs text-neutral-400">© <?= date('Y') ?> <?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?>. Costa Rica.</p>
     </div>
 </footer>

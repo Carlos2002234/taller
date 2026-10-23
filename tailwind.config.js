@@ -7,6 +7,8 @@ module.exports = {
         rivera: {
           rojo: '#D11A21',
           'rojo-oscuro': '#A8141A',
+          // Solo para TEXTO PEQUEÑO sobre fondo oscuro: el rojo del logo no alcanza el contraste mínimo (4.5:1)
+          'rojo-claro': '#F04A4F',
           negro: '#0B0B0B',
           carbon: '#1A1A1A',
           borde: '#2A2A2A',

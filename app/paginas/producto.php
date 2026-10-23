@@ -26,6 +26,25 @@ if ($imagenes) {
 }
 $meta['fondo_claro'] = true;
 
+// Datos del producto para Google (precio en colones y disponibilidad)
+$meta['datos'][] = array_filter([
+    '@context'    => 'https://schema.org',
+    '@type'       => 'Product',
+    'name'        => $producto['nombre'],
+    'sku'         => (string) $producto['id'],
+    'description' => $producto['descripcion'] ?: null,
+    'image'       => array_map(fn ($ruta) => url_foto($ruta), $imagenes) ?: null,
+    'brand'       => $producto['marca'] ? ['@type' => 'Brand', 'name' => $producto['marca']] : null,
+    'offers'      => [
+        '@type'         => 'Offer',
+        'url'           => url('producto/' . $producto['slug']),
+        'priceCurrency' => 'CRC',
+        'price'         => (string) (int) round((float) $producto['precio']),
+        'availability'  => $agotado ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
+        'seller'        => ['@type' => 'Organization', 'name' => ajuste('negocio_nombre', 'Rivera Grupo Automotriz')],
+    ],
+]);
+
 $coloresStock = [
     'disponible' => 'bg-emerald-500',
     'ultimas'    => 'bg-amber-500',
@@ -33,7 +52,7 @@ $coloresStock = [
 ];
 ?>
 <div class="contenedor py-6 sm:py-8">
-    <nav class="mb-5 text-xs text-neutral-500" aria-label="Ruta">
+    <nav class="mb-5 text-xs text-neutral-600" aria-label="Ruta">
         <a href="<?= e(url('tienda')) ?>" class="hover:text-rivera-negro">Tienda</a>
         <span class="mx-1.5">/</span>
         <a href="<?= e(url('tienda?categoria=' . rawurlencode($producto['categoria_slug']))) ?>" class="hover:text-rivera-negro"><?= e($producto['categoria_nombre']) ?></a>
@@ -46,7 +65,7 @@ $coloresStock = [
 
         <div data-producto>
             <?php if ($producto['marca']): ?>
-                <p class="text-xs font-semibold uppercase tracking-wider text-neutral-500"><?= e($producto['marca']) ?></p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-neutral-600"><?= e($producto['marca']) ?></p>
             <?php endif; ?>
             <h1 class="mt-1 font-display text-2xl font-extrabold leading-tight sm:text-3xl"><?= e($producto['nombre']) ?></h1>
 

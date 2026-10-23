@@ -21,7 +21,8 @@ function config(string $clave, mixed $porDefecto = null): mixed
 
     $config ??= [
         'app.entorno'   => env('APP_ENV', 'produccion'),
-        'app.debug'     => env_bool('APP_DEBUG'),
+        // En producción NUNCA se muestran errores ni páginas de desarrollo, aunque APP_DEBUG quede en true
+        'app.debug'     => env_bool('APP_DEBUG') && env('APP_ENV', 'produccion') !== 'produccion',
         'app.url'       => rtrim(env('APP_URL', ''), '/'),
         'app.zona'      => env('APP_TIMEZONE', 'America/Costa_Rica'),
 
