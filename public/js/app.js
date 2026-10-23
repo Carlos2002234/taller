@@ -162,9 +162,14 @@
       try { localStorage.setItem(POPUP_CLAVE, JSON.stringify(estadoPopup)); } catch (e) { /* sin almacenamiento */ }
     };
 
+    // Enlace con ?consulta=abrir (ej. en un anuncio o para probar): abre el formulario siempre, enseguida
+    if (/[?&]consulta=abrir/.test(location.search)) {
+      ventanaConsulta.showModal();
+    }
+
     // Sin almacenamiento disponible no se abre sola (no habría forma de recordar que la cerró)
     var cerradaHace = estadoPopup && estadoPopup.cerrado ? Date.now() - estadoPopup.cerrado : Infinity;
-    if (estadoPopup && !estadoPopup.enviado && cerradaHace > POPUP_DIAS_SIN_MOSTRAR * 24 * 3600 * 1000) {
+    if (!ventanaConsulta.open && estadoPopup && !estadoPopup.enviado && cerradaHace > POPUP_DIAS_SIN_MOSTRAR * 24 * 3600 * 1000) {
       setTimeout(function () {
         // No interrumpe si la persona ya abrió la ventana u otra ventana del sitio
         if (!ventanaConsulta.open && !document.querySelector('dialog[open]')) ventanaConsulta.showModal();
