@@ -22,16 +22,31 @@
     select.addEventListener('change', function () { select.form.submit(); });
   });
 
-  // Origen de la visita (anuncios): guarda los parámetros UTM por 30 días para asociarlos al pedido
+  // Origen de la visita (anuncios): se guarda 30 días para asociarlo al pedido.
+  // 1) Parámetros UTM del enlace del anuncio; 2) si no hay, se deduce de fbclid/gclid
+  //    (los agregan Facebook/Instagram y Google) o del sitio desde el que llegó la persona.
   try {
     var parametros = new URLSearchParams(location.search);
+    var origen = null;
     if (parametros.get('utm_source')) {
-      localStorage.setItem('utm', JSON.stringify({
-        utm_source: parametros.get('utm_source'),
-        utm_medium: parametros.get('utm_medium') || '',
-        utm_campaign: parametros.get('utm_campaign') || '',
-        guardado: Date.now(),
-      }));
+      origen = { utm_source: parametros.get('utm_source'), utm_medium: parametros.get('utm_medium') || '', utm_campaign: parametros.get('utm_campaign') || '' };
+    } else if (parametros.get('fbclid')) {
+      origen = { utm_source: 'facebook', utm_medium: 'anuncio', utm_campaign: '' };
+    } else if (parametros.get('gclid')) {
+      origen = { utm_source: 'google', utm_medium: 'anuncio', utm_campaign: '' };
+    } else if (document.referrer) {
+      var sitio = new URL(document.referrer).hostname;
+      var conocidos = { instagram: 'instagram', facebook: 'facebook', google: 'google', tiktok: 'tiktok', whatsapp: 'whatsapp', bing: 'bing' };
+      if (sitio !== location.hostname) {
+        Object.keys(conocidos).some(function (clave) {
+          if (sitio.indexOf(clave) !== -1) { origen = { utm_source: conocidos[clave], utm_medium: 'referido', utm_campaign: '' }; return true; }
+          return false;
+        });
+      }
+    }
+    if (origen) {
+      origen.guardado = Date.now();
+      localStorage.setItem('utm', JSON.stringify(origen));
     }
   } catch (e) { /* sin almacenamiento disponible */ }
 

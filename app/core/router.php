@@ -71,6 +71,7 @@ function rutas(): array
         'admin/pedidos/{numero}' => ['admin/pedido', false, 'html'],
         'admin/comprobantes/{id}' => ['admin/comprobante-archivo', false, 'archivo'],
         'admin/configuracion'    => ['admin/configuracion', false, 'html'],
+        'admin/reportes'         => ['admin/reportes', false, 'html'],
         'admin/servicios'        => ['admin/servicios', false, 'html'],
         'admin/servicios/nuevo'  => ['admin/servicio-form', false, 'html'],
         'admin/servicios/{id}'   => ['admin/servicio-form', false, 'html'],

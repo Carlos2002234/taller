@@ -30,8 +30,10 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 
 ## Estado actual del proyecto
 - **Fase:** MVP completo (módulos 0–10). Siguiente: publicación por el dueño; luego Fase 2 (WhatsApp) y Fase 3 (marketing).
-- **Último módulo completado:** 11 — páginas legales y WhatsApp gratuito (2026-10-22). Probado: 32/32 pruebas, XSS en textos legales, mensaje de WhatsApp, accesibilidad.
-- **Próximo:** Módulo 12 — reporte "¿Qué anuncio vende?" (ventas por UTM) en el admin. Luego, a pedido del dueño: Meta Pixel / Analytics (necesita IDs) y API oficial de WhatsApp (2B, con costo).
+- **Último módulo completado:** 12 — reporte "¿Qué anuncio vende?" (2026-10-22). Probado: cifras exactas contra datos de prueba (incluye cancelado tras pagar y mes anterior), detección de origen, accesibilidad, 32/32 pruebas.
+- **Próximo:** el MVP + extras están completos. Pendiente del dueño: publicar (guía), completar [COMPLETAR] legales con abogado. A pedido: Meta Pixel / Analytics (IDs + aviso de cookies + ajustar CSP) y API de WhatsApp (2B, con costo).
+- Reportes (`/admin/reportes`, solo dueño, `app/modelos/reportes.php`): ventas por origen = misma regla que ventas_del_mes (fecha de aprobación, sin cancelados). Barras con clases `w-[N%]` en pasos de 5% (`clase_ancho_barra()`, sin estilos inline por la CSP) y color `bg-dato` (#2a78d6, validado con la guía dataviz; NO usar el rojo de marca para datos).
+- Origen del cliente (`public/js/app.js`): UTM del enlace; si no hay, fbclid→facebook, gclid→google, o el sitio de referencia (instagram, facebook, google, tiktok…). Último origen gana; dura 30 días en localStorage.
 - Legal: `/terminos` y `/privacidad` desde settings `terminos_texto` / `privacidad_texto` (editables en Configuración; `texto_legal_html()` escapa todo, "## " = título, "- " = viñeta, {negocio} {telefono} {direccion} {horario} {horas_pago} {envio_plazo}). Base redactada por Claude con [COMPLETAR] (razón social, IVA, devoluciones, garantía, conservación): el dueño completa y un abogado revisa. Checkout exige casilla `acepto` (Ley 8968).
 - WhatsApp Fase 2 (decisión: opción gratuita 2A): botón "Avisar por WhatsApp" (cliente → dueño) en confirmación y Mi pedido. `notificarPedido()` sigue vacía para una futura API (2B).
 - Carpeta pública: `index.php` define `PUBLICO` (funciona como `public` o `public_html`). Usar `PUBLICO`, nunca `RAIZ . '/public'`.

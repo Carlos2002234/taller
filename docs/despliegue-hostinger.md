@@ -236,6 +236,8 @@ En `https://tudominio.com/admin`:
    (la opción por DNS funciona bien con dominios de Hostinger) y en **Sitemaps** envía `https://tudominio.com/sitemap.xml`.
 2. [ ] **Perfil de negocio en Google (Google Maps):** agrega el enlace de tu tienda como sitio web.
 3. [ ] Pon el enlace de la tienda en tu Facebook, Instagram y en el estado de WhatsApp.
+   Para cada anuncio o publicación, crea el enlace en **Admin → Reportes → Enlace para tus anuncios**:
+   así verás en **Reportes** cuánto vendió cada uno.
 
 ---
 

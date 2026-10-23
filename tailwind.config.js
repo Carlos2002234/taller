@@ -14,6 +14,9 @@ module.exports = {
           borde: '#2A2A2A',
           gris: '#F2F2F2',
         },
+        // Color de datos para gráficos (una sola serie). Validado: contraste y daltonismo.
+        // No se usa el rojo de marca para datos porque se lee como "alerta".
+        dato: '#2a78d6',
       },
       fontFamily: {
         display: ['Montserrat', 'system-ui', 'sans-serif'],
