@@ -53,7 +53,9 @@ $redes = array_filter(['Facebook' => ajuste('facebook_url'), 'Instagram' => ajus
                     <h2 class="font-sans text-base font-semibold">Síguenos</h2>
                     <div class="mt-3 flex flex-wrap gap-2">
                         <?php foreach ($redes as $red => $enlace): ?>
-                            <a href="<?= e($enlace) ?>" target="_blank" rel="noopener" class="btn-secundario btn-pequeno"><?= e($red) ?></a>
+                            <a href="<?= e($enlace) ?>" target="_blank" rel="noopener" class="btn-secundario btn-pequeno">
+                                <?= icono(strtolower($red), 'h-4 w-4') ?> <?= e($red) ?>
+                            </a>
                         <?php endforeach; ?>
                     </div>
                 </div>

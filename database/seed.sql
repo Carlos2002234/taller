@@ -39,10 +39,10 @@ INSERT INTO settings (clave, valor) VALUES
     ('banner_titulo_rojo',      'con lo mejor'),
     ('banner_texto',            'Accesorios, repuestos y productos de calidad para mantener tu auto en perfectas condiciones.'),
 
-    -- Redes sociales (PENDIENTE)
-    ('facebook_url',            ''),
-    ('instagram_url',           ''),
-    ('tiktok_url',              ''),
+    -- Redes sociales (confirmadas por el dueño; editables en Admin → Configuración)
+    ('facebook_url',            'https://www.facebook.com/profile.php?id=61592820894749'),
+    ('instagram_url',           'https://www.instagram.com/riveragrupoautomotriz/'),
+    ('tiktok_url',              'https://www.tiktok.com/@riveragrupoautomotriz'),
 
     -- Textos legales BASE: el dueño completa lo marcado [COMPLETAR] y un abogado los revisa.
     -- {negocio}, {telefono}, {direccion}, {horario}, {horas_pago} y {envio_plazo} se reemplazan solos.

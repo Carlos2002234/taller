@@ -69,6 +69,7 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 - **Repositorio:** https://github.com/Carlos2002234/taller (rama `main`). Cada commit se sube con `git push`.
 
 ### Datos del negocio (confirmados)
+- Redes: Facebook profile.php?id=61592820894749, Instagram @riveragrupoautomotriz, TikTok @riveragrupoautomotriz (en `seed.sql`, sin parámetros de rastreo).
 - **Rivera Grupo Automotriz** — Costa Rica, colones (₡).
 - Teléfono, WhatsApp y SINPE Móvil: **8702-6760**.
 - Dirección: 150 m oeste de la plaza de deportes de La Puebla, antes de llegar a los semáforos.
@@ -101,6 +102,6 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 - Titular del SINPE; datos bancarios (banco, IBAN, titular, cédula): el dueño los carga en Admin → Configuración.
 - ¿Precios con IVA incluido?
 - Provincia/cantón de La Puebla y enlace de Google Maps/Waze.
-- Revisar los 6 servicios cargados y poner las redes sociales (ambos desde el admin).
+- Revisar los 6 servicios cargados (desde el admin).
 - Tarifas reales de envío: el dueño las ajusta en Admin → Configuración antes de publicar.
 - Correo para avisos de pedidos; dominio; plan de Hostinger.
