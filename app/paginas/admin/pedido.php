@@ -5,6 +5,7 @@
  */
 
 require_once RAIZ . '/app/modelos/pedidos-admin.php';
+require_once RAIZ . '/app/modelos/clientes.php';
 
 $usuario = requerir_admin();
 $meta['layout'] = 'admin/layout';
@@ -231,6 +232,7 @@ $revision = ['pendiente' => 'Pendiente de revisión', 'aprobado' => 'Aprobado', 
         <section class="tarjeta-clara p-5">
             <h2 class="text-base">Cliente</h2>
             <p class="mt-3 font-semibold"><?= e($pedido['nombre_cliente']) ?></p>
+            <a href="<?= e(url_cliente($pedido['telefono'])) ?>" class="text-xs font-semibold text-rivera-rojo hover:underline">Ver ficha del cliente →</a>
             <p class="text-sm text-neutral-600"><?= e($pedido['telefono']) ?><?= $pedido['email'] ? ' · ' . e($pedido['email']) : '' ?></p>
             <div class="mt-3 grid grid-cols-2 gap-2">
                 <a href="<?= e(whatsapp_cliente_url($pedido['telefono'], $mensajesWhatsapp[$estado] ?? "Hola {$pedido['nombre_cliente']}, sobre tu pedido {$pedido['numero_pedido']}:")) ?>"

@@ -6,6 +6,7 @@
 
 require_once RAIZ . '/app/modelos/consultas.php';
 require_once RAIZ . '/app/modelos/reportes.php';
+require_once RAIZ . '/app/modelos/clientes.php';
 
 $usuario = requerir_admin();
 $meta['layout'] = 'admin/layout';
@@ -101,6 +102,7 @@ $origen = array_filter([$consulta['utm_source'], $consulta['utm_medium'], $consu
         <section class="tarjeta-clara p-5">
             <h2 class="text-base">Contactar</h2>
             <p class="mt-3 font-semibold"><?= e($consulta['nombre']) ?></p>
+            <a href="<?= e(url_cliente($consulta['telefono'])) ?>" class="text-xs font-semibold text-rivera-rojo hover:underline">Ver ficha del cliente →</a>
             <p class="text-sm text-neutral-600"><?= e($consulta['telefono']) ?></p>
             <?php if ($consulta['email']): ?>
                 <p class="break-all text-sm text-neutral-600"><?= e($consulta['email']) ?></p>

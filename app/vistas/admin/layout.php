@@ -18,6 +18,7 @@ if ($usuario) {
     $menu[] = ['admin', 'Inicio', 'inicio'];
     $menu[] = ['admin/pedidos', 'Pedidos', 'pedido'];
     $menu[] = ['admin/consultas', 'Consultas', 'buzon'];
+    $menu[] = ['admin/clientes', 'Clientes', 'personas'];
     if (es_duenio($usuario)) {
         $menu[] = ['admin/reportes', 'Reportes', 'grafico'];
         $menu[] = ['admin/visitas', 'Visitas', 'ojo'];

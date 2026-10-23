@@ -76,6 +76,8 @@ function rutas(): array
         'admin/consultas'        => ['admin/consultas', false, 'html'],
         'admin/consultas/{id}'   => ['admin/consulta', false, 'html'],
         'admin/api/novedades'    => ['admin/api-novedades', false, 'json'],
+        'admin/clientes'         => ['admin/clientes', false, 'html'],
+        'admin/clientes/{telefono}' => ['admin/cliente', false, 'html'],
         'admin/servicios'        => ['admin/servicios', false, 'html'],
         'admin/servicios/nuevo'  => ['admin/servicio-form', false, 'html'],
         'admin/servicios/{id}'   => ['admin/servicio-form', false, 'html'],
