@@ -22,12 +22,15 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 - Archivos y carpetas en minúsculas con guiones.
 - Consultas SQL solo con PDO preparado.
 - Estructura: `/public` (raíz web; incluye `/public/uploads`), `/app` (lógica), `/admin`, `/storage` (privado), `/assets`, `/database`, `/docs`
-- Toda página empieza con `require .../app/config/config.php`. Usar `db()`, `ajuste()`, `e()`, `colones()`, `url()`, `csrf_campo()` / `verificar_csrf()`.
+- Rutas en `app/core/router.php` (`rutas()`); páginas en `app/paginas/*.php` (pueden cambiar `$meta`); componentes con `componente('nombre', [...])` desde `app/vistas/componentes/`.
+- CSS: editar `resources/css/app.css` y compilar con `npm run css` (el compilado `public/css/app.css` SÍ se versiona). Las clases deben escribirse completas en el código (Tailwind no detecta nombres armados por partes).
+- Íconos: `icono('nombre')` en `helpers.php`. Enlaces de WhatsApp: `whatsapp_url($mensaje)`.
+- `public/index.php` solo carga config y llama `despachar()`. Usar `db()`, `ajuste()`, `e()`, `colones()`, `url()`, `csrf_campo()` / `verificar_csrf()`.
 
 ## Estado actual del proyecto
 - **Fase:** MVP
-- **Último módulo completado:** 1 — estructura, base de datos (12 tablas) y configuración (2026-10-22). Probado con PHP 8.2 y MariaDB 10.11: schema + seed importan sin errores, `public/index.php` muestra la revisión de instalación en verde.
-- **Próximo módulo:** 2 — diseño base (layout, header, footer, paleta, componentes, Tailwind). Proponer plan y esperar confirmación.
+- **Último módulo completado:** 2 — diseño base (2026-10-22): layout, header, footer, barra inferior móvil, botón WhatsApp, componentes y guía de estilos. Verificado con capturas en 1366px y 390px.
+- **Próximo módulo:** 3 — tienda pública: catálogo (filtros categoría/marca/precio, búsqueda, orden), página de producto, carrito. Proponer plan y esperar confirmación.
 - Admin: se crea con `php database/crear-admin.php` (no hay usuarios en `seed.sql`). Números de pedido: prefijo en `settings.prefijo_pedido` (TAL) + tabla `order_sequences`.
 - **Repositorio:** https://github.com/Carlos2002234/taller (rama `main`). Cada commit se sube con `git push`.
 

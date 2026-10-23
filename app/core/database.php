@@ -47,7 +47,13 @@ function ajuste(string $clave, string $porDefecto = ''): string
     static $ajustes = null;
 
     if ($ajustes === null) {
-        $ajustes = db()->query('SELECT clave, valor FROM settings')->fetchAll(PDO::FETCH_KEY_PAIR);
+        try {
+            $ajustes = db()->query('SELECT clave, valor FROM settings')->fetchAll(PDO::FETCH_KEY_PAIR);
+        } catch (Throwable $e) {
+            // Sin base de datos el sitio sigue mostrándose con los valores por defecto
+            error_log('No se pudieron leer los ajustes: ' . $e->getMessage());
+            $ajustes = [];
+        }
     }
 
     return $ajustes[$clave] ?? $porDefecto;

@@ -29,6 +29,9 @@
 *.log
 /tmp/
 
+# Capturas de pruebas del navegador
+/.playwright-mcp/
+
 # Sistema / editor
 .DS_Store
 Thumbs.db

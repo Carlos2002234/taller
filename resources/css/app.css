@@ -1,0 +1,63 @@
+/*
+ * Estilos fuente. NO editar public/css/app.css a mano:
+ * se genera con  npm run css  (o  npm run css:watch  mientras se diseña).
+ */
+
+@font-face { font-family: 'Montserrat'; font-weight: 700; font-style: normal; font-display: swap; src: url('../fonts/montserrat-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Montserrat'; font-weight: 800; font-style: normal; font-display: swap; src: url('../fonts/montserrat-latin-800-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Montserrat'; font-weight: 800; font-style: italic; font-display: swap; src: url('../fonts/montserrat-latin-800-italic.woff2') format('woff2'); }
+@font-face { font-family: 'Inter'; font-weight: 400; font-style: normal; font-display: swap; src: url('../fonts/inter-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Inter'; font-weight: 500; font-style: normal; font-display: swap; src: url('../fonts/inter-latin-500-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Inter'; font-weight: 600; font-style: normal; font-display: swap; src: url('../fonts/inter-latin-600-normal.woff2') format('woff2'); }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { -webkit-tap-highlight-color: transparent; }
+  h1, h2, h3 { @apply font-display font-bold; }
+  :focus-visible { @apply outline-none ring-2 ring-rivera-rojo ring-offset-2 ring-offset-rivera-negro; }
+}
+
+@layer components {
+  /* Ancho máximo y márgenes laterales del sitio */
+  .contenedor { @apply mx-auto w-full max-w-sitio px-4 sm:px-6 lg:px-8; }
+
+  /* Botones */
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-primario { @apply btn bg-rivera-rojo text-white hover:bg-rivera-rojo-oscuro disabled:bg-neutral-500 disabled:opacity-60; }
+  .btn-secundario { @apply btn border border-white/25 text-white hover:border-white hover:bg-white/5; }
+  .btn-claro { @apply btn border border-neutral-300 text-rivera-negro hover:border-rivera-negro; }
+  .btn-pequeno { @apply px-3 py-2 text-xs; }
+
+  /* Títulos de sección: etiqueta roja + título (con segunda línea roja opcional) */
+  .etiqueta-seccion { @apply mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-rivera-rojo before:h-0.5 before:w-5 before:bg-rivera-rojo before:content-['']; }
+  .titulo-seccion { @apply text-2xl leading-tight sm:text-3xl; }
+
+  /* Tarjetas */
+  .tarjeta { @apply overflow-hidden rounded-lg border border-rivera-borde bg-rivera-carbon; }
+  .tarjeta-clara { @apply overflow-hidden rounded-lg border border-neutral-200 bg-white text-rivera-negro; }
+
+  /* Insignias sobre productos */
+  .insignia { @apply inline-block rounded px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide; }
+  .insignia-oferta { @apply insignia bg-rivera-rojo text-white; }
+  .insignia-destacado { @apply insignia bg-white text-rivera-negro; }
+  .tarjeta-clara .insignia-destacado { @apply bg-rivera-negro text-white; }
+  .insignia-agotado { @apply insignia bg-neutral-700 text-white; }
+
+  /* Campos de formulario */
+  .campo { @apply w-full rounded-md border border-rivera-borde bg-rivera-carbon px-3 py-2.5 text-sm text-white placeholder:text-neutral-500 focus:border-rivera-rojo focus:outline-none focus:ring-1 focus:ring-rivera-rojo; }
+  .campo-claro { @apply campo border-neutral-300 bg-white text-rivera-negro placeholder:text-neutral-400; }
+  .etiqueta-campo { @apply mb-1.5 block text-sm font-medium; }
+
+  /* Avisos */
+  .aviso { @apply flex items-start gap-3 rounded-md border px-4 py-3 text-sm; }
+  .aviso-exito { @apply aviso border-emerald-500/40 bg-emerald-500/10 text-emerald-200; }
+  .aviso-error { @apply aviso border-rivera-rojo/50 bg-rivera-rojo/10 text-red-200; }
+  .aviso-info { @apply aviso border-white/15 bg-white/5 text-neutral-200; }
+
+  /* Enlaces del menú */
+  .enlace-menu { @apply text-sm font-medium text-neutral-300 transition-colors hover:text-white; }
+  .enlace-menu-activo { @apply text-white after:mt-1 after:block after:h-0.5 after:bg-rivera-rojo after:content-['']; }
+}

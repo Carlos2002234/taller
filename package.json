@@ -1,0 +1,17 @@
+{
+  "name": "rivera-tienda",
+  "private": true,
+  "description": "Herramientas de desarrollo (solo en la PC). El servidor no necesita Node.",
+  "scripts": {
+    "css": "tailwindcss -i resources/css/app.css -o public/css/app.css --minify",
+    "css:watch": "tailwindcss -i resources/css/app.css -o public/css/app.css --watch",
+    "imagenes": "node scripts/optimizar-imagenes.js",
+    "fuentes": "node scripts/copiar-fuentes.js"
+  },
+  "devDependencies": {
+    "@fontsource/inter": "5.1.0",
+    "@fontsource/montserrat": "5.1.0",
+    "sharp": "0.33.5",
+    "tailwindcss": "3.4.17"
+  }
+}

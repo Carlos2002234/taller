@@ -51,11 +51,26 @@ Escribe tu nombre, correo, rol `duenio` y una contraseña de al menos 10 caracte
 
 ## 6. Verificar
 
-Abre **http://taller.test**. La página de revisión debe mostrar todo en verde:
+Abre **http://taller.test/instalacion**. La página de revisión debe mostrar todo en verde:
 
 - PHP 8.2 o mayor
-- Extensión PDO MySQL
+- Extensiones PDO MySQL y GD con WebP
 - Carpetas de fotos y comprobantes escribibles
 - Base de datos conectada (12 tablas)
 
 Si algo sale en rojo, revisa el archivo `storage/logs/php-errores.log`.
+
+Las páginas `/instalacion` y `/estilos` (guía de estilos) solo existen con `APP_DEBUG=true`;
+en el sitio publicado responden 404.
+
+## 7. Cambiar el diseño (solo si vas a editar estilos)
+
+El servidor **no** necesita Node.js: el CSS ya compilado (`public/css/app.css`) se sube a GitHub.
+Solo para modificar el diseño, instala Node.js LTS y en la carpeta del proyecto:
+
+```bash
+npm install          # una sola vez
+npm run css:watch    # recompila el CSS mientras editas
+npm run css          # versión final minificada (antes de hacer commit)
+npm run imagenes     # regenera logo y fotos optimizadas desde /assets
+```
