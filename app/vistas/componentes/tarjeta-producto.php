@@ -14,7 +14,7 @@ $descuento = $oferta ? (int) round(100 - $producto['precio'] * 100 / $producto['
 <article class="<?= $tono === 'claro' ? 'tarjeta-clara' : 'tarjeta' ?> group flex flex-col">
     <a href="<?= e($enlace) ?>" class="relative block aspect-square overflow-hidden <?= $tono === 'claro' ? 'bg-white' : 'bg-neutral-900' ?>">
         <?php if (!empty($producto['imagen'])): ?>
-            <img src="<?= e(url('uploads/' . $producto['imagen'])) ?>" alt="<?= e($producto['nombre']) ?>"
+            <img src="<?= e(url_foto($producto['imagen'], true)) ?>" alt="<?= e($producto['nombre']) ?>"
                  loading="lazy" class="h-full w-full object-contain p-4 transition-transform duration-300 group-hover:scale-105">
         <?php else: ?>
             <span class="flex h-full w-full items-center justify-center <?= $tono === 'claro' ? 'text-neutral-300' : 'text-neutral-700' ?>">

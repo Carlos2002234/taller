@@ -22,7 +22,7 @@ $meta['descripcion'] = $producto['descripcion']
     ? mb_strimwidth(preg_replace('/\s+/', ' ', $producto['descripcion']), 0, 155, '…')
     : $producto['nombre'] . ' — ' . colones($producto['precio']) . '. Paga por SINPE Móvil o transferencia.';
 if ($imagenes) {
-    $meta['imagen'] = url('uploads/' . $imagenes[0]);
+    $meta['imagen'] = url_foto($imagenes[0]);
 }
 $meta['fondo_claro'] = true;
 

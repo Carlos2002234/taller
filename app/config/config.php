@@ -53,3 +53,4 @@ require RAIZ . '/app/core/helpers.php';
 require RAIZ . '/app/core/database.php';
 require RAIZ . '/app/core/session.php';
 require RAIZ . '/app/core/csrf.php';
+require RAIZ . '/app/core/auth.php';

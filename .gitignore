@@ -8,6 +8,7 @@
 # Archivos subidos (fotos de productos) — solo se versiona la estructura
 /public/uploads/productos/*
 !/public/uploads/productos/.gitkeep
+/public/uploads/categorias/
 
 # Comprobantes de pago y logs (privados, NUNCA al repositorio)
 /storage/comprobantes/*

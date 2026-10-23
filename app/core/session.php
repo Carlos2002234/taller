@@ -35,6 +35,24 @@ function regenerar_sesion(): void
 }
 
 /**
+ * Mensaje que se muestra una sola vez en la siguiente página (después de redirigir).
+ * $tipo: 'exito' | 'error' | 'info'
+ */
+function avisar(string $tipo, string $mensaje): void
+{
+    iniciar_sesion();
+    $_SESSION['avisos'][] = ['tipo' => $tipo, 'mensaje' => $mensaje];
+}
+
+function tomar_avisos(): array
+{
+    iniciar_sesion();
+    $avisos = $_SESSION['avisos'] ?? [];
+    unset($_SESSION['avisos']);
+    return $avisos;
+}
+
+/**
  * Cierra la sesión por completo (logout).
  */
 function cerrar_sesion(): void

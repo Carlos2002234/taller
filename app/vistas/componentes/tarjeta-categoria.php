@@ -7,7 +7,7 @@
 <a href="<?= e(url('tienda?categoria=' . rawurlencode($categoria['slug']))) ?>" class="tarjeta group block">
     <span class="block aspect-[4/3] overflow-hidden bg-neutral-900">
         <?php if (!empty($categoria['imagen'])): ?>
-            <img src="<?= e(url('uploads/' . $categoria['imagen'])) ?>" alt="" loading="lazy"
+            <img src="<?= e(url_foto($categoria['imagen'], true)) ?>" alt="" loading="lazy"
                  class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105">
         <?php else: ?>
             <span class="flex h-full w-full items-center justify-center text-neutral-700">

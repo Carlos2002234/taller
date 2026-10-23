@@ -19,6 +19,18 @@ function no_encontrado(): never
 }
 
 /**
+ * Se lanza cuando un usuario del panel no tiene permiso (ej. empleado en Productos).
+ */
+final class AccesoDenegado extends Exception
+{
+}
+
+function prohibido(): never
+{
+    throw new AccesoDenegado();
+}
+
+/**
  * Rutas del sitio: 'url' => ['página', solo_en_desarrollo, tipo]
  * - {slug} captura un segmento (letras minúsculas, números y guiones) y llega a la página en $parametros['slug'].
  * - tipo 'json' no usa el layout (la página imprime su propia respuesta).
@@ -27,19 +39,37 @@ function no_encontrado(): never
 function rutas(): array
 {
     return [
-        ''                => ['inicio', false, 'html'],
-        'tienda'          => ['tienda', false, 'html'],
-        'producto/{slug}' => ['producto', false, 'html'],
-        'carrito'         => ['carrito', false, 'html'],
-        'checkout'          => ['checkout', false, 'html'],
-        'pedido-confirmado' => ['pedido-confirmado', false, 'html'],
-        'servicios'       => ['en-construccion', false, 'html'],
-        'contacto'        => ['en-construccion', false, 'html'],
+        // Tienda pública
+        ''                   => ['inicio', false, 'html'],
+        'tienda'             => ['tienda', false, 'html'],
+        'producto/{slug}'    => ['producto', false, 'html'],
+        'carrito'            => ['carrito', false, 'html'],
+        'checkout'           => ['checkout', false, 'html'],
+        'pedido-confirmado'  => ['pedido-confirmado', false, 'html'],
+        'servicios'          => ['en-construccion', false, 'html'],
+        'contacto'           => ['en-construccion', false, 'html'],
         'mi-pedido'          => ['mi-pedido', false, 'html'],
         'mi-pedido/{numero}' => ['pedido-detalle', false, 'html'],
-        'api/carrito'     => ['api-carrito', false, 'json'],
-        'estilos'         => ['estilos', true, 'html'],
-        'instalacion'     => ['instalacion', true, 'html'],
+        'api/carrito'        => ['api-carrito', false, 'json'],
+
+        // Panel de administración ("nuevo"/"nueva" deben ir antes de {id})
+        'admin'                  => ['admin/inicio', false, 'html'],
+        'admin/login'            => ['admin/login', false, 'html'],
+        'admin/salir'            => ['admin/salir', false, 'html'],
+        'admin/cuenta'           => ['admin/cuenta', false, 'html'],
+        'admin/productos'        => ['admin/productos', false, 'html'],
+        'admin/productos/nuevo'  => ['admin/producto-form', false, 'html'],
+        'admin/productos/{id}'   => ['admin/producto-form', false, 'html'],
+        'admin/categorias'       => ['admin/categorias', false, 'html'],
+        'admin/categorias/nueva' => ['admin/categoria-form', false, 'html'],
+        'admin/categorias/{id}'  => ['admin/categoria-form', false, 'html'],
+        'admin/usuarios'         => ['admin/usuarios', false, 'html'],
+        'admin/usuarios/nuevo'   => ['admin/usuario-form', false, 'html'],
+        'admin/usuarios/{id}'    => ['admin/usuario-form', false, 'html'],
+
+        // Solo en desarrollo
+        'estilos'            => ['estilos', true, 'html'],
+        'instalacion'        => ['instalacion', true, 'html'],
     ];
 }
 
@@ -109,6 +139,7 @@ function mostrar_pagina(string $pagina, int $codigo = 200, array $parametros = [
         'imagen'      => null,
         'fondo_claro' => false,
         'noindex'     => false,
+        'layout'      => 'layout',   // 'admin/layout' para el panel
     ];
 
     // Se fija antes de ejecutar la página para que ella pueda cambiarlo (ej. 422 en formularios con errores)
@@ -121,10 +152,14 @@ function mostrar_pagina(string $pagina, int $codigo = 200, array $parametros = [
         ob_end_clean();
         mostrar_pagina('404', 404);
         return;
+    } catch (AccesoDenegado) {
+        ob_end_clean();
+        mostrar_pagina('admin/sin-permiso', 403);
+        return;
     }
     $contenido = ob_get_clean();
 
-    require RAIZ . '/app/vistas/layout.php';
+    require RAIZ . '/app/vistas/' . $meta['layout'] . '.php';
 }
 
 /**

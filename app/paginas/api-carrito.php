@@ -18,7 +18,7 @@ try {
         'precio'          => (float) $p['precio'],
         'precio_anterior' => $p['precio_anterior'] !== null ? (float) $p['precio_anterior'] : null,
         'stock'           => max(0, (int) $p['stock']),
-        'imagen'          => $p['imagen'] ? url('uploads/' . $p['imagen']) : null,
+        'imagen'          => url_foto($p['imagen'], true),
         'url'             => url('producto/' . $p['slug']),
     ], productos_por_ids($ids));
 

@@ -48,6 +48,7 @@ php database/crear-admin.php
 ```
 
 Escribe tu nombre, correo, rol `duenio` y una contraseña de al menos 10 caracteres.
+Después entra al panel en **http://taller.test/admin**. Los empleados se crean desde el panel (*Usuarios*).
 
 ## 6. Verificar
 
@@ -60,8 +61,9 @@ Abre **http://taller.test/instalacion**. La página de revisión debe mostrar to
 
 Si algo sale en rojo, revisa el archivo `storage/logs/php-errores.log`.
 
-> **Subidas de 5 MB:** si sale en rojo "Subidas de al menos 5 MB", en Laragon: clic derecho → *PHP → php.ini*,
-> cambia `upload_max_filesize = 8M` y `post_max_size = 10M`, guarda y presiona *Recargar*.
+> **Tamaño de las subidas:** si sale en rojo la línea de "Subidas", en Laragon: clic derecho → *PHP → php.ini*,
+> cambia `upload_max_filesize = 10M` y `post_max_size = 64M`, guarda y presiona *Recargar*.
+> (Comprobantes: hasta 5 MB. Fotos de productos: hasta 10 MB cada una, hasta 5 a la vez.)
 > En Hostinger se ajusta en hPanel → *Avanzado → Configuración de PHP → Opciones de PHP*.
 
 Las páginas `/instalacion` y `/estilos` (guía de estilos) solo existen con `APP_DEBUG=true`;

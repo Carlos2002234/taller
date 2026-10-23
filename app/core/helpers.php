@@ -41,6 +41,26 @@ function asset(string $ruta): string
 }
 
 /**
+ * Versión pequeña de una foto subida: "productos/abc.webp" → "productos/abc-mini.webp".
+ * Si la versión pequeña no existe (fotos antiguas), se usa la original.
+ */
+function ruta_mini(string $ruta): string
+{
+    return preg_replace('/\.webp$/', '-mini.webp', $ruta);
+}
+
+function url_foto(?string $ruta, bool $mini = false): ?string
+{
+    if (!$ruta) {
+        return null;
+    }
+    if ($mini && is_file(config('ruta.uploads') . '/' . ruta_mini($ruta))) {
+        return url('uploads/' . ruta_mini($ruta));
+    }
+    return url('uploads/' . $ruta);
+}
+
+/**
  * Enlace de WhatsApp con mensaje prellenado (no es la automatización de la Fase 2).
  */
 function whatsapp_url(string $mensaje = ''): string
