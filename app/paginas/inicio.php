@@ -17,36 +17,39 @@ $categorias = array_slice(array_filter(categorias_activas(), fn ($c) => (int) $c
 $destacados = productos_destacados(8);
 $servicios = servicios_activos(true);
 ?>
-<!-- Portada: fachada completa del taller -->
-<section class="relative isolate overflow-hidden">
-    <picture>
-        <source type="image/webp"
-                srcset="<?= e(url('img/fotos/rivera-14-960.webp')) ?> 960w, <?= e(url('img/fotos/rivera-14-1920.webp')) ?> 1920w"
-                sizes="100vw">
-        <img src="<?= e(url('img/fotos/rivera-14-1920.webp')) ?>"
-             alt="Fachada de <?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?>"
-             class="portada-foto absolute inset-0 -z-20 h-full w-full object-cover object-[62%_75%] sm:object-[center_70%]" fetchpriority="high">
-    </picture>
-    <!-- Degradados: oscurecen el cielo detrás del texto y funden la foto con la página -->
-    <div class="absolute inset-0 -z-10 bg-gradient-to-r from-rivera-negro/95 via-rivera-negro/75 to-rivera-negro/25"></div>
-    <div class="absolute inset-0 -z-10 bg-gradient-to-t from-rivera-negro via-transparent to-rivera-negro/60"></div>
-
-    <div class="contenedor flex min-h-[88svh] flex-col justify-center pb-20 pt-28 sm:min-h-[90vh]">
-        <p class="etiqueta-seccion portada-entrar portada-entrar-1"><?= e(ajuste('banner_etiqueta', 'Accesorios y repuestos para tu auto')) ?></p>
-        <h1 class="portada-entrar portada-entrar-2 max-w-2xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
-            <?= e(ajuste('banner_titulo', 'Equipa tu camino')) ?>
-            <span class="block text-rivera-rojo"><?= e(ajuste('banner_titulo_rojo', 'con lo mejor')) ?></span>
-        </h1>
-        <p class="portada-entrar portada-entrar-3 mt-6 max-w-md text-base leading-relaxed text-neutral-200 sm:text-lg"><?= e(ajuste('banner_texto')) ?></p>
-        <div class="portada-entrar portada-entrar-4 mt-9 flex flex-wrap gap-3">
-            <a href="<?= e(url('tienda')) ?>" class="btn-primario px-7 py-3.5 text-base">Ver tienda <?= icono('flecha', 'h-4 w-4') ?></a>
-            <a href="<?= e(url('servicios')) ?>" class="btn-secundario px-7 py-3.5 text-base"><?= icono('llave', 'h-4 w-4') ?> Servicios del taller</a>
-        </div>
+<!-- Portada: la fachada del taller va limpia, sin texto encima; el texto va debajo, sobre el fondo negro
+     y solo roza la parte de la foto que ya se funde con la página
+     (decisión del dueño: "minimalista y elegante, que la letra no tape la imagen") -->
+<section class="relative isolate">
+    <div class="relative h-[62svh] min-h-[22rem] overflow-hidden sm:h-[74vh]">
+        <picture>
+            <source type="image/webp"
+                    srcset="<?= e(url('img/fotos/rivera-14-960.webp')) ?> 960w, <?= e(url('img/fotos/rivera-14-1920.webp')) ?> 1920w"
+                    sizes="100vw">
+            <img src="<?= e(url('img/fotos/rivera-14-1920.webp')) ?>"
+                 alt="Fachada de <?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?>"
+                 class="portada-foto absolute inset-0 h-full w-full object-cover object-[22%_72%] sm:object-[center_65%]" fetchpriority="high">
+        </picture>
+        <!-- Sombra arriba para leer el menú y fundido abajo hacia el negro de la página -->
+        <div class="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-rivera-negro/70 to-transparent"></div>
+        <div class="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-rivera-negro to-transparent"></div>
     </div>
 
-    <a href="#beneficios" class="indicador-bajar absolute bottom-6 left-1/2 hidden -translate-x-1/2 text-neutral-300 hover:text-white sm:block" aria-label="Ver más">
-        <span class="block rotate-90"><?= icono('flecha', 'h-7 w-7') ?></span>
-    </a>
+    <div class="contenedor relative -mt-16 pb-14 sm:-mt-20 sm:pb-20">
+        <p class="portada-entrar portada-entrar-1 text-[11px] font-semibold uppercase tracking-[0.25em] text-neutral-400"><?= e(ajuste('banner_etiqueta', 'Accesorios y repuestos para tu auto')) ?></p>
+        <h1 class="portada-entrar portada-entrar-2 mt-3 font-display text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+            <?= e(ajuste('banner_titulo', 'Equipa tu camino')) ?> <span class="text-rivera-rojo"><?= e(ajuste('banner_titulo_rojo', 'con lo mejor')) ?></span>
+        </h1>
+        <?php if (ajuste('banner_texto') !== ''): ?>
+            <p class="portada-entrar portada-entrar-3 mt-3 max-w-md text-sm leading-relaxed text-neutral-400"><?= e(ajuste('banner_texto')) ?></p>
+        <?php endif; ?>
+        <div class="portada-entrar portada-entrar-4 mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <a href="<?= e(url('tienda')) ?>" class="btn-primario">Ver tienda <?= icono('flecha', 'h-4 w-4') ?></a>
+            <a href="<?= e(url('servicios')) ?>" class="inline-flex items-center gap-1.5 text-sm font-semibold text-white/90 underline-offset-4 hover:text-white hover:underline">
+                Servicios del taller <?= icono('flecha', 'h-4 w-4') ?>
+            </a>
+        </div>
+    </div>
 </section>
 
 <div id="beneficios">
