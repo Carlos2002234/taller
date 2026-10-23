@@ -30,8 +30,11 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 
 ## Estado actual del proyecto
 - **Fase:** MVP
-- **Último módulo completado:** 4 — checkout y creación de pedido (2026-10-22). Probado: validaciones, CSRF, campo trampa, límites anti-abuso, 12 compras simultáneas contra stock 5 (vende exactamente 5, sin números repetidos), vencimiento con devolución de stock, UTM.
-- **Próximo módulo:** 5 — seguimiento de pedido (`/mi-pedido`: número + teléfono) y subida del comprobante (JPG/PNG/PDF máx. 5 MB, a `storage/comprobantes`, nombre aleatorio). Al subir: `pendiente_pago` → `comprobante_enviado`. Proponer plan y esperar confirmación.
+- **Último módulo completado:** 5 — seguimiento y comprobante (2026-10-22). Probado: archivos falsos/vacíos/grandes, acceso sin autorización, bloqueo por intentos, comprobante único, flujo de rechazo, pedido vencido, archivo inaccesible por web.
+- **Próximo módulo:** 6 — admin: login seguro (roles dueño/empleado, tabla `intentos` tipo 'login'), productos (hasta 5 fotos → WebP), categorías. Proponer plan y esperar confirmación.
+- Seguimiento: `/mi-pedido` (número + teléfono) → `/mi-pedido/{numero en minúsculas}`. Acceso por sesión (`autorizar_pedido()` / `pedido_autorizado()`); quien crea el pedido queda autorizado. Bloqueo: 10 fallidos por IP = 15 min (`app/modelos/intentos.php`).
+- Comprobantes (decisión del dueño): UN comprobante activo por pedido; desde celular o computadora; JPG/PNG/PDF ≤ 5 MB validado por contenido (finfo + getimagesize/%PDF-); nombre aleatorio en `storage/comprobantes/AAAA/MM/`. Subir → `comprobante_enviado` (nunca `pagado`).
+- Rechazo de comprobante (para el Módulo 7, decisión del dueño): el dueño escribe el MOTIVO (`payment_proofs.nota_revision`, lo ve el cliente), el pedido vuelve a `pendiente_pago` y el cliente puede subir otro. CONFIRMAR con el dueño el nuevo plazo de pago tras el rechazo (propuesto: 24 h). "Rechazar pedido" es aparte y final (devuelve stock).
 - Pedidos: `crear_pedido()` en `app/modelos/pedidos.php` (transacción con `FOR UPDATE`, precios de la BD, reserva stock, historial). Número `RGA-AAAA-NNNN` (prefijo en `settings.prefijo_pedido`, contador `order_sequences`). Tras crear, llama `notificarPedido()` (vacía, Fase 2).
 - Vencimiento: SOLO pedidos en `pendiente_pago` vencen (48 h, `settings.horas_expiracion_pedido`) → `cancelado` + `devolver_stock()`. Los `comprobante_enviado` NUNCA vencen solos. Cron: `app/tareas/liberar-pedidos-vencidos.php` cada hora (además se ejecuta al crear pedidos).
 - Anti-abuso aprobado por el dueño: campo trampa, máx. 3 pedidos `pendiente_pago` por teléfono, máx. 5 pedidos/hora por IP.

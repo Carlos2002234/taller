@@ -9,6 +9,10 @@ require_once RAIZ . '/app/modelos/pedidos.php';
 
 iniciar_sesion();
 $pedido = isset($_SESSION['pedido_confirmado']) ? pedido_por_id((int) $_SESSION['pedido_confirmado']) : null;
+if ($pedido && $pedido['estado'] !== 'pendiente_pago') {
+    // Ya pagó o cambió de estado: el seguimiento muestra la información actualizada
+    redirigir('mi-pedido/' . strtolower($pedido['numero_pedido']));
+}
 
 $meta['titulo'] = $pedido ? 'Pedido ' . $pedido['numero_pedido'] : 'Pedido';
 $meta['noindex'] = true;
@@ -43,30 +47,8 @@ $items = pedido_items((int) $pedido['id']);
     </div>
 
     <h2 class="mt-10 text-xl">Detalle del pedido</h2>
-    <div class="tarjeta-clara mt-4 p-5 text-sm sm:p-6">
-        <ul class="space-y-2">
-            <?php foreach ($items as $item): ?>
-                <li class="flex justify-between gap-4">
-                    <span><?= e($item['nombre_snapshot']) ?> <span class="text-neutral-500">× <?= (int) $item['cantidad'] ?></span></span>
-                    <span class="shrink-0 font-semibold"><?= colones($item['precio_snapshot'] * $item['cantidad']) ?></span>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-        <dl class="mt-4 space-y-1.5 border-t border-neutral-200 pt-4">
-            <div class="flex justify-between"><dt class="text-neutral-600">Subtotal</dt><dd><?= colones($pedido['subtotal']) ?></dd></div>
-            <div class="flex justify-between">
-                <dt class="text-neutral-600">Envío<?= $pedido['zona_envio_nombre'] ? ' (' . e($pedido['zona_envio_nombre']) . ')' : '' ?></dt>
-                <dd><?= (float) $pedido['costo_envio'] > 0 ? colones($pedido['costo_envio']) : 'Gratis' ?></dd>
-            </div>
-            <div class="flex justify-between text-base font-bold"><dt>Total</dt><dd><?= colones($pedido['total']) ?></dd></div>
-        </dl>
-        <div class="mt-4 border-t border-neutral-200 pt-4 text-neutral-700">
-            <p><strong>Entrega:</strong>
-                <?= $pedido['tipo_entrega'] === 'envio'
-                    ? 'Envío a domicilio — ' . e($pedido['direccion'])
-                    : 'Retiro en el taller — ' . e(ajuste('direccion')) ?></p>
-            <p class="mt-1"><strong>A nombre de:</strong> <?= e($pedido['nombre_cliente']) ?> · <?= e($pedido['telefono']) ?></p>
-        </div>
+    <div class="mt-4">
+        <?php componente('detalle-pedido', ['pedido' => $pedido, 'items' => $items]); ?>
     </div>
 
     <p class="mt-8 text-center text-sm text-neutral-600">

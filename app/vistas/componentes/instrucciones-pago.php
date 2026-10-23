@@ -82,7 +82,7 @@ $vence = date_create($pedido['expira_en']);
         <li class="flex gap-3"><span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-rivera-rojo text-xs font-bold text-white">2</span>
             <span>Guarda la captura o el comprobante del pago.</span></li>
         <li class="flex gap-3"><span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-rivera-rojo text-xs font-bold text-white">3</span>
-            <span>Súbelo en <a href="<?= e(url('mi-pedido')) ?>" class="font-semibold text-rivera-rojo hover:underline">Mi pedido</a> con tu número de pedido y tu teléfono.</span></li>
+            <span>Súbelo en <a href="<?= e(url('mi-pedido/' . strtolower($pedido['numero_pedido']))) ?>" class="font-semibold text-rivera-rojo hover:underline">Mi pedido</a> (desde el celular o la computadora).</span></li>
         <li class="flex gap-3"><span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-rivera-rojo text-xs font-bold text-white">4</span>
             <span>Verificamos el ingreso en nuestra cuenta y preparamos tu pedido.</span></li>
     </ol>

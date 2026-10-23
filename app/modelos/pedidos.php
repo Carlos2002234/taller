@@ -217,6 +217,52 @@ function pedido_por_id(int $id): ?array
     return $stmt->fetch() ?: null;
 }
 
+/**
+ * Busca un pedido por número + teléfono (los dos deben coincidir).
+ */
+function pedido_por_numero_y_telefono(string $numero, string $telefono): ?array
+{
+    $stmt = db()->prepare('SELECT * FROM orders WHERE numero_pedido = ? AND telefono = ?');
+    $stmt->execute([$numero, $telefono]);
+    return $stmt->fetch() ?: null;
+}
+
+function pedido_por_numero(string $numero): ?array
+{
+    $stmt = db()->prepare('SELECT * FROM orders WHERE numero_pedido = ?');
+    $stmt->execute([$numero]);
+    return $stmt->fetch() ?: null;
+}
+
+/**
+ * Historial de estados (del más antiguo al más reciente).
+ */
+function pedido_historial(int $pedidoId): array
+{
+    $stmt = db()->prepare(
+        'SELECT estado_anterior, estado_nuevo, origen, nota, fecha FROM order_status_log WHERE order_id = ? ORDER BY fecha, id'
+    );
+    $stmt->execute([$pedidoId]);
+    return $stmt->fetchAll();
+}
+
+/**
+ * Pedidos que el visitante puede ver en esta sesión (los que creó o consultó con número + teléfono).
+ */
+function autorizar_pedido(int $pedidoId): void
+{
+    iniciar_sesion();
+    $autorizados = $_SESSION['pedidos_autorizados'] ?? [];
+    $autorizados[] = $pedidoId;
+    $_SESSION['pedidos_autorizados'] = array_slice(array_values(array_unique($autorizados)), -10);
+}
+
+function pedido_autorizado(int $pedidoId): bool
+{
+    iniciar_sesion();
+    return in_array($pedidoId, $_SESSION['pedidos_autorizados'] ?? [], true);
+}
+
 function pedido_items(int $pedidoId): array
 {
     $stmt = db()->prepare(
@@ -266,7 +312,7 @@ function liberar_pedidos_vencidos(): int
             devolver_stock($db, (int) $id);
             $db->prepare("UPDATE orders SET estado = 'cancelado' WHERE id = ?")->execute([$id]);
             registrar_estado($db, (int) $id, 'pendiente_pago', 'cancelado', 'sistema',
-                'Cancelado automáticamente: no se recibió el pago a tiempo');
+                'No se recibió el pago dentro del plazo');
             $db->commit();
             $cancelados++;
         } catch (Throwable $e) {

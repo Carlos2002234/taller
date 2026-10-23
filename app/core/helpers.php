@@ -107,6 +107,19 @@ function slug(string $texto): string
 }
 
 /**
+ * Teléfono de Costa Rica (8 dígitos, acepta +506, espacios o guiones) → "8888-8888".
+ * Devuelve null si no es válido.
+ */
+function normalizar_telefono(string $telefono): ?string
+{
+    $digitos = preg_replace('/\D/', '', $telefono);
+    if (strlen($digitos) === 11 && str_starts_with($digitos, '506')) {
+        $digitos = substr($digitos, 3);
+    }
+    return preg_match('/^[2-8]\d{7}$/', $digitos) ? substr($digitos, 0, 4) . '-' . substr($digitos, 4) : null;
+}
+
+/**
  * Indica si la petición actual llegó por HTTPS (también detrás de proxy).
  */
 function es_https(): bool

@@ -23,6 +23,10 @@ $revisiones = [
     'PHP ' . PHP_VERSION                 => version_compare(PHP_VERSION, '8.2.0', '>='),
     'Extensión PDO MySQL'                => extension_loaded('pdo_mysql'),
     'Extensión GD con WebP (fotos)'      => function_exists('imagewebp'),
+    'Extensión fileinfo (comprobantes)'  => class_exists('finfo'),
+    'Subidas de al menos 5 MB (upload_max_filesize y post_max_size)' =>
+        ini_parse_quantity(ini_get('upload_max_filesize')) >= 5 * 1024 * 1024
+        && ini_parse_quantity(ini_get('post_max_size')) >= 6 * 1024 * 1024,
     'Carpeta de fotos escribible'        => carpeta_escribible(config('ruta.uploads') . '/productos'),
     'Carpeta de comprobantes escribible' => carpeta_escribible(config('ruta.comprobantes')),
 ];

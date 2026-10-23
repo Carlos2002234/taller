@@ -22,7 +22,11 @@ $campo = [
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verificar_csrf();
 
-    $texto = fn (string $clave, int $max): string => mb_substr(trim(is_string($_POST[$clave] ?? null) ? $_POST[$clave] : ''), 0, $max);
+    // Texto recibido: solo UTF-8 válido (si no, se descarta y la validación pide el dato de nuevo)
+    $texto = function (string $clave, int $max): string {
+        $valor = is_string($_POST[$clave] ?? null) ? $_POST[$clave] : '';
+        return mb_check_encoding($valor, 'UTF-8') ? mb_substr(trim($valor), 0, $max) : '';
+    };
 
     // Campo trampa: las personas no lo ven; los robots lo llenan
     if ($texto('sitio_web', 100) !== '') {
@@ -39,16 +43,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'notas'          => $texto('notas', 500),
     ];
 
-    // Teléfono de Costa Rica: 8 dígitos (se acepta con +506, espacios o guiones)
-    $digitos = preg_replace('/\D/', '', $campo['telefono']);
-    if (strlen($digitos) === 11 && str_starts_with($digitos, '506')) {
-        $digitos = substr($digitos, 3);
-    }
+    $telefono = normalizar_telefono($campo['telefono']);
 
     if (mb_strlen($campo['nombre_cliente']) < 3) {
         $errores[] = 'Escribe tu nombre completo.';
     }
-    if (!preg_match('/^[2-8]\d{7}$/', $digitos)) {
+    if ($telefono === null) {
         $errores[] = 'Escribe un número de teléfono de 8 dígitos.';
     }
     if ($campo['email'] !== '' && !filter_var($campo['email'], FILTER_VALIDATE_EMAIL)) {
@@ -71,7 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errores[] = 'Tu carrito está vacío.';
     }
 
-    $telefono = substr($digitos, 0, 4) . '-' . substr($digitos, 4);
     $ip = $_SERVER['REMOTE_ADDR'] ?? '';
 
     if (!$errores) {
@@ -101,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             iniciar_sesion();
             regenerar_sesion();
             $_SESSION['pedido_confirmado'] = (int) $resultado['pedido']['id'];
+            autorizar_pedido((int) $resultado['pedido']['id']);
             redirigir('pedido-confirmado');
         }
         $errores = $resultado['errores'];

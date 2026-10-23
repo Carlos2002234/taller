@@ -46,6 +46,39 @@
     });
   });
 
+  // Subida del comprobante: mostrar el archivo elegido y avisar si pesa más de 5 MB
+  document.querySelectorAll('[data-subir-comprobante]').forEach(function (formulario) {
+    var campo = formulario.querySelector('input[type=file]');
+    var nombre = formulario.querySelector('[data-nombre-archivo]');
+    var boton = formulario.querySelector('button[type=submit]');
+    var textoOriginal = nombre.textContent;
+
+    campo.addEventListener('change', function () {
+      var archivo = campo.files[0];
+      if (!archivo) {
+        nombre.textContent = textoOriginal;
+        return;
+      }
+      if (archivo.size > 5 * 1024 * 1024) {
+        alert('El archivo pesa más de 5 MB. Sube una captura de pantalla o un PDF más liviano.');
+        campo.value = '';
+        nombre.textContent = textoOriginal;
+        return;
+      }
+      nombre.textContent = 'Archivo elegido: ' + archivo.name;
+    });
+
+    formulario.addEventListener('submit', function (evento) {
+      if (!campo.files.length) {
+        evento.preventDefault();
+        alert('Elige la foto o el PDF de tu comprobante.');
+        return;
+      }
+      boton.disabled = true;
+      boton.textContent = 'Enviando…';
+    });
+  });
+
   // Contador del carrito (el carrito se guarda en el navegador; ver carrito.js)
   function cantidadEnCarrito() {
     try {

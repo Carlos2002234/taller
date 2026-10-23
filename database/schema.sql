@@ -25,16 +25,17 @@ CREATE TABLE users (
     UNIQUE KEY uq_users_email (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Intentos de inicio de sesión (para bloquear ataques de fuerza bruta)
-CREATE TABLE login_attempts (
+-- Intentos (para bloquear fuerza bruta): login del admin y consulta de pedidos
+CREATE TABLE intentos (
     id              INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    email           VARCHAR(150) NOT NULL,
+    tipo            ENUM('login','seguimiento') NOT NULL,
+    clave           VARCHAR(150) NOT NULL,            -- correo (login) o número de pedido (seguimiento)
     ip              VARCHAR(45) NOT NULL,
     exitoso         TINYINT(1) NOT NULL DEFAULT 0,
     fecha           DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    KEY idx_login_email_fecha (email, fecha),
-    KEY idx_login_ip_fecha (ip, fecha)
+    KEY idx_intentos_ip (tipo, ip, fecha),
+    KEY idx_intentos_clave (tipo, clave, fecha)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------
@@ -163,6 +164,8 @@ CREATE TABLE order_items (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Comprobantes de pago. Los archivos viven en /storage/comprobantes (privado).
+-- Solo UNO activo por pedido: se puede subir otro únicamente si el anterior fue rechazado
+-- (nota_revision = motivo que ve el cliente).
 CREATE TABLE payment_proofs (
     id              INT UNSIGNED NOT NULL AUTO_INCREMENT,
     order_id        INT UNSIGNED NOT NULL,
