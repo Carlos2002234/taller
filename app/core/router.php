@@ -34,7 +34,7 @@ function prohibido(): never
  * Rutas del sitio: 'url' => ['página', solo_en_desarrollo, tipo]
  * - {slug} captura un segmento (letras minúsculas, números y guiones) y llega a la página en $parametros['slug'].
  * - tipo 'json' no usa el layout (la página imprime su propia respuesta).
- * Las páginas "en-construccion" se reemplazan en los módulos siguientes.
+ * - tipo 'archivo' envía sus propios encabezados (ej. comprobantes privados).
  */
 function rutas(): array
 {
