@@ -48,6 +48,23 @@ function usuario_actual(): ?array
 }
 
 /**
+ * Igual que usuario_actual() pero SIN renovar la sesión: para consultas automáticas del panel
+ * (ej. revisar si hay leads nuevos cada 30 s), que no deben impedir el cierre por inactividad.
+ */
+function usuario_sin_renovar(): ?array
+{
+    iniciar_sesion();
+    $id = $_SESSION['admin_id'] ?? null;
+    $vigente = $id && time() - ($_SESSION['admin_ultimo'] ?? 0) <= ADMIN_INACTIVIDAD_SEGUNDOS;
+    session_write_close(); // libera la sesión enseguida para no frenar otras páginas abiertas
+    if (!$vigente) {
+        return null;
+    }
+    $datos = usuario_por_id((int) $id);
+    return $datos && $datos['activo'] ? $datos : null;
+}
+
+/**
  * Exige sesión del panel (y opcionalmente un rol). Sin sesión, redirige al login.
  */
 function requerir_admin(?string $rol = null): array

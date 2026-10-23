@@ -43,7 +43,8 @@ $activo = fn (string $ruta): bool => $ruta === 'admin' ? $actual === 'admin' : s
     <script src="<?= e(asset('js/app.js')) ?>" defer></script>
     <script src="<?= e(asset('js/admin.js')) ?>" defer></script>
 </head>
-<body class="fondo-claro min-h-screen bg-rivera-gris font-sans text-rivera-negro antialiased lg:flex">
+<body class="fondo-claro min-h-screen bg-rivera-gris font-sans text-rivera-negro antialiased lg:flex"
+      <?= $usuario ? 'data-novedades="' . e(url('admin/api/novedades')) . '"' : '' ?>>
 
 <?php if ($usuario): ?>
     <!-- Menú -->
@@ -54,16 +55,21 @@ $activo = fn (string $ruta): bool => $ruta === 'admin' ? $actual === 'admin' : s
                 <img src="<?= e(asset('img/rivera-texto.webp')) ?>" alt="Rivera" width="139" height="15" class="mb-1 block h-[15px] w-auto">
                 <span class="block text-[9px] font-semibold uppercase tracking-[0.2em] text-neutral-400">Panel</span>
             </span>
-            <?php if ($porRevisar > 0): ?>
-                <a href="<?= e(url('admin/pedidos?ver=por-revisar')) ?>" class="ml-auto rounded-full bg-rivera-rojo px-2.5 py-1 text-xs font-bold lg:hidden">
-                    <?= $porRevisar ?> por revisar
-                </a>
-            <?php endif; ?>
-            <button type="button" class="<?= $porRevisar > 0 ? '' : 'ml-auto' ?> rounded-md p-2 text-neutral-200 lg:hidden"
-                    data-menu-boton aria-controls="menu-movil" aria-expanded="false" aria-label="Abrir menú">
-                <span data-menu-icono-abrir><?= icono('menu', 'h-6 w-6') ?></span>
-                <span data-menu-icono-cerrar class="hidden"><?= icono('cerrar', 'h-6 w-6') ?></span>
-            </button>
+            <div class="ml-auto flex items-center gap-2 lg:hidden">
+                <!-- Consultas nuevas (celular): public/js/admin.js lo actualiza solo cuando entra un lead -->
+                <a href="<?= e(url('admin/consultas?ver=nueva')) ?>" class="rounded-full bg-white px-2.5 py-1 text-xs font-bold text-rivera-rojo <?= $consultasNuevas > 0 ? '' : 'hidden' ?>"
+                   data-aviso-consultas-movil><span data-contador-consultas><?= $consultasNuevas ?></span> consulta(s)</a>
+                <?php if ($porRevisar > 0): ?>
+                    <a href="<?= e(url('admin/pedidos?ver=por-revisar')) ?>" class="rounded-full bg-rivera-rojo px-2.5 py-1 text-xs font-bold">
+                        <?= $porRevisar ?> por revisar
+                    </a>
+                <?php endif; ?>
+                <button type="button" class="rounded-md p-2 text-neutral-200"
+                        data-menu-boton aria-controls="menu-movil" aria-expanded="false" aria-label="Abrir menú">
+                    <span data-menu-icono-abrir><?= icono('menu', 'h-6 w-6') ?></span>
+                    <span data-menu-icono-cerrar class="hidden"><?= icono('cerrar', 'h-6 w-6') ?></span>
+                </button>
+            </div>
         </div>
 
         <div id="menu-movil" class="hidden border-t border-white/10 lg:flex lg:flex-1 lg:flex-col lg:border-0">
@@ -77,9 +83,9 @@ $activo = fn (string $ruta): bool => $ruta === 'admin' ? $actual === 'admin' : s
                             <span class="ml-auto rounded-full px-2 text-xs font-bold <?= $activo($ruta) ? 'bg-white text-rivera-rojo' : 'bg-rivera-rojo text-white' ?>"
                                   title="Comprobantes por revisar"><?= $porRevisar ?></span>
                         <?php endif; ?>
-                        <?php if ($ruta === 'admin/consultas' && $consultasNuevas > 0): ?>
-                            <span class="ml-auto rounded-full px-2 text-xs font-bold <?= $activo($ruta) ? 'bg-white text-rivera-rojo' : 'bg-rivera-rojo text-white' ?>"
-                                  title="Consultas nuevas"><?= $consultasNuevas ?></span>
+                        <?php if ($ruta === 'admin/consultas'): ?>
+                            <span class="ml-auto rounded-full px-2 text-xs font-bold <?= $activo($ruta) ? 'bg-white text-rivera-rojo' : 'bg-rivera-rojo text-white' ?> <?= $consultasNuevas > 0 ? '' : 'hidden' ?>"
+                                  title="Consultas nuevas" data-contador-consultas><?= $consultasNuevas ?></span>
                         <?php endif; ?>
                     </a>
                 <?php endforeach; ?>
@@ -100,6 +106,11 @@ $activo = fn (string $ruta): bool => $ruta === 'admin' ? $actual === 'admin' : s
             </div>
         </div>
     </header>
+<?php endif; ?>
+
+<?php if ($usuario): ?>
+    <!-- Avisos de consultas nuevas (los crea public/js/admin.js) -->
+    <div class="pointer-events-none fixed bottom-4 right-4 z-50 flex w-[calc(100%-2rem)] max-w-sm flex-col gap-2" aria-live="assertive" data-avisos-panel></div>
 <?php endif; ?>
 
 <main class="min-w-0 flex-1">

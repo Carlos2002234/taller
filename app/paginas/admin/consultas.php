@@ -6,8 +6,25 @@
 
 require_once RAIZ . '/app/modelos/consultas.php';
 require_once RAIZ . '/app/modelos/reportes.php';
+require_once RAIZ . '/app/servicios/notificaciones.php';
 
-requerir_admin();
+$usuario = requerir_admin();
+
+// Mensaje de prueba por Telegram (solo el dueño)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verificar_csrf();
+    if (!es_duenio($usuario)) {
+        prohibido();
+    }
+    if (($_POST['accion'] ?? '') === 'probar_telegram') {
+        $error = enviar_telegram("✅ <b>Prueba de alertas</b>
+Así te llegará el aviso cada vez que alguien deje una consulta en la página.");
+        avisar($error === null ? 'exito' : 'error', $error === null
+            ? 'Mensaje de prueba enviado. Revisa Telegram.'
+            : 'No se pudo enviar por Telegram: ' . $error);
+    }
+    redirigir('admin/consultas');
+}
 $meta['titulo'] = 'Consultas';
 $meta['layout'] = 'admin/layout';
 
@@ -28,6 +45,33 @@ $colores = [
 ?>
 <h1 class="font-display text-2xl font-extrabold sm:text-3xl">Consultas</h1>
 <p class="mt-1 text-sm text-neutral-600">Personas que dejaron sus datos en la página para que las contacten.</p>
+
+<!-- Alertas cuando entra una consulta -->
+<section class="tarjeta-clara mt-5 grid gap-4 p-4 sm:grid-cols-2 sm:p-5" aria-labelledby="titulo-alertas">
+    <h2 id="titulo-alertas" class="sr-only">Alertas</h2>
+    <div>
+        <p class="flex items-center gap-2 text-sm font-semibold"><?= icono('alerta', 'h-4 w-4 text-rivera-rojo') ?> Aviso en este dispositivo</p>
+        <p class="mt-1 text-xs text-neutral-600">Con el panel abierto, suena y aparece un aviso cuando entra una consulta.
+            <span data-estado-notificaciones></span></p>
+        <button type="button" class="btn-claro btn-pequeno mt-2 hidden bg-white" data-activar-notificaciones>Activar notificaciones</button>
+    </div>
+    <div>
+        <p class="flex items-center gap-2 text-sm font-semibold"><?= icono('celular', 'h-4 w-4 text-rivera-rojo') ?> Aviso al celular (Telegram)</p>
+        <?php if (telegram_configurado()): ?>
+            <p class="mt-1 text-xs text-emerald-800">Activo: cada consulta nueva llega al instante a Telegram.</p>
+            <?php if (es_duenio($usuario)): ?>
+                <form method="post" action="<?= e(url('admin/consultas')) ?>" class="mt-2">
+                    <?= csrf_campo() ?>
+                    <input type="hidden" name="accion" value="probar_telegram">
+                    <button type="submit" class="btn-claro btn-pequeno bg-white">Enviar mensaje de prueba</button>
+                </form>
+            <?php endif; ?>
+        <?php else: ?>
+            <p class="mt-1 text-xs text-neutral-600">Todavía no está configurado. Sigue la guía <code>docs/alertas-telegram.md</code>
+                (5 minutos) para recibir cada consulta al instante en tu celular.</p>
+        <?php endif; ?>
+    </div>
+</section>
 
 <!-- Pestañas -->
 <nav class="-mx-4 mt-5 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0" aria-label="Estados">

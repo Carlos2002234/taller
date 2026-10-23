@@ -38,6 +38,10 @@ function config(string $clave, mixed $porDefecto = null): mixed
 
         'sesion.nombre' => env('SESSION_NAME', 'rivera_sesion'),
 
+        // Alertas de consultas nuevas por Telegram (vacío = desactivadas). Ver docs/alertas-telegram.md
+        'telegram.token' => env('TELEGRAM_BOT_TOKEN', ''),
+        'telegram.chat'  => env('TELEGRAM_CHAT_ID', ''),
+
         // Rutas de archivos
         'ruta.uploads'      => PUBLICO . '/uploads',           // fotos de productos (públicas)
         'ruta.comprobantes' => RAIZ . '/storage/comprobantes', // comprobantes de pago (privados)

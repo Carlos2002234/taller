@@ -6,6 +6,7 @@
  */
 
 require_once RAIZ . '/app/modelos/consultas.php';
+require_once RAIZ . '/app/servicios/notificaciones.php';
 
 $meta['titulo'] = 'Contacto y ubicación';
 $meta['descripcion'] = 'Visítanos: ' . ajuste('direccion') . ' Horario: ' . ajuste('horario') . '. Teléfono y WhatsApp ' . ajuste('telefono') . '.';
@@ -36,7 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errorGeneral = limite_consultas_superado((string) normalizar_telefono($campo['telefono']), $ip);
     }
     if (!$errores && $errorGeneral === null) {
-        crear_consulta($campo, $ip);
+        $id = crear_consulta($campo, $ip);
+        // La consulta ya quedó guardada: si la alerta falla, igual aparece en el panel
+        notificar_consulta(consulta_por_id($id));
         redirigir('contacto?consulta=enviada#consulta');
     }
 
