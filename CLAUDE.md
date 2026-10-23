@@ -60,6 +60,7 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 - Rechazo de comprobante (para el Módulo 7, decisión del dueño): el dueño escribe el MOTIVO (`payment_proofs.nota_revision`, lo ve el cliente), el pedido vuelve a `pendiente_pago` y el cliente puede subir otro. Nuevo plazo de pago tras el rechazo: **24 h** (confirmado por el dueño). "Rechazar pedido" es aparte y final (devuelve stock).
 - Pedidos: `crear_pedido()` en `app/modelos/pedidos.php` (transacción con `FOR UPDATE`, precios de la BD, reserva stock, historial). Número `RGA-AAAA-NNNN` (prefijo en `settings.prefijo_pedido`, contador `order_sequences`). Tras crear, llama `notificarPedido()` (vacía, Fase 2).
 - Vencimiento: SOLO pedidos en `pendiente_pago` vencen (48 h, `settings.horas_expiracion_pedido`) → `cancelado` + `devolver_stock()`. Los `comprobante_enviado` NUNCA vencen solos. Cron: `app/tareas/liberar-pedidos-vencidos.php` cada hora (además se ejecuta al crear pedidos).
+- `generar_numero_pedido()` salta números ya usados si el contador `order_sequences` quedó atrasado (ej. respaldo restaurado a medias): nunca bloquea las ventas.
 - Anti-abuso aprobado por el dueño: campo trampa, máx. 3 pedidos `pendiente_pago` por teléfono, máx. 5 pedidos/hora por IP.
 - Carrito: vive en `localStorage` como `[{id, cantidad}]` SOLAMENTE. Precios y stock siempre del servidor (`/api/carrito`); el checkout DEBE revalidar todo en el servidor dentro de una transacción.
 - Stock al cliente: "Disponible" / "¡Últimas N unidades!" (≤3) / "Agotado" (`estado_stock()`).

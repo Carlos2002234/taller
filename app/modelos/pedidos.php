@@ -68,10 +68,20 @@ function generar_numero_pedido(PDO $db): string
     $stmt = $db->prepare('SELECT ultimo FROM order_sequences WHERE anio = ? FOR UPDATE');
     $stmt->execute([$anio]);
     $siguiente = (int) $stmt->fetchColumn() + 1;
-    $db->prepare('UPDATE order_sequences SET ultimo = ? WHERE anio = ?')->execute([$siguiente, $anio]);
 
+    // Si el contador quedó atrasado (ej. un respaldo restaurado a medias), se salta los números ya usados
     $prefijo = preg_replace('/[^A-Z0-9]/', '', strtoupper(ajuste('prefijo_pedido', 'RGA'))) ?: 'RGA';
-    return sprintf('%s-%d-%04d', $prefijo, $anio, $siguiente);
+    $existe = $db->prepare('SELECT 1 FROM orders WHERE numero_pedido = ?');
+    for ($intentos = 0; $intentos < 10000; $intentos++, $siguiente++) {
+        $numero = sprintf('%s-%d-%04d', $prefijo, $anio, $siguiente);
+        $existe->execute([$numero]);
+        if (!$existe->fetchColumn()) {
+            break;
+        }
+    }
+
+    $db->prepare('UPDATE order_sequences SET ultimo = ? WHERE anio = ?')->execute([$siguiente, $anio]);
+    return $numero;
 }
 
 /**
