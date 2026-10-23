@@ -2,6 +2,7 @@
 /**
  * Bloque "Lo que dicen nuestros clientes": capturas reales de WhatsApp.
  * Las imágenes se recortaron a la burbuja del mensaje para quitar los números de teléfono
+ * y se taparon las placas de los carros
  * (las capturas originales están en /testimoniales, que NO se sube a git).
  * El texto completo de cada mensaje va en el "alt" para lectores de pantalla y buscadores.
  */
