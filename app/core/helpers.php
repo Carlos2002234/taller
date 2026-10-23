@@ -70,13 +70,20 @@ function whatsapp_url(string $mensaje = ''): string
 }
 
 /**
- * Enlace "Cómo llegar": el de Google Maps configurado por el dueño, o una búsqueda del negocio.
+ * Enlace "Cómo llegar": el de Google Maps configurado por el dueño; si no hay, el punto exacto
+ * tomado de las coordenadas del enlace de Waze; y como último recurso, una búsqueda del negocio.
  */
 function mapa_url(): string
 {
     $configurado = trim(ajuste('mapa_url'));
     if ($configurado !== '') {
         return $configurado;
+    }
+    // Waze trae las coordenadas en "ll=lat,lng" (la coma puede venir como %2C)
+    parse_str((string) parse_url(ajuste('waze_url'), PHP_URL_QUERY), $waze);
+    if (isset($waze['ll']) && is_string($waze['ll'])
+        && preg_match('/^(-?\d{1,2}(?:\.\d+)?),(-?\d{1,3}(?:\.\d+)?)$/', $waze['ll'], $m)) {
+        return 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode((float) $m[1] . ',' . (float) $m[2]);
     }
     $busqueda = ajuste('negocio_nombre', 'Rivera Grupo Automotriz') . ', ' . ajuste('direccion') . ', Costa Rica';
     return 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($busqueda);
