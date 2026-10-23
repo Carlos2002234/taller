@@ -54,6 +54,18 @@ INSERT INTO shipping_zones (nombre, descripcion, tarifa, activa, orden) VALUES
     ('Cartago',  'Cantones de Cartago dentro de la GAM',  3500, 1, 4);
 
 -- ---------------------------------------------------------------------
+-- Servicios del taller (tomados de los rótulos de las fotos).
+-- REVISAR: el dueño corrige nombres y descripciones desde Admin → Servicios.
+-- ---------------------------------------------------------------------
+INSERT INTO services (nombre, descripcion, icono, orden, en_inicio) VALUES
+    ('Cambio de aceite',            'Cambio de aceite y filtro con marcas como Havoline, Castrol y Delo.',     'aceite',    1, 1),
+    ('Lavado y detallado',          'Lavado exterior e interior y detallado con productos profesionales.',    'lavado',    2, 1),
+    ('Diagnóstico con escáner',     'Lectura de códigos de falla y diagnóstico electrónico de tu vehículo.',  'escaner',   3, 1),
+    ('Revisión técnica vehicular',  'Revisamos tu vehículo para que llegue preparado a la RTV.',              'revision',  4, 1),
+    ('Frenos y suspensión',         'Revisión y reparación de frenos y suspensión.',                          'engranaje', 5, 1),
+    ('Carga para autos eléctricos', 'Contamos con cargador para vehículos eléctricos.',                       'electrico', 6, 1);
+
+-- ---------------------------------------------------------------------
 -- Categorías (basadas en el prototipo)
 -- ---------------------------------------------------------------------
 INSERT INTO categories (id, nombre, slug, orden) VALUES

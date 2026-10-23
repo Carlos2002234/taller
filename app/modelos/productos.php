@@ -71,6 +71,23 @@ function productos_catalogo(array $filtros, int $pagina, int $porPagina): array
 }
 
 /**
+ * Productos destacados para el inicio (con stock primero).
+ */
+function productos_destacados(int $limite = 8): array
+{
+    $stmt = db()->prepare(
+        'SELECT ' . PRODUCTO_COLUMNAS . '
+           FROM products p JOIN categories c ON c.id = p.category_id
+          WHERE p.activo = 1 AND c.activa = 1 AND p.destacado = 1
+          ORDER BY (p.stock > 0) DESC, p.creado_en DESC
+          LIMIT ?'
+    );
+    $stmt->bindValue(1, $limite, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll();
+}
+
+/**
  * Marcas disponibles (para el filtro), opcionalmente dentro de una categoría.
  */
 function productos_marcas(?int $categoriaId = null): array

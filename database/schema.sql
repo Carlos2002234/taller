@@ -205,6 +205,20 @@ CREATE TABLE order_status_log (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------
+-- Servicios del taller (sin precios: se cotizan por WhatsApp). Editables desde el admin.
+-- ---------------------------------------------------------------------
+CREATE TABLE services (
+    id              INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    nombre          VARCHAR(100) NOT NULL,
+    descripcion     VARCHAR(300) NULL,
+    icono           VARCHAR(30) NOT NULL DEFAULT 'llave',
+    orden           SMALLINT NOT NULL DEFAULT 0,
+    activo          TINYINT(1) NOT NULL DEFAULT 1,
+    en_inicio       TINYINT(1) NOT NULL DEFAULT 1,   -- aparece en la página de inicio
+    PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
 -- Configuración editable desde el admin (datos de pago, contacto, banner...)
 -- ---------------------------------------------------------------------
 CREATE TABLE settings (

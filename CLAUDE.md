@@ -30,8 +30,10 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 
 ## Estado actual del proyecto
 - **Fase:** MVP
-- **Último módulo completado:** 7 — pedidos, aprobación de pagos y configuración (2026-10-22). Probado: reglas de aprobación, roles, transiciones inválidas, 4 aprobaciones simultáneas (solo 1 pasa), rechazo con motivo + nuevo comprobante, devolución de stock, ventas del mes, configuración y zonas.
-- **Próximo módulo:** 8 — páginas de Inicio (completa), Servicios y Contacto. Pendiente del dueño: lista de servicios, redes sociales, enlace de Google Maps, provincia/cantón. Proponer plan y esperar confirmación.
+- **Último módulo completado:** 8 — Inicio completo, Servicios, Contacto y servicios editables (2026-10-22).
+- **Próximo módulo:** 9 — seguridad, pruebas y optimización (revisión general, .htaccess en Apache real, encabezados, rendimiento, SEO básico: sitemap.xml). Proponer plan y esperar confirmación.
+- Servicios (decisión del dueño): editables en Admin → Servicios (tabla `services`, sin precios, botón "Cotizar por WhatsApp"). Se cargaron 6 de las fotos para que el dueño los revise.
+- Mapa: NO se incrusta un mapa (riesgo de ubicación equivocada: "La Puebla" existe en varios lugares). Botón "Cómo llegar" = `mapa_url()` (enlace de Configuración o búsqueda del negocio). El dueño aún no tiene el enlace de Google Maps.
 - Pedidos admin (`app/modelos/pedidos-admin.php`): todo cambio pasa por `transicion_pedido()` (FOR UPDATE + estados permitidos + historial). **JAMÁS aprobar sin comprobante** (decisión del dueño): `aprobar_pago()` exige dueño, estado `comprobante_enviado`, comprobante `pendiente` y casilla "verifiqué el ingreso".
 - Permisos (decisión del dueño): empleado VE pedidos y comprobantes y marca en preparación/entregado; NO aprueba, rechaza ni cancela. Cancelar (aun pagado) solo el dueño, con motivo y aviso de devolver el dinero.
 - Comprobantes se sirven por `/admin/comprobantes/{id}` (ruta tipo 'archivo', con sesión). Ventas del mes = pedidos cuyo paso a `pagado` fue en el mes y no se cancelaron después.
@@ -85,6 +87,6 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 - Titular del SINPE; datos bancarios (banco, IBAN, titular, cédula): el dueño los carga en Admin → Configuración.
 - ¿Precios con IVA incluido?
 - Provincia/cantón de La Puebla y enlace de Google Maps/Waze.
-- Lista completa de servicios del taller y redes sociales.
+- Revisar los 6 servicios cargados y poner las redes sociales (ambos desde el admin).
 - Tarifas reales de envío: el dueño las ajusta en Admin → Configuración antes de publicar.
 - Correo para avisos de pedidos; dominio; plan de Hostinger.

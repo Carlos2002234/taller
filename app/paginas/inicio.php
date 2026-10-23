@@ -1,11 +1,21 @@
 <?php
 /**
- * Inicio — PROVISIONAL (Módulo 2): banner principal y beneficios.
- * La página completa (servicios, productos destacados, ubicación) se arma en el Módulo 8.
+ * Inicio: banner, beneficios, categorías, destacados, servicios, cómo comprar y ubicación.
+ * Todo el contenido sale de la base de datos (editable desde el admin).
  */
 
-$meta['descripcion'] = 'Rivera Grupo Automotriz: taller mecánico y tienda de accesorios y repuestos en La Puebla. Paga por SINPE Móvil o transferencia.';
+require_once RAIZ . '/app/modelos/productos.php';
+require_once RAIZ . '/app/modelos/categorias.php';
+require_once RAIZ . '/app/modelos/servicios.php';
+
+$meta['descripcion'] = ajuste('negocio_nombre', 'Rivera Grupo Automotriz')
+    . ': taller mecánico y tienda de accesorios y repuestos. Paga por SINPE Móvil o transferencia y retira en el taller o recibe en la GAM.';
+
+$categorias = array_slice(array_filter(categorias_activas(), fn ($c) => (int) $c['total_productos'] > 0), 0, 6);
+$destacados = productos_destacados(8);
+$servicios = servicios_activos(true);
 ?>
+<!-- Banner principal -->
 <section class="relative isolate overflow-hidden">
     <picture>
         <source type="image/webp"
@@ -25,15 +35,40 @@ $meta['descripcion'] = 'Rivera Grupo Automotriz: taller mecánico y tienda de ac
         <p class="mt-5 max-w-md text-base text-neutral-300"><?= e(ajuste('banner_texto')) ?></p>
         <div class="mt-8 flex flex-wrap gap-3">
             <a href="<?= e(url('tienda')) ?>" class="btn-primario">Ver tienda <?= icono('flecha', 'h-4 w-4') ?></a>
-            <a href="<?= e(whatsapp_url('Hola, quiero cotizar un servicio para mi auto.')) ?>" class="btn-secundario" target="_blank" rel="noopener">
-                <?= icono('whatsapp', 'h-4 w-4') ?> Cotizar servicio
-            </a>
+            <a href="<?= e(url('servicios')) ?>" class="btn-secundario"><?= icono('llave', 'h-4 w-4') ?> Servicios del taller</a>
         </div>
     </div>
 </section>
 
 <?php componente('beneficios'); ?>
 
-<section class="contenedor py-12">
-    <?php componente('aviso', ['tipo' => 'info', 'mensaje' => 'Estamos preparando nuestra tienda en línea. Mientras tanto, escríbenos por WhatsApp.']); ?>
-</section>
+<?php if ($categorias): ?>
+    <section class="contenedor pt-14">
+        <?php componente('titulo-seccion', ['etiqueta' => 'Categorías', 'titulo' => 'Explora por categoría', 'enlace' => url('tienda'), 'enlace_texto' => 'Ver tienda']); ?>
+        <div class="grid grid-cols-2 gap-3 <?= count($categorias) <= 4 ? 'sm:grid-cols-4' : 'sm:grid-cols-3 lg:grid-cols-6' ?>">
+            <?php foreach ($categorias as $categoria) { componente('tarjeta-categoria', ['categoria' => $categoria]); } ?>
+        </div>
+    </section>
+<?php endif; ?>
+
+<?php if ($destacados): ?>
+    <section class="contenedor pt-14">
+        <?php componente('titulo-seccion', ['etiqueta' => 'Lo más buscado', 'titulo' => 'Productos destacados', 'enlace' => url('tienda'), 'enlace_texto' => 'Ver todos']); ?>
+        <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+            <?php foreach ($destacados as $producto) { componente('tarjeta-producto', ['producto' => $producto]); } ?>
+        </div>
+    </section>
+<?php endif; ?>
+
+<?php if ($servicios): ?>
+    <section class="contenedor pt-14">
+        <?php componente('titulo-seccion', ['etiqueta' => 'Taller mecánico', 'titulo' => 'Cuidamos tu auto', 'titulo_rojo' => 'como si fuera nuestro', 'enlace' => url('servicios'), 'enlace_texto' => 'Ver servicios']); ?>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <?php foreach ($servicios as $servicio) { componente('tarjeta-servicio', ['servicio' => $servicio]); } ?>
+        </div>
+    </section>
+<?php endif; ?>
+
+<?php componente('como-comprar'); ?>
+
+<?php componente('visitanos'); ?>
