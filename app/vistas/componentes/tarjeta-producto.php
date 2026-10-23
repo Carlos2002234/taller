@@ -11,11 +11,11 @@ $agotado = (int) $producto['stock'] <= 0;
 $enlace = url('producto/' . $producto['slug']);
 $descuento = $oferta ? (int) round(100 - $producto['precio'] * 100 / $producto['precio_anterior']) : 0;
 ?>
-<article class="<?= $tono === 'claro' ? 'tarjeta-clara' : 'tarjeta' ?> group flex flex-col">
+<article class="<?= $tono === 'claro' ? 'tarjeta-clara' : 'tarjeta' ?> tarjeta-interactiva group flex flex-col">
     <a href="<?= e($enlace) ?>" tabindex="-1" aria-hidden="true" class="relative block aspect-square overflow-hidden <?= $tono === 'claro' ? 'bg-white' : 'bg-neutral-900' ?>">
         <?php if (!empty($producto['imagen'])): ?>
             <img src="<?= e(url_foto($producto['imagen'], true)) ?>" alt=""
-                 loading="lazy" class="h-full w-full object-contain p-4 transition-transform duration-300 group-hover:scale-105">
+                 loading="lazy" class="h-full w-full object-contain p-4 transition-transform duration-500 ease-out group-hover:scale-110">
         <?php else: ?>
             <span class="flex h-full w-full items-center justify-center <?= $tono === 'claro' ? 'text-neutral-300' : 'text-neutral-700' ?>">
                 <?= icono('llave', 'h-14 w-14') ?>

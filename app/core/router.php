@@ -186,6 +186,7 @@ function mostrar_pagina(string $pagina, int $codigo = 200, array $parametros = [
         'noindex'     => false,
         'layout'      => 'layout',   // 'admin/layout' para el panel
         'datos'       => [],         // datos estructurados para Google (JSON-LD)
+        'portada'     => false,      // true: encabezado transparente sobre una foto a pantalla completa
     ];
 
     // Se fija antes de ejecutar la página para que ella pueda cambiarlo (ej. 422 en formularios con errores)

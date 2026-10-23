@@ -13,11 +13,11 @@ $telefono = preg_replace('/\D/', '', ajuste('telefono'));
 $redes = array_filter(['Facebook' => ajuste('facebook_url'), 'Instagram' => ajuste('instagram_url'), 'TikTok' => ajuste('tiktok_url')]);
 ?>
 <section class="contenedor py-12 sm:py-16">
-    <p class="etiqueta-seccion">Estamos para ayudarte</p>
-    <h1 class="font-display text-4xl font-extrabold sm:text-5xl">Contacto y <span class="text-rivera-rojo">ubicación</span></h1>
+    <p class="etiqueta-seccion portada-entrar portada-entrar-1">Estamos para ayudarte</p>
+    <h1 class="portada-entrar portada-entrar-2 font-display text-4xl font-extrabold sm:text-5xl">Contacto y <span class="text-rivera-rojo">ubicación</span></h1>
 
     <div class="mt-10 grid gap-8 lg:grid-cols-2">
-        <div class="space-y-4">
+        <div class="escalonado space-y-4">
             <div class="tarjeta flex gap-4 p-5">
                 <span class="text-rivera-rojo"><?= icono('ubicacion', 'h-7 w-7') ?></span>
                 <div>
@@ -60,7 +60,7 @@ $redes = array_filter(['Facebook' => ajuste('facebook_url'), 'Instagram' => ajus
             <?php endif; ?>
         </div>
 
-        <div class="space-y-3">
+        <div class="aparecer space-y-3">
             <p class="text-sm text-neutral-400">Así nos encuentras:</p>
             <img src="<?= e(url('img/fotos/rivera-14-1600.webp')) ?>" alt="Fachada de <?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?>" class="aspect-[16/9] w-full rounded-lg object-cover">
             <img src="<?= e(url('img/fotos/rivera-18-800.webp')) ?>" alt="Entrada al taller con los rótulos de servicios" loading="lazy" class="aspect-[16/9] w-full rounded-lg object-cover">

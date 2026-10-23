@@ -15,7 +15,7 @@
 @tailwind utilities;
 
 @layer base {
-  html { -webkit-tap-highlight-color: transparent; }
+  html { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
   h1, h2, h3 { @apply font-display font-bold; }
   :focus-visible { @apply outline-none ring-2 ring-rivera-rojo ring-offset-2 ring-offset-rivera-negro; }
 }
@@ -25,9 +25,9 @@
   .contenedor { @apply mx-auto w-full max-w-sitio px-4 sm:px-6 lg:px-8; }
 
   /* Botones */
-  .btn { @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50; }
-  .btn-primario { @apply btn bg-rivera-rojo text-white hover:bg-rivera-rojo-oscuro disabled:bg-neutral-500 disabled:opacity-60; }
-  .btn-secundario { @apply btn border border-white/25 text-white hover:border-white hover:bg-white/5; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold transition duration-300 disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-primario { @apply btn bg-rivera-rojo text-white shadow-lg shadow-rivera-rojo/25 hover:-translate-y-0.5 hover:bg-rivera-rojo-oscuro hover:shadow-xl hover:shadow-rivera-rojo/35 active:translate-y-0 disabled:translate-y-0 disabled:bg-neutral-500 disabled:opacity-60 disabled:shadow-none; }
+  .btn-secundario { @apply btn border border-white/25 text-white backdrop-blur-sm hover:-translate-y-0.5 hover:border-white hover:bg-white/10; }
   .btn-claro { @apply btn border border-neutral-300 text-rivera-negro hover:border-rivera-negro; }
   .btn-pequeno { @apply px-3 py-2 text-xs; }
 
@@ -71,7 +71,59 @@
   .texto-legal p { @apply mb-4 leading-relaxed text-neutral-700; }
   .texto-legal ul { @apply mb-4 list-disc space-y-1.5 pl-6 text-neutral-700; }
 
-  /* Enlaces del menú */
-  .enlace-menu { @apply text-sm font-medium text-neutral-300 transition-colors hover:text-white; }
-  .enlace-menu-activo { @apply text-white after:mt-1 after:block after:h-0.5 after:bg-rivera-rojo after:content-['']; }
+  /* Enlaces del menú: línea roja que crece al pasar el mouse */
+  .enlace-menu { @apply relative py-1 text-sm font-medium text-neutral-300 transition-colors duration-300 after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-rivera-rojo after:transition-transform after:duration-300 after:content-[''] hover:text-white hover:after:scale-x-100; }
+  .enlace-menu-activo { @apply text-white after:scale-x-100; }
+
+  /* Tarjetas que se elevan al pasar el mouse (productos, categorías, servicios) */
+  .tarjeta-interactiva { @apply transition duration-300 ease-out hover:-translate-y-1 hover:border-white/20 hover:shadow-2xl hover:shadow-black/60; }
+  .tarjeta-clara.tarjeta-interactiva { @apply hover:border-neutral-300 hover:shadow-xl hover:shadow-black/10; }
+}
+
+/* =====================================================================
+   Animaciones (elegantes y sutiles). Se apagan con "reducir movimiento".
+   El HTML recibe la clase "js" antes de dibujarse (js/precarga.js), así el
+   contenido solo se oculta para animarlo si el JavaScript está activo.
+   ===================================================================== */
+
+/* Portada: acercamiento muy lento de la foto y entrada escalonada del texto */
+@keyframes acercamiento-lento { from { transform: scale(1.08); } to { transform: scale(1); } }
+@keyframes entrar-suave { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes indicar-abajo { 0%, 100% { transform: translateY(0); opacity: .6; } 50% { transform: translateY(6px); opacity: 1; } }
+
+.portada-foto { animation: acercamiento-lento 14s cubic-bezier(.2, .6, .3, 1) both; }
+.portada-entrar { animation: entrar-suave .8s cubic-bezier(.2, .65, .3, 1) both; }
+.portada-entrar-1 { animation-delay: .15s; }
+.portada-entrar-2 { animation-delay: .3s; }
+.portada-entrar-3 { animation-delay: .45s; }
+.portada-entrar-4 { animation-delay: .6s; }
+.indicador-bajar { animation: indicar-abajo 2.2s ease-in-out infinite; }
+
+/* Secciones que aparecen al bajar */
+.js .aparecer { opacity: 0; transform: translateY(24px); transition: opacity .7s cubic-bezier(.2, .65, .3, 1), transform .7s cubic-bezier(.2, .65, .3, 1); }
+.js .aparecer.visible { opacity: 1; transform: none; }
+
+/* Elementos de una grilla que entran uno tras otro.
+   Se usa una animación (no transición) que se retira al terminar ("backwards"),
+   para que después funcione la elevación de las tarjetas al pasar el mouse. */
+.js .escalonado:not(.visible) > * { opacity: 0; }
+.escalonado.visible > * { animation: entrar-suave .6s cubic-bezier(.2, .65, .3, 1) backwards; }
+.escalonado.visible > *:nth-child(2) { animation-delay: 70ms; }
+.escalonado.visible > *:nth-child(3) { animation-delay: 140ms; }
+.escalonado.visible > *:nth-child(4) { animation-delay: 210ms; }
+.escalonado.visible > *:nth-child(5) { animation-delay: 280ms; }
+.escalonado.visible > *:nth-child(6) { animation-delay: 350ms; }
+.escalonado.visible > *:nth-child(7) { animation-delay: 420ms; }
+.escalonado.visible > *:nth-child(n+8) { animation-delay: 490ms; }
+
+/* Encabezado transparente sobre la portada que se vuelve sólido al bajar (solo en el inicio) */
+.encabezado-flotante > header { position: fixed; inset: 0 0 auto 0; background-color: transparent; border-color: transparent; backdrop-filter: none; transition: background-color .4s ease, border-color .4s ease, backdrop-filter .4s ease; }
+.encabezado-flotante.encabezado-solido > header { background-color: rgb(11 11 11 / .85); border-color: rgb(255 255 255 / .1); backdrop-filter: blur(12px); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .portada-foto, .portada-entrar, .indicador-bajar, .escalonado.visible > * { animation: none; }
+  .js .aparecer, .js .escalonado:not(.visible) > * { opacity: 1; transform: none; transition: none; }
+  .tarjeta-interactiva, .btn { transition: none; }
+  .tarjeta-interactiva:hover, .btn:hover { transform: none; }
 }

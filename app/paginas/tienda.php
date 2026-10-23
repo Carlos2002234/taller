@@ -122,7 +122,7 @@ $meta['noindex'] = $q !== '' || $marcasElegidas || $min !== null || $max !== nul
         </div>
 
         <?php if ($resultado['productos']): ?>
-            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
+            <div class="escalonado grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
                 <?php foreach ($resultado['productos'] as $producto): ?>
                     <?php componente('tarjeta-producto', ['producto' => $producto, 'tono' => 'claro']); ?>
                 <?php endforeach; ?>

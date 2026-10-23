@@ -17,6 +17,34 @@
     });
   }
 
+  // Animaciones al bajar: las secciones .aparecer y las grillas .escalonado se muestran al entrar en pantalla
+  var animables = document.querySelectorAll('.aparecer, .escalonado');
+  if ('IntersectionObserver' in window) {
+    var observador = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (entrada) {
+        if (entrada.isIntersecting) {
+          entrada.target.classList.add('visible');
+          observador.unobserve(entrada.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+    animables.forEach(function (el) { observador.observe(el); });
+  } else {
+    animables.forEach(function (el) { el.classList.add('visible'); });
+  }
+
+  // Encabezado transparente sobre la portada: se vuelve sólido al bajar o al abrir el menú
+  var cuerpo = document.querySelector('[data-encabezado]');
+  if (cuerpo && cuerpo.classList.contains('encabezado-flotante')) {
+    var actualizarEncabezado = function () {
+      var menuAbierto = boton && boton.getAttribute('aria-expanded') === 'true';
+      cuerpo.classList.toggle('encabezado-solido', window.scrollY > 40 || menuAbierto);
+    };
+    window.addEventListener('scroll', actualizarEncabezado, { passive: true });
+    if (boton) boton.addEventListener('click', actualizarEncabezado);
+    actualizarEncabezado();
+  }
+
   // Selects que envían su formulario al cambiar (ej. "Ordenar por" en la tienda)
   document.querySelectorAll('[data-auto-enviar]').forEach(function (select) {
     select.addEventListener('change', function () { select.form.submit(); });

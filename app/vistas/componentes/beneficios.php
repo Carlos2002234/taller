@@ -11,7 +11,7 @@ $beneficios = [
 ];
 ?>
 <section class="border-y border-white/10 bg-black/40" aria-label="Beneficios">
-    <ul class="contenedor grid grid-cols-2 gap-x-4 gap-y-6 py-6 lg:grid-cols-4 lg:divide-x lg:divide-white/10">
+    <ul class="escalonado contenedor grid grid-cols-2 gap-x-4 gap-y-6 py-7 lg:grid-cols-4 lg:divide-x lg:divide-white/10">
         <?php foreach ($beneficios as [$icono, $titulo, $texto]): ?>
             <li class="flex items-center gap-3 lg:justify-center lg:px-4">
                 <span class="shrink-0 text-rivera-rojo"><?= icono($icono, 'h-8 w-8') ?></span>

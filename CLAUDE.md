@@ -40,6 +40,7 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 - Cada carpeta interna (app, database, docs, tests, resources, scripts, assets, storage) tiene `.htaccess` con `Require all denied`; la raíz bloquea archivos ocultos y internos.
 - Respaldo: `app/tareas/respaldar-base.php` (cron diario) → `storage/respaldos/*.sql.gz`, conserva 14.
 - Seguridad: encabezados (CSP estricta, HSTS, etc.) en `encabezados_seguridad()` del router; NO usar JS ni `style=` dentro del HTML (rompería la CSP). `APP_ENV=produccion` fuerza debug apagado. Ver `docs/seguridad.md`.
+- Diseño animado (decisión del dueño: "elegante y sutil"): portada del inicio = fachada `rivera-14` (960/1920) con acercamiento lento y entrada escalonada; encabezado transparente que se vuelve sólido (`$meta['portada'] = true`); secciones `.aparecer` y grillas `.escalonado` (IntersectionObserver en app.js; `js/precarga.js` sin defer pone la clase `js`); tarjetas `.tarjeta-interactiva`. Todo se apaga con prefers-reduced-motion. Sin estilos inline (CSP).
 - Colores: `rivera-rojo-claro` (#F04A4F) SOLO para texto pequeño sobre fondo oscuro (contraste); el rojo de marca para botones, títulos grandes e íconos.
 - `componente()` usa variables internas `$__componente`/`$__datos` para no chocar con los datos (ej. 'nombre').
 - SEO: `/sitemap.xml` y `/robots.txt` dinámicos; datos estructurados (AutoRepair y Product) vía `$meta['datos']`.

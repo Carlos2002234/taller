@@ -35,11 +35,12 @@ $urlActual = url(ruta_actual());
     <link rel="apple-touch-icon" href="<?= e(asset('img/apple-touch-icon.png')) ?>">
     <link rel="preload" href="<?= e(url('fonts/montserrat-latin-800-normal.woff2')) ?>" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="<?= e(asset('css/app.css')) ?>">
+    <script src="<?= e(asset('js/precarga.js')) ?>"></script>
     <script src="<?= e(asset('js/app.js')) ?>" defer></script>
     <script src="<?= e(asset('js/carrito.js')) ?>" defer></script>
     <?php if ($meta['datos']) { componente('datos-estructurados', ['bloques' => $meta['datos']]); } ?>
 </head>
-<body class="flex min-h-screen flex-col bg-rivera-negro font-sans text-white antialiased">
+<body class="flex min-h-screen flex-col bg-rivera-negro font-sans text-white antialiased <?= $meta['portada'] ? 'encabezado-flotante' : '' ?>" data-encabezado>
     <a href="#contenido" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-rivera-negro">
         Saltar al contenido
     </a>

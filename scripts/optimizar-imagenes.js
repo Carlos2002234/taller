@@ -11,9 +11,9 @@ fs.mkdirSync(fotos, { recursive: true });
 
 // Fotos del taller: [archivo en assets/fotos, anchos a generar]
 const listaFotos = [
-  ['rivera-07.jpg', [960, 1920]], // imagen principal (hero)
+  ['rivera-07.jpg', [960, 1920]], // auto cubierto (portada anterior)
   ['rivera-01.jpg', [800, 1600]], // rótulo
-  ['rivera-14.jpg', [800, 1600]], // fachada
+  ['rivera-14.jpg', [800, 960, 1600, 1920]], // fachada completa: PORTADA del inicio
   ['rivera-18.jpg', [800, 1600]], // fachada con banners
   ['rivera-23.jpg', [800, 1600]], // recepción
   ['rivera-08.jpg', [800, 1600]], // zona de lavado
