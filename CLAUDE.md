@@ -22,6 +22,7 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 - Archivos y carpetas en minúsculas con guiones.
 - Consultas SQL solo con PDO preparado.
 - Estructura: `/public` (raíz web; incluye `/public/uploads`), `/app` (lógica), `/admin`, `/storage` (privado), `/assets`, `/database`, `/docs`
+- Consultas en `app/modelos/*.php` (cargar con `require_once` en la página). Rutas con parámetro `{slug}` llegan en `$parametros`; `no_encontrado()` muestra el 404; rutas tipo `json` no usan layout.
 - Rutas en `app/core/router.php` (`rutas()`); páginas en `app/paginas/*.php` (pueden cambiar `$meta`); componentes con `componente('nombre', [...])` desde `app/vistas/componentes/`.
 - CSS: editar `resources/css/app.css` y compilar con `npm run css` (el compilado `public/css/app.css` SÍ se versiona). Las clases deben escribirse completas en el código (Tailwind no detecta nombres armados por partes).
 - Íconos: `icono('nombre')` en `helpers.php`. Enlaces de WhatsApp: `whatsapp_url($mensaje)`.
@@ -29,8 +30,10 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 
 ## Estado actual del proyecto
 - **Fase:** MVP
-- **Último módulo completado:** 2 — diseño base (2026-10-22): layout, header, footer, barra inferior móvil, botón WhatsApp, componentes y guía de estilos. Verificado con capturas en 1366px y 390px.
-- **Próximo módulo:** 3 — tienda pública: catálogo (filtros categoría/marca/precio, búsqueda, orden), página de producto, carrito. Proponer plan y esperar confirmación.
+- **Último módulo completado:** 3 — tienda pública (2026-10-22): catálogo con filtros/búsqueda/orden/paginación, página de producto con galería, carrito. Probado con datos reales en MariaDB + navegador (filtros, límites de stock, carrito manipulado).
+- **Próximo módulo:** 4 — checkout y creación de pedido con número único (`TAL-AAAA-NNNN`), reserva de stock, zonas de envío, `notificarPedido()` vacía. Proponer plan y esperar confirmación.
+- Carrito: vive en `localStorage` como `[{id, cantidad}]` SOLAMENTE. Precios y stock siempre del servidor (`/api/carrito`); el checkout DEBE revalidar todo en el servidor dentro de una transacción.
+- Stock al cliente: "Disponible" / "¡Últimas N unidades!" (≤3) / "Agotado" (`estado_stock()`).
 - Admin: se crea con `php database/crear-admin.php` (no hay usuarios en `seed.sql`). Números de pedido: prefijo en `settings.prefijo_pedido` (TAL) + tabla `order_sequences`.
 - **Repositorio:** https://github.com/Carlos2002234/taller (rama `main`). Cada commit se sube con `git push`.
 

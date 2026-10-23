@@ -7,20 +7,37 @@
 declare(strict_types=1);
 
 /**
- * Rutas del sitio: 'url' => ['página', solo_en_desarrollo]
+ * Se lanza desde una página para mostrar el 404 (ej. producto inexistente).
+ */
+final class PaginaNoEncontrada extends Exception
+{
+}
+
+function no_encontrado(): never
+{
+    throw new PaginaNoEncontrada();
+}
+
+/**
+ * Rutas del sitio: 'url' => ['página', solo_en_desarrollo, tipo]
+ * - {slug} captura un segmento (letras minúsculas, números y guiones) y llega a la página en $parametros['slug'].
+ * - tipo 'json' no usa el layout (la página imprime su propia respuesta).
  * Las páginas "en-construccion" se reemplazan en los módulos siguientes.
  */
 function rutas(): array
 {
     return [
-        ''            => ['inicio', false],
-        'tienda'      => ['en-construccion', false],
-        'carrito'     => ['en-construccion', false],
-        'servicios'   => ['en-construccion', false],
-        'contacto'    => ['en-construccion', false],
-        'mi-pedido'   => ['en-construccion', false],
-        'estilos'     => ['estilos', true],
-        'instalacion' => ['instalacion', true],
+        ''                => ['inicio', false, 'html'],
+        'tienda'          => ['tienda', false, 'html'],
+        'producto/{slug}' => ['producto', false, 'html'],
+        'carrito'         => ['carrito', false, 'html'],
+        'checkout'        => ['en-construccion', false, 'html'],
+        'servicios'       => ['en-construccion', false, 'html'],
+        'contacto'        => ['en-construccion', false, 'html'],
+        'mi-pedido'       => ['en-construccion', false, 'html'],
+        'api/carrito'     => ['api-carrito', false, 'json'],
+        'estilos'         => ['estilos', true, 'html'],
+        'instalacion'     => ['instalacion', true, 'html'],
     ];
 }
 
@@ -34,38 +51,75 @@ function ruta_actual(): string
     return $ruta;
 }
 
+/**
+ * Busca la ruta que coincide con la URL. Devuelve [definición, parámetros] o null.
+ */
+function buscar_ruta(string $url): ?array
+{
+    foreach (rutas() as $patron => $definicion) {
+        if (!str_contains($patron, '{')) {
+            if ($patron === $url) {
+                return [$definicion, []];
+            }
+            continue;
+        }
+
+        $regex = '#^' . preg_replace('#\{(\w+)\}#', '(?P<$1>[a-z0-9-]+)', $patron) . '$#';
+        if (preg_match($regex, $url, $coincidencias)) {
+            return [$definicion, array_filter($coincidencias, 'is_string', ARRAY_FILTER_USE_KEY)];
+        }
+    }
+
+    return null;
+}
+
 function despachar(): void
 {
-    $ruta = rutas()[ruta_actual()] ?? null;
+    $encontrada = buscar_ruta(ruta_actual());
 
     // Las páginas de desarrollo no existen en producción
-    if ($ruta === null || ($ruta[1] && !config('app.debug'))) {
+    if ($encontrada === null || ($encontrada[0][1] && !config('app.debug'))) {
         mostrar_pagina('404', 404);
         return;
     }
 
-    mostrar_pagina($ruta[0]);
+    [[$pagina, , $tipo], $parametros] = $encontrada;
+
+    if ($tipo === 'json') {
+        header('Content-Type: application/json; charset=utf-8');
+        header('Cache-Control: no-store');
+        require RAIZ . '/app/paginas/' . $pagina . '.php';
+        return;
+    }
+
+    mostrar_pagina($pagina, 200, $parametros);
 }
 
 /**
  * Ejecuta una página y la envuelve en el layout.
- * La página puede cambiar $meta (título, descripción, fondo claro, noindex).
+ * La página puede cambiar $meta (título, descripción, imagen, fondo claro, noindex).
  */
-function mostrar_pagina(string $pagina, int $codigo = 200): void
+function mostrar_pagina(string $pagina, int $codigo = 200, array $parametros = []): void
 {
-    http_response_code($codigo);
-
     $meta = [
         'titulo'      => null,
         'descripcion' => 'Taller mecánico y tienda de accesorios y repuestos para tu auto. Paga por SINPE Móvil o transferencia.',
+        'imagen'      => null,
         'fondo_claro' => false,
         'noindex'     => false,
     ];
 
     ob_start();
-    require RAIZ . '/app/paginas/' . $pagina . '.php';
+    try {
+        require RAIZ . '/app/paginas/' . $pagina . '.php';
+    } catch (PaginaNoEncontrada) {
+        ob_end_clean();
+        mostrar_pagina('404', 404);
+        return;
+    }
     $contenido = ob_get_clean();
 
+    http_response_code($codigo);
     require RAIZ . '/app/vistas/layout.php';
 }
 

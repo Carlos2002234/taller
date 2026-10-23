@@ -17,7 +17,12 @@
     });
   }
 
-  // Contador del carrito (el carrito se guarda en el navegador; se completa en el Módulo 3)
+  // Selects que envían su formulario al cambiar (ej. "Ordenar por" en la tienda)
+  document.querySelectorAll('[data-auto-enviar]').forEach(function (select) {
+    select.addEventListener('change', function () { select.form.submit(); });
+  });
+
+  // Contador del carrito (el carrito se guarda en el navegador; ver carrito.js)
   function cantidadEnCarrito() {
     try {
       var carrito = JSON.parse(localStorage.getItem('carrito') || '[]');

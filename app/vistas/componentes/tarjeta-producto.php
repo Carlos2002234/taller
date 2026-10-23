@@ -50,7 +50,8 @@ $descuento = $oferta ? (int) round(100 - $producto['precio'] * 100 / $producto['
 
         <div class="mt-auto pt-3">
             <button type="button" class="btn-primario btn-pequeno w-full sm:py-2.5"
-                    data-agregar-carrito="<?= (int) ($producto['id'] ?? 0) ?>" <?= $agotado ? 'disabled' : '' ?>>
+                    data-agregar-carrito="<?= (int) ($producto['id'] ?? 0) ?>" data-stock="<?= (int) $producto['stock'] ?>"
+                    <?= $agotado ? 'disabled' : '' ?>>
                 <?= icono('carrito', 'h-4 w-4') ?>
                 <?php if ($agotado): ?>
                     Agotado
