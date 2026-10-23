@@ -150,6 +150,41 @@
     ventanaConsulta.addEventListener('click', function (evento) {
       if (evento.target === ventanaConsulta) ventanaConsulta.close();
     });
+
+    // Se abre sola unos segundos después de cargar la página (decisión del dueño, para captar más consultas).
+    // Si la persona la cierra, no vuelve a salir en 7 días; si ya envió una consulta, no sale más.
+    var POPUP_CLAVE = 'consulta_popup';
+    var POPUP_SEGUNDOS = 3;
+    var POPUP_DIAS_SIN_MOSTRAR = 7;
+    var estadoPopup = {};
+    try { estadoPopup = JSON.parse(localStorage.getItem(POPUP_CLAVE) || '{}') || {}; } catch (e) { estadoPopup = null; }
+    var guardarPopup = function () {
+      try { localStorage.setItem(POPUP_CLAVE, JSON.stringify(estadoPopup)); } catch (e) { /* sin almacenamiento */ }
+    };
+
+    // Sin almacenamiento disponible no se abre sola (no habría forma de recordar que la cerró)
+    var cerradaHace = estadoPopup && estadoPopup.cerrado ? Date.now() - estadoPopup.cerrado : Infinity;
+    if (estadoPopup && !estadoPopup.enviado && cerradaHace > POPUP_DIAS_SIN_MOSTRAR * 24 * 3600 * 1000) {
+      setTimeout(function () {
+        // No interrumpe si la persona ya abrió la ventana u otra ventana del sitio
+        if (!ventanaConsulta.open && !document.querySelector('dialog[open]')) ventanaConsulta.showModal();
+      }, POPUP_SEGUNDOS * 1000);
+    }
+    ventanaConsulta.addEventListener('close', function () {
+      if (!estadoPopup) return;
+      estadoPopup.cerrado = Date.now();
+      guardarPopup();
+    });
+  }
+
+  // Quien ya envió una consulta (desde cualquier formulario) no vuelve a ver la ventana automática.
+  // Se marca solo cuando el servidor confirmó el envío (si hubo errores, la ventana puede volver a salir).
+  if (/[?&]consulta=enviada/.test(location.search)) {
+    try {
+      var yaEnviada = JSON.parse(localStorage.getItem('consulta_popup') || '{}') || {};
+      yaEnviada.enviado = true;
+      localStorage.setItem('consulta_popup', JSON.stringify(yaEnviada));
+    } catch (e) { /* sin almacenamiento */ }
   }
 
   // Botones "Copiar" (número SINPE, IBAN, monto)
