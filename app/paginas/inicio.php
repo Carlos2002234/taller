@@ -88,6 +88,8 @@ $servicios = servicios_activos(true);
 
 <?php componente('video-taller'); ?>
 
+<?php componente('testimonios'); ?>
+
 <?php componente('como-comprar'); ?>
 
 <?php componente('visitanos'); ?>
