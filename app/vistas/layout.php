@@ -7,6 +7,17 @@
 $negocio = ajuste('negocio_nombre', 'Rivera Grupo Automotriz');
 $tituloCompleto = $meta['titulo'] ? $meta['titulo'] . ' | ' . $negocio : $negocio;
 $urlActual = url(ruta_actual());
+
+// Ventana de consulta: en todas las páginas públicas menos el proceso de compra, Contacto
+// (ya tiene el formulario) y las legales; tampoco en errores (404, formularios con errores).
+// Se prepara ANTES de enviar el HTML porque su formulario abre la sesión (token CSRF).
+$ventanaConsulta = '';
+$sinVentana = ['carrito', 'checkout', 'pedido-confirmado', 'mi-pedido', 'contacto', 'terminos', 'privacidad'];
+if (http_response_code() === 200 && !in_array(explode('/', ruta_actual())[0], $sinVentana, true)) {
+    ob_start();
+    componente('ventana-consulta');
+    $ventanaConsulta = ob_get_clean();
+}
 ?>
 <!doctype html>
 <html lang="es">
@@ -54,5 +65,6 @@ $urlActual = url(ruta_actual());
     <?php require RAIZ . '/app/vistas/parciales/footer.php'; ?>
     <?php require RAIZ . '/app/vistas/parciales/nav-movil.php'; ?>
     <?php require RAIZ . '/app/vistas/parciales/boton-whatsapp.php'; ?>
+    <?= $ventanaConsulta ?>
 </body>
 </html>
