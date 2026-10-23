@@ -104,6 +104,12 @@ $meta['fondo_claro'] = true;
         <?php endswitch; ?>
     </div>
 
+    <?php if (in_array($pedido['estado'], ['pendiente_pago', 'comprobante_enviado'], true)): ?>
+        <div class="mt-4">
+            <?php componente('avisar-whatsapp', ['pedido' => $pedido]); ?>
+        </div>
+    <?php endif; ?>
+
     <?php if ($puedeSubir): ?>
         <section class="mt-8">
             <h2 class="text-xl">Sube tu comprobante</h2>

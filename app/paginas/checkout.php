@@ -66,6 +66,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // Consentimiento para usar los datos (Ley 8968) y aceptación de los términos
+    if (!isset($_POST['acepto'])) {
+        $errores[] = 'Debes aceptar los Términos y condiciones y la Política de privacidad.';
+    }
+
     $carrito = normalizar_carrito(json_decode(is_string($_POST['carrito'] ?? null) ? $_POST['carrito'] : '[]', true));
     if (!$carrito) {
         $errores[] = 'Tu carrito está vacío.';
@@ -245,7 +250,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         Tu pedido se prepara cuando verificamos el pago.</span></p>
                 </div>
 
-                <button type="submit" class="btn-primario mt-5 w-full text-base" data-checkout-enviar disabled>
+                <label class="mt-4 flex cursor-pointer items-start gap-2.5 text-xs text-neutral-700">
+                    <input type="checkbox" name="acepto" required class="mt-0.5 h-4 w-4 shrink-0 accent-rivera-rojo" <?= isset($_POST['acepto']) ? 'checked' : '' ?>>
+                    <span>Acepto los <a href="<?= e(url('terminos')) ?>" target="_blank" class="font-semibold underline hover:text-rivera-rojo">Términos y condiciones</a>
+                        y la <a href="<?= e(url('privacidad')) ?>" target="_blank" class="font-semibold underline hover:text-rivera-rojo">Política de privacidad</a>,
+                        y autorizo el uso de mis datos para procesar este pedido.</span>
+                </label>
+
+                <button type="submit" class="btn-primario mt-4 w-full text-base" data-checkout-enviar disabled>
                     Confirmar pedido
                 </button>
                 <p class="mt-3 text-center text-xs text-neutral-500">

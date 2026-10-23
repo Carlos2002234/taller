@@ -42,7 +42,16 @@ const CONFIGURACION_CAMPOS = [
         'instagram_url' => ['Instagram', 'url', ''],
         'tiktok_url'    => ['TikTok', 'url', ''],
     ],
+    'Textos legales' => [
+        'terminos_texto'   => ['Términos y condiciones', 'legal', ''],
+        'privacidad_texto' => ['Política de privacidad', 'legal', ''],
+    ],
 ];
+
+// Ayuda que se muestra junto a los textos legales
+const TEXTOS_LEGALES_AYUDA = 'Formato: "## " al inicio de una línea crea un título; "- " crea una viñeta; deja una línea vacía entre párrafos. '
+    . 'Puedes usar {negocio}, {telefono}, {direccion}, {horario}, {horas_pago} y {envio_plazo}: se reemplazan solos con tus datos. '
+    . 'Reemplaza todo lo que dice [COMPLETAR …] antes de publicar y pide a un abogado que revise el texto.';
 
 /**
  * Valida y normaliza un valor según su tipo. Devuelve [valor, error|null].
@@ -67,6 +76,7 @@ function configuracion_validar(string $tipo, string $valor, string $etiqueta): a
         'entero'   => preg_match('/^\d{1,3}$/', $valor) && (int) $valor >= 1 && (int) $valor <= 168
                         ? [$valor, null] : [$valor, "«{$etiqueta}» debe ser un número entre 1 y 168."],
         'prefijo'  => preg_match('/^[A-Z0-9]{2,5}$/', $p = strtoupper($valor)) ? [$p, null] : [$valor, "«{$etiqueta}» debe tener de 2 a 5 letras o números."],
+        'legal'    => [mb_substr(str_replace("\r\n", "\n", $valor), 0, 20000), null],
         default    => [mb_substr($valor, 0, $tipo === 'largo' ? 500 : 150), null],
     };
 }

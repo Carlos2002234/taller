@@ -11,6 +11,8 @@ $urls = [
     ['tienda', null, '0.9'],
     ['servicios', null, '0.7'],
     ['contacto', null, '0.6'],
+    ['terminos', null, '0.2'],
+    ['privacidad', null, '0.2'],
 ];
 
 foreach (categorias_activas() as $categoria) {

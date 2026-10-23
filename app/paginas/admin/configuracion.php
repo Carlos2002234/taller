@@ -87,9 +87,15 @@ $zonas = zonas_admin_listar();
             <h2 class="text-lg"><?= e($seccion) ?></h2>
             <div class="mt-4 grid gap-4 sm:grid-cols-2">
                 <?php foreach ($campos as $clave => [$etiqueta, $tipo, $ayuda]): ?>
-                    <div class="<?= $tipo === 'largo' ? 'sm:col-span-2' : '' ?>">
+                    <div class="<?= in_array($tipo, ['largo', 'legal'], true) ? 'sm:col-span-2' : '' ?>">
                         <label for="<?= e($clave) ?>" class="etiqueta-campo"><?= e($etiqueta) ?></label>
-                        <?php if ($tipo === 'largo'): ?>
+                        <?php if ($tipo === 'legal'): ?>
+                            <textarea id="<?= e($clave) ?>" name="<?= e($clave) ?>" rows="14" maxlength="20000" class="campo-claro font-mono text-xs leading-relaxed"><?= e($valores[$clave]) ?></textarea>
+                            <p class="mt-1 text-xs text-neutral-600">
+                                <?= e(TEXTOS_LEGALES_AYUDA) ?>
+                                <a href="<?= e(url($clave === 'terminos_texto' ? 'terminos' : 'privacidad')) ?>" target="_blank" class="font-semibold text-rivera-rojo hover:underline">Ver cómo se ve ↗</a>
+                            </p>
+                        <?php elseif ($tipo === 'largo'): ?>
                             <textarea id="<?= e($clave) ?>" name="<?= e($clave) ?>" rows="2" maxlength="500" class="campo-claro"><?= e($valores[$clave]) ?></textarea>
                         <?php else: ?>
                             <input id="<?= e($clave) ?>" name="<?= e($clave) ?>" class="campo-claro"

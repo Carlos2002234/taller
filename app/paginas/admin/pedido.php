@@ -234,7 +234,7 @@ $revision = ['pendiente' => 'Pendiente de revisión', 'aprobado' => 'Aprobado', 
             <p class="text-sm text-neutral-600"><?= e($pedido['telefono']) ?><?= $pedido['email'] ? ' · ' . e($pedido['email']) : '' ?></p>
             <div class="mt-3 grid grid-cols-2 gap-2">
                 <a href="<?= e(whatsapp_cliente_url($pedido['telefono'], $mensajesWhatsapp[$estado] ?? "Hola {$pedido['nombre_cliente']}, sobre tu pedido {$pedido['numero_pedido']}:")) ?>"
-                   target="_blank" rel="noopener" class="btn btn-pequeno bg-[#25D366] text-white hover:bg-[#1ebe5b]">
+                   target="_blank" rel="noopener" class="btn btn-pequeno bg-green-700 text-white hover:bg-green-800">
                     <?= icono('whatsapp', 'h-4 w-4') ?> WhatsApp
                 </a>
                 <a href="tel:+506<?= e(preg_replace('/\D/', '', $pedido['telefono'])) ?>" class="btn-claro btn-pequeno bg-white"><?= icono('telefono', 'h-4 w-4') ?> Llamar</a>

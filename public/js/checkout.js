@@ -106,6 +106,15 @@
 
   // Al enviar: adjuntar el carrito (solo IDs y cantidades) y evitar doble envío
   formulario.addEventListener('submit', function (evento) {
+    // La casilla de términos es obligatoria (el servidor también lo revisa)
+    var acepto = formulario.querySelector('input[name=acepto]');
+    if (acepto && !acepto.checked) {
+      evento.preventDefault();
+      acepto.setCustomValidity('Debes aceptar los Términos y la Política de privacidad para continuar.');
+      acepto.reportValidity();
+      acepto.addEventListener('change', function () { acepto.setCustomValidity(''); }, { once: true });
+      return;
+    }
     raiz.querySelector('[data-checkout-carrito]').value = JSON.stringify(Carrito.leer());
     if (boton.disabled) {
       evento.preventDefault();

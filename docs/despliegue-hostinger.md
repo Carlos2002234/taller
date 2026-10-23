@@ -219,6 +219,7 @@ Con la tienda publicada **pero todavía sin anunciarla**:
 En `https://tudominio.com/admin`:
 
 1. [ ] **Configuración:** titular del SINPE, banco, IBAN, titular y cédula; enlace de Google Maps; redes sociales; revisa el banner.
+   - [ ] **Textos legales:** completa todo lo marcado **[COMPLETAR]** en Términos y Política de privacidad (razón social, cédula, IVA, devoluciones, garantía, plazo de conservación) y **pide a un abogado que los revise**. Mientras falte algo, el inicio del panel te lo recuerda.
 2. [ ] **Configuración → Zonas de envío:** tus tarifas reales (las actuales son de ejemplo).
 3. [ ] **Servicios:** revisa y corrige los 6 servicios cargados.
 4. [ ] **Categorías:** ajusta nombres y agrega fotos.

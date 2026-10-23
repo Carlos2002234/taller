@@ -66,6 +66,12 @@ $redes = array_filter([
     </div>
 
     <div class="border-t border-white/10">
-        <p class="contenedor py-5 text-xs text-neutral-400">© <?= date('Y') ?> <?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?>. Costa Rica.</p>
+        <div class="contenedor flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-5 text-xs text-neutral-400">
+            <p>© <?= date('Y') ?> <?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?>. Costa Rica.</p>
+            <nav class="flex gap-5" aria-label="Legal">
+                <a href="<?= e(url('terminos')) ?>" class="hover:text-white">Términos y condiciones</a>
+                <a href="<?= e(url('privacidad')) ?>" class="hover:text-white">Política de privacidad</a>
+            </nav>
+        </div>
     </div>
 </footer>

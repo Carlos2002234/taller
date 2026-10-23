@@ -83,6 +83,61 @@ function mapa_url(): string
 }
 
 /**
+ * Convierte un texto legal editado en el admin a HTML seguro.
+ * - "## Título" → <h2>, "- punto" → lista, línea vacía → nuevo párrafo.
+ * - {negocio}, {telefono}, {direccion}, {horario}, {horas_pago}, {envio_plazo} → datos de Configuración.
+ * - "[COMPLETAR …]" se resalta para que se note que falta.
+ * Todo el texto se escapa: aunque alguien escriba HTML o scripts, se muestra como texto.
+ */
+function texto_legal_html(string $texto): string
+{
+    $texto = strtr($texto, [
+        '{negocio}'     => ajuste('negocio_nombre', 'Rivera Grupo Automotriz'),
+        '{telefono}'    => ajuste('telefono'),
+        '{direccion}'   => ajuste('direccion'),
+        '{horario}'     => ajuste('horario'),
+        '{horas_pago}'  => ajuste('horas_expiracion_pedido', '48'),
+        '{envio_plazo}' => ajuste('envio_plazo', '48 horas'),
+    ]);
+
+    $resaltar = fn (string $linea): string => preg_replace(
+        '/\[COMPLETAR[^\]]*\]/u',
+        '<mark class="rounded bg-amber-100 px-1 text-amber-900">$0</mark>',
+        e($linea)
+    );
+
+    $html = '';
+    foreach (preg_split('/\n\s*\n/', trim(str_replace("\r\n", "\n", $texto))) as $bloque) {
+        $lineas = array_values(array_filter(array_map('trim', explode("\n", $bloque)), 'strlen'));
+        if (!$lineas) {
+            continue;
+        }
+        if (str_starts_with($lineas[0], '## ')) {
+            $html .= '<h2>' . $resaltar(substr(array_shift($lineas), 3)) . '</h2>';
+        }
+        $parrafo = [];
+        $lista = [];
+        foreach ($lineas as $linea) {
+            if (str_starts_with($linea, '- ')) {
+                if ($parrafo) {
+                    $html .= '<p>' . implode(' ', $parrafo) . '</p>';
+                    $parrafo = [];
+                }
+                $lista[] = '<li>' . $resaltar(substr($linea, 2)) . '</li>';
+            } else {
+                if ($lista) {
+                    $html .= '<ul>' . implode('', $lista) . '</ul>';
+                    $lista = [];
+                }
+                $parrafo[] = $resaltar($linea);
+            }
+        }
+        $html .= ($parrafo ? '<p>' . implode(' ', $parrafo) . '</p>' : '') . ($lista ? '<ul>' . implode('', $lista) . '</ul>' : '');
+    }
+    return $html;
+}
+
+/**
  * Datos del negocio para Google (schema.org AutoRepair = taller mecánico).
  * El horario no se incluye porque es texto libre en Configuración y podría quedar desactualizado.
  */

@@ -48,6 +48,8 @@ function rutas(): array
         'pedido-confirmado'  => ['pedido-confirmado', false, 'html'],
         'servicios'          => ['servicios', false, 'html'],
         'contacto'           => ['contacto', false, 'html'],
+        'terminos'           => ['legal', false, 'html'],
+        'privacidad'         => ['legal', false, 'html'],
         'mi-pedido'          => ['mi-pedido', false, 'html'],
         'mi-pedido/{numero}' => ['pedido-detalle', false, 'html'],
         'api/carrito'        => ['api-carrito', false, 'json'],

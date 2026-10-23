@@ -35,7 +35,7 @@ printf '<?php echo 1; ?>' > "$TMP/ataque.jpg"
 echo "Probando $BASE (teléfono de prueba $TELEFONO)"
 
 echo "1. Páginas públicas"
-for ruta in "" tienda servicios contacto carrito mi-pedido sitemap.xml robots.txt; do
+for ruta in "" tienda servicios contacto terminos privacidad carrito mi-pedido sitemap.xml robots.txt; do
     igual "/$ruta responde" "$(codigo "$BASE/$ruta")" 200
 done
 igual "página inexistente da 404" "$(codigo "$BASE/no-existe-$RANDOM")" 404
@@ -50,9 +50,10 @@ echo "3. Checkout"
 T="$(token "$CLIENTE" checkout)"
 igual "sin token CSRF se rechaza" "$(codigo -X POST "$BASE/checkout" -d 'nombre_cliente=X')" 403
 igual "datos inválidos se rechazan" "$(codigo -b "$CLIENTE" -c "$CLIENTE" -X POST "$BASE/checkout" -d "csrf_token=$T" -d 'nombre_cliente=A' -d 'telefono=1' -d 'carrito=[]')" 422
-igual "campo trampa (robot) se descarta" "$(codigo -b "$CLIENTE" -c "$CLIENTE" -X POST "$BASE/checkout" -d "csrf_token=$T" -d 'sitio_web=spam' -d 'nombre_cliente=Robot' -d "telefono=$TELEFONO" -d 'tipo_entrega=retiro' --data-urlencode "carrito=[{\"id\":$PRODUCTO_ID,\"cantidad\":1}]")" 302
+igual "sin aceptar los términos se rechaza" "$(codigo -b "$CLIENTE" -c "$CLIENTE" -X POST "$BASE/checkout" -d "csrf_token=$T" -d 'nombre_cliente=Sin Aceptar' -d "telefono=$TELEFONO" -d 'tipo_entrega=retiro' --data-urlencode "carrito=[{\"id\":$PRODUCTO_ID,\"cantidad\":1}]")" 422
+igual "campo trampa (robot) se descarta" "$(codigo -b "$CLIENTE" -c "$CLIENTE" -X POST "$BASE/checkout" -d "csrf_token=$T" -d 'sitio_web=spam' -d 'nombre_cliente=Robot' -d "telefono=$TELEFONO" -d 'tipo_entrega=retiro' -d 'acepto=on' --data-urlencode "carrito=[{\"id\":$PRODUCTO_ID,\"cantidad\":1}]")" 302
 resultado="$(curl -s -o /dev/null -w '%{redirect_url}' -b "$CLIENTE" -c "$CLIENTE" -X POST "$BASE/checkout" -d "csrf_token=$T" \
-    -d 'nombre_cliente=Prueba Automatica' -d "telefono=$TELEFONO" -d 'tipo_entrega=retiro' \
+    -d 'nombre_cliente=Prueba Automatica' -d "telefono=$TELEFONO" -d 'tipo_entrega=retiro' -d 'acepto=on' \
     --data-urlencode "carrito=[{\"id\":$PRODUCTO_ID,\"cantidad\":1,\"precio\":1}]")"
 case "$resultado" in */pedido-confirmado) bien "pedido creado";; *) mal "no se creó el pedido ($resultado)";; esac
 codigo -b "$CLIENTE" "$BASE/pedido-confirmado" >/dev/null

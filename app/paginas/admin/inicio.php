@@ -34,6 +34,14 @@ $ultimos = array_slice($ultimos, 0, 5);
 <h1 class="font-display text-2xl font-extrabold sm:text-3xl">Hola, <?= e(explode(' ', $usuario['nombre'])[0]) ?></h1>
 <p class="mt-1 text-sm text-neutral-600">Resumen de tu tienda.</p>
 
+<?php if ($esDuenio && (str_contains(ajuste('terminos_texto'), '[COMPLETAR') || str_contains(ajuste('privacidad_texto'), '[COMPLETAR'))): ?>
+    <div class="aviso-error mt-6" role="alert">
+        <span class="shrink-0"><?= icono('alerta', 'h-5 w-5') ?></span>
+        <span>Los Términos o la Política de privacidad tienen partes por completar <strong>[COMPLETAR]</strong>.
+            <a href="<?= e(url('admin/configuracion')) ?>" class="font-semibold underline">Complétalas en Configuración → Textos legales</a> antes de abrir la tienda.</span>
+    </div>
+<?php endif; ?>
+
 <?php if ($esDuenio): ?>
     <div class="mt-6 grid gap-3 sm:grid-cols-2">
         <div class="rounded-lg bg-rivera-negro p-5 text-white">

@@ -12,6 +12,7 @@ Resumen de cómo está protegido el sitio y qué revisar antes de publicarlo y d
 - [ ] Contraseña del dueño de 12 caracteres o más, que no uses en otro sitio.
 - [ ] Tarea programada cada hora: `app/tareas/liberar-pedidos-vencidos.php` (ver `docs/instalacion-local.md`).
 - [ ] Datos de pago, tarifas de envío y servicios revisados en Admin → Configuración / Servicios.
+- [ ] Términos y Política de privacidad completos (sin [COMPLETAR]) y revisados por un abogado. El checkout exige aceptarlos (consentimiento de la Ley 8968).
 - [ ] Respaldo automático de la base de datos activado en Hostinger.
 - [ ] Correr `tests/flujo-completo.sh` contra el sitio de pruebas (no contra la tienda real con clientes).
 

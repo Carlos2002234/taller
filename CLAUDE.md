@@ -30,8 +30,10 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 
 ## Estado actual del proyecto
 - **Fase:** MVP completo (módulos 0–10). Siguiente: publicación por el dueño; luego Fase 2 (WhatsApp) y Fase 3 (marketing).
-- **Último módulo completado:** 10 — guía de despliegue en Hostinger (2026-10-22): `docs/despliegue-hostinger.md`. Probado en estructura tipo Hostinger (`domains/tudominio.com/` + `public_html`) con Apache: 29/29 pruebas, fotos en public_html, proyecto subido por error dentro de la raíz web sin exponer nada, respaldo + restauración idénticos.
-- **Próximo paso:** el dueño publica siguiendo la guía (aún no contrata Hostinger ni dominio). Pendiente de Fase 2: `notificarPedido()` (WhatsApp). Fase 3: Meta Pixel / Analytics.
+- **Último módulo completado:** 11 — páginas legales y WhatsApp gratuito (2026-10-22). Probado: 32/32 pruebas, XSS en textos legales, mensaje de WhatsApp, accesibilidad.
+- **Próximo:** Módulo 12 — reporte "¿Qué anuncio vende?" (ventas por UTM) en el admin. Luego, a pedido del dueño: Meta Pixel / Analytics (necesita IDs) y API oficial de WhatsApp (2B, con costo).
+- Legal: `/terminos` y `/privacidad` desde settings `terminos_texto` / `privacidad_texto` (editables en Configuración; `texto_legal_html()` escapa todo, "## " = título, "- " = viñeta, {negocio} {telefono} {direccion} {horario} {horas_pago} {envio_plazo}). Base redactada por Claude con [COMPLETAR] (razón social, IVA, devoluciones, garantía, conservación): el dueño completa y un abogado revisa. Checkout exige casilla `acepto` (Ley 8968).
+- WhatsApp Fase 2 (decisión: opción gratuita 2A): botón "Avisar por WhatsApp" (cliente → dueño) en confirmación y Mi pedido. `notificarPedido()` sigue vacía para una futura API (2B).
 - Carpeta pública: `index.php` define `PUBLICO` (funciona como `public` o `public_html`). Usar `PUBLICO`, nunca `RAIZ . '/public'`.
 - Cada carpeta interna (app, database, docs, tests, resources, scripts, assets, storage) tiene `.htaccess` con `Require all denied`; la raíz bloquea archivos ocultos y internos.
 - Respaldo: `app/tareas/respaldar-base.php` (cron diario) → `storage/respaldos/*.sql.gz`, conserva 14.

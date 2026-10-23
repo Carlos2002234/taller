@@ -35,6 +35,9 @@ $items = pedido_items((int) $pedido['id']);
         <p class="mt-2 text-neutral-600">Tu número de pedido es</p>
         <p class="mt-1 font-display text-3xl font-extrabold tracking-wide text-rivera-rojo sm:text-4xl"><?= e($pedido['numero_pedido']) ?></p>
         <p class="mt-3 text-sm text-neutral-600">Guárdalo: lo necesitas para pagar y para consultar tu pedido.</p>
+        <div class="mt-5">
+            <?php componente('avisar-whatsapp', ['pedido' => $pedido]); ?>
+        </div>
     </div>
 
     <div class="mt-6">

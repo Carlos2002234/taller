@@ -63,6 +63,14 @@
   .fondo-claro .aviso-error { @apply border-red-300 bg-red-50 text-red-900; }
   .fondo-claro .aviso-info { @apply border-sky-200 bg-sky-50 text-sky-900; }
 
+  /* En páginas claras, el gris más claro no alcanza el contraste mínimo sobre el fondo gris: un tono más oscuro */
+  .fondo-claro .text-neutral-500 { @apply text-neutral-600; }
+
+  /* Textos largos (términos, privacidad) */
+  .texto-legal h2 { @apply mb-3 mt-8 text-xl first:mt-0; }
+  .texto-legal p { @apply mb-4 leading-relaxed text-neutral-700; }
+  .texto-legal ul { @apply mb-4 list-disc space-y-1.5 pl-6 text-neutral-700; }
+
   /* Enlaces del menú */
   .enlace-menu { @apply text-sm font-medium text-neutral-300 transition-colors hover:text-white; }
   .enlace-menu-activo { @apply text-white after:mt-1 after:block after:h-0.5 after:bg-rivera-rojo after:content-['']; }
