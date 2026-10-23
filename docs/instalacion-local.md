@@ -74,3 +74,14 @@ npm run css:watch    # recompila el CSS mientras editas
 npm run css          # versión final minificada (antes de hacer commit)
 npm run imagenes     # regenera logo y fotos optimizadas desde /assets
 ```
+
+## 8. Tarea programada (en Hostinger)
+
+Los pedidos sin pagar se cancelan solos al vencer el plazo (48 h) y su stock vuelve al inventario.
+En Hostinger: **hPanel → Avanzado → Cron Jobs**, crear una tarea **cada hora** con:
+
+```bash
+php /home/TU_USUARIO/taller/app/tareas/liberar-pedidos-vencidos.php
+```
+
+En local puedes ejecutarla a mano con `php app/tareas/liberar-pedidos-vencidos.php`.

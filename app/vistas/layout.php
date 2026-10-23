@@ -45,7 +45,7 @@ $urlActual = url(ruta_actual());
 
     <?php require RAIZ . '/app/vistas/parciales/header.php'; ?>
 
-    <main id="contenido" class="flex-1 <?= $meta['fondo_claro'] ? 'bg-rivera-gris text-rivera-negro' : '' ?>">
+    <main id="contenido" class="flex-1 <?= $meta['fondo_claro'] ? 'fondo-claro bg-rivera-gris text-rivera-negro' : '' ?>">
         <?= $contenido ?>
     </main>
 

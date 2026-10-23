@@ -22,6 +22,30 @@
     select.addEventListener('change', function () { select.form.submit(); });
   });
 
+  // Origen de la visita (anuncios): guarda los parámetros UTM por 30 días para asociarlos al pedido
+  try {
+    var parametros = new URLSearchParams(location.search);
+    if (parametros.get('utm_source')) {
+      localStorage.setItem('utm', JSON.stringify({
+        utm_source: parametros.get('utm_source'),
+        utm_medium: parametros.get('utm_medium') || '',
+        utm_campaign: parametros.get('utm_campaign') || '',
+        guardado: Date.now(),
+      }));
+    }
+  } catch (e) { /* sin almacenamiento disponible */ }
+
+  // Botones "Copiar" (número SINPE, IBAN, monto)
+  document.addEventListener('click', function (evento) {
+    var boton = evento.target.closest('[data-copiar]');
+    if (!boton || !navigator.clipboard) return;
+    navigator.clipboard.writeText(boton.getAttribute('data-copiar')).then(function () {
+      var texto = boton.textContent;
+      boton.textContent = '¡Copiado!';
+      setTimeout(function () { boton.textContent = texto; }, 1500);
+    });
+  });
+
   // Contador del carrito (el carrito se guarda en el navegador; ver carrito.js)
   function cantidadEnCarrito() {
     try {

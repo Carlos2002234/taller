@@ -30,11 +30,14 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 
 ## Estado actual del proyecto
 - **Fase:** MVP
-- **Último módulo completado:** 3 — tienda pública (2026-10-22): catálogo con filtros/búsqueda/orden/paginación, página de producto con galería, carrito. Probado con datos reales en MariaDB + navegador (filtros, límites de stock, carrito manipulado).
-- **Próximo módulo:** 4 — checkout y creación de pedido con número único (`TAL-AAAA-NNNN`), reserva de stock, zonas de envío, `notificarPedido()` vacía. Proponer plan y esperar confirmación.
+- **Último módulo completado:** 4 — checkout y creación de pedido (2026-10-22). Probado: validaciones, CSRF, campo trampa, límites anti-abuso, 12 compras simultáneas contra stock 5 (vende exactamente 5, sin números repetidos), vencimiento con devolución de stock, UTM.
+- **Próximo módulo:** 5 — seguimiento de pedido (`/mi-pedido`: número + teléfono) y subida del comprobante (JPG/PNG/PDF máx. 5 MB, a `storage/comprobantes`, nombre aleatorio). Al subir: `pendiente_pago` → `comprobante_enviado`. Proponer plan y esperar confirmación.
+- Pedidos: `crear_pedido()` en `app/modelos/pedidos.php` (transacción con `FOR UPDATE`, precios de la BD, reserva stock, historial). Número `RGA-AAAA-NNNN` (prefijo en `settings.prefijo_pedido`, contador `order_sequences`). Tras crear, llama `notificarPedido()` (vacía, Fase 2).
+- Vencimiento: SOLO pedidos en `pendiente_pago` vencen (48 h, `settings.horas_expiracion_pedido`) → `cancelado` + `devolver_stock()`. Los `comprobante_enviado` NUNCA vencen solos. Cron: `app/tareas/liberar-pedidos-vencidos.php` cada hora (además se ejecuta al crear pedidos).
+- Anti-abuso aprobado por el dueño: campo trampa, máx. 3 pedidos `pendiente_pago` por teléfono, máx. 5 pedidos/hora por IP.
 - Carrito: vive en `localStorage` como `[{id, cantidad}]` SOLAMENTE. Precios y stock siempre del servidor (`/api/carrito`); el checkout DEBE revalidar todo en el servidor dentro de una transacción.
 - Stock al cliente: "Disponible" / "¡Últimas N unidades!" (≤3) / "Agotado" (`estado_stock()`).
-- Admin: se crea con `php database/crear-admin.php` (no hay usuarios en `seed.sql`). Números de pedido: prefijo en `settings.prefijo_pedido` (TAL) + tabla `order_sequences`.
+- Admin: se crea con `php database/crear-admin.php` (no hay usuarios en `seed.sql`).
 - **Repositorio:** https://github.com/Carlos2002234/taller (rama `main`). Cada commit se sube con `git push`.
 
 ### Datos del negocio (confirmados)
@@ -71,5 +74,5 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 - ¿Precios con IVA incluido?
 - Provincia/cantón de La Puebla y enlace de Google Maps/Waze.
 - Lista completa de servicios del taller y redes sociales.
-- Zonas de envío y sus tarifas.
+- Tarifas reales de envío (el dueño dejó las de ejemplo; las cambia desde el admin antes de publicar).
 - Correo para avisos de pedidos; dominio; plan de Hostinger.

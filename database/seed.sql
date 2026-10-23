@@ -28,7 +28,7 @@ INSERT INTO settings (clave, valor) VALUES
     ('banco_cedula',            'PENDIENTE'),
 
     -- Pedidos y entregas
-    ('prefijo_pedido',          'TAL'),
+    ('prefijo_pedido',          'RGA'),           -- Rivera Grupo Automotriz → RGA-2026-0001
     ('horas_expiracion_pedido', '48'),
     ('envio_plazo',             '48 horas'),
     ('envio_cobertura',         'Gran Área Metropolitana (GAM)'),

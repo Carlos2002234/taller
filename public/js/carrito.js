@@ -35,6 +35,12 @@
     return '₡' + String(Math.round(monto)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   }
 
+  // Funciones compartidas con checkout.js
+  window.Carrito = { leer: leer, guardar: guardar, colones: colones };
+
+  // Pedido confirmado: el carrito ya se convirtió en pedido
+  if (document.querySelector('[data-vaciar-carrito]')) guardar([]);
+
   // --- Aviso flotante ---------------------------------------------------------
   var temporizador;
   function mostrarAviso(mensaje, conEnlace) {
@@ -159,7 +165,7 @@
     elementos.avisos.textContent = '';
     mensajes.forEach(function (mensaje) {
       var aviso = document.createElement('div');
-      aviso.className = 'aviso-info !border-amber-500/40 !bg-amber-50 !text-amber-900';
+      aviso.className = 'aviso-info';
       aviso.setAttribute('role', 'status');
       aviso.textContent = mensaje;
       elementos.avisos.appendChild(aviso);

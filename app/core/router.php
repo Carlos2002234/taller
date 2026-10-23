@@ -31,7 +31,8 @@ function rutas(): array
         'tienda'          => ['tienda', false, 'html'],
         'producto/{slug}' => ['producto', false, 'html'],
         'carrito'         => ['carrito', false, 'html'],
-        'checkout'        => ['en-construccion', false, 'html'],
+        'checkout'          => ['checkout', false, 'html'],
+        'pedido-confirmado' => ['pedido-confirmado', false, 'html'],
         'servicios'       => ['en-construccion', false, 'html'],
         'contacto'        => ['en-construccion', false, 'html'],
         'mi-pedido'       => ['en-construccion', false, 'html'],
@@ -109,6 +110,9 @@ function mostrar_pagina(string $pagina, int $codigo = 200, array $parametros = [
         'noindex'     => false,
     ];
 
+    // Se fija antes de ejecutar la página para que ella pueda cambiarlo (ej. 422 en formularios con errores)
+    http_response_code($codigo);
+
     ob_start();
     try {
         require RAIZ . '/app/paginas/' . $pagina . '.php';
@@ -119,7 +123,6 @@ function mostrar_pagina(string $pagina, int $codigo = 200, array $parametros = [
     }
     $contenido = ob_get_clean();
 
-    http_response_code($codigo);
     require RAIZ . '/app/vistas/layout.php';
 }
 

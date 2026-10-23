@@ -107,7 +107,7 @@ CREATE TABLE shipping_zones (
 -- ---------------------------------------------------------------------
 CREATE TABLE orders (
     id                  INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    numero_pedido       VARCHAR(20) NOT NULL,         -- ej. TAL-2026-0001
+    numero_pedido       VARCHAR(20) NOT NULL,         -- ej. RGA-2026-0001
     nombre_cliente      VARCHAR(120) NOT NULL,
     telefono            VARCHAR(20) NOT NULL,
     email               VARCHAR(150) NULL,
@@ -126,6 +126,7 @@ CREATE TABLE orders (
     utm_source          VARCHAR(100) NULL,
     utm_medium          VARCHAR(100) NULL,
     utm_campaign        VARCHAR(100) NULL,
+    ip                  VARCHAR(45) NULL,             -- para limitar pedidos falsos por conexión
     creado_en           DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     actualizado_en      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
@@ -133,6 +134,7 @@ CREATE TABLE orders (
     KEY idx_orders_estado (estado, creado_en),
     KEY idx_orders_telefono (telefono),
     KEY idx_orders_expira (estado, expira_en),
+    KEY idx_orders_ip (ip, creado_en),
     CONSTRAINT fk_orders_zona FOREIGN KEY (zona_envio_id) REFERENCES shipping_zones (id)
         ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
