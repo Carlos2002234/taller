@@ -33,7 +33,7 @@ $urlActual = url(ruta_actual());
 
     <link rel="icon" type="image/png" sizes="32x32" href="<?= e(asset('img/favicon-32.png')) ?>">
     <link rel="apple-touch-icon" href="<?= e(asset('img/apple-touch-icon.png')) ?>">
-    <link rel="preload" href="<?= e(url('fonts/montserrat-latin-800-normal.woff2')) ?>" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="<?= e(url('fonts/saira-latin-800-italic.woff2')) ?>" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="<?= e(asset('css/app.css')) ?>">
     <script src="<?= e(asset('js/precarga.js')) ?>"></script>
     <script src="<?= e(asset('js/app.js')) ?>" defer></script>
