@@ -33,6 +33,50 @@
     animables.forEach(function (el) { el.classList.add('visible'); });
   }
 
+  // Video del taller: se descarga y reproduce solo cuando está en pantalla, y se pausa al salir.
+  // Con "reducir movimiento" o "ahorro de datos" no arranca solo (queda la portada con el botón ▶).
+  document.querySelectorAll('[data-video]').forEach(function (contenedor) {
+    var video = contenedor.querySelector('[data-video-auto]');
+    var control = contenedor.querySelector('[data-video-boton]');
+    if (!video || !control) return;
+    var reducido = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var ahorro = navigator.connection && navigator.connection.saveData;
+    var detenidoPorUsuario = reducido || ahorro;
+    var enPantalla = false;
+
+    var reproducir = function () {
+      var promesa = video.play();
+      if (promesa && promesa.catch) promesa.catch(function () {}); // el navegador puede bloquear la reproducción automática
+    };
+    var mostrarEstado = function () {
+      var pausado = video.paused;
+      control.setAttribute('aria-label', pausado ? 'Reproducir video' : 'Pausar video');
+      control.querySelector('[data-video-icono-reproducir]').classList.toggle('hidden', !pausado);
+      control.querySelector('[data-video-icono-pausa]').classList.toggle('hidden', pausado);
+    };
+    video.addEventListener('play', mostrarEstado);
+    video.addEventListener('pause', mostrarEstado);
+    control.classList.remove('hidden');
+
+    control.addEventListener('click', function () {
+      if (video.paused) {
+        detenidoPorUsuario = false;
+        reproducir();
+      } else {
+        detenidoPorUsuario = true;
+        video.pause();
+      }
+    });
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entradas) {
+        enPantalla = entradas[0].isIntersecting;
+        if (enPantalla && !detenidoPorUsuario) reproducir();
+        if (!enPantalla && !video.paused) video.pause();
+      }, { threshold: 0.35 }).observe(video);
+    }
+  });
+
   // Encabezado transparente sobre la portada: se vuelve sólido al bajar o al abrir el menú
   var cuerpo = document.querySelector('[data-encabezado]');
   if (cuerpo && cuerpo.classList.contains('encabezado-flotante')) {

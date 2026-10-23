@@ -86,6 +86,8 @@ $servicios = servicios_activos(true);
     </section>
 <?php endif; ?>
 
+<?php componente('video-taller'); ?>
+
 <?php componente('como-comprar'); ?>
 
 <?php componente('visitanos'); ?>

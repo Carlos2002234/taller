@@ -30,7 +30,7 @@ DirectoryIndex index.php
 
 # Encabezados de seguridad para archivos estáticos (las páginas los reciben desde PHP)
 <IfModule mod_headers.c>
-    <FilesMatch "\.(css|js|webp|png|jpe?g|woff2|ico|svg|txt)$">
+    <FilesMatch "\.(css|js|webp|png|jpe?g|woff2|ico|svg|txt|mp4)$">
         Header always set X-Content-Type-Options "nosniff"
         Header always set X-Frame-Options "SAMEORIGIN"
         Header always set Referrer-Policy "strict-origin-when-cross-origin"
@@ -49,6 +49,7 @@ DirectoryIndex index.php
     ExpiresByType image/png                "access plus 30 days"
     ExpiresByType image/jpeg               "access plus 30 days"
     ExpiresByType image/x-icon             "access plus 30 days"
+    ExpiresByType video/mp4                "access plus 30 days"
 </IfModule>
 
 # Compresión del texto (HTML, CSS, JS, JSON, XML)
@@ -59,4 +60,5 @@ DirectoryIndex index.php
 <IfModule mod_mime.c>
     AddType font/woff2 .woff2
     AddType image/webp .webp
+    AddType video/mp4 .mp4
 </IfModule>
