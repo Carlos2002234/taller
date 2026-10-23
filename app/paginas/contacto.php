@@ -26,6 +26,11 @@ $redes = array_filter(['Facebook' => ajuste('facebook_url'), 'Instagram' => ajus
                     <a href="<?= e(mapa_url()) ?>" target="_blank" rel="noopener" class="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-rivera-rojo-claro hover:underline">
                         Cómo llegar (Google Maps) <?= icono('flecha', 'h-4 w-4') ?>
                     </a>
+                    <?php if (ajuste('waze_url') !== ''): ?>
+                        <a href="<?= e(ajuste('waze_url')) ?>" target="_blank" rel="noopener" class="mt-2 ml-4 inline-flex items-center gap-1 text-sm font-semibold text-rivera-rojo-claro hover:underline">
+                            Abrir en Waze <?= icono('flecha', 'h-4 w-4') ?>
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="tarjeta flex gap-4 p-5">

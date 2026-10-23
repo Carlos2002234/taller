@@ -24,6 +24,7 @@ const CONFIGURACION_CAMPOS = [
         'correo_avisos'  => ['Correo del negocio', 'correo', 'Opcional.'],
         'direccion'      => ['Dirección', 'largo', ''],
         'mapa_url'       => ['Enlace de Google Maps', 'url', 'En Google Maps: Compartir → Copiar enlace.'],
+        'waze_url'       => ['Enlace de Waze', 'url', 'En Waze: Compartir ubicación → Copiar enlace. Vacío = no se muestra el botón.'],
         'horario'        => ['Horario', 'texto', ''],
     ],
     'Pedidos y envíos' => [

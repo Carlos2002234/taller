@@ -32,6 +32,9 @@
             </div>
             <div class="mt-7 flex flex-wrap gap-3">
                 <a href="<?= e(mapa_url()) ?>" target="_blank" rel="noopener" class="btn-primario"><?= icono('ubicacion', 'h-4 w-4') ?> Cómo llegar</a>
+                <?php if (ajuste('waze_url') !== ''): ?>
+                    <a href="<?= e(ajuste('waze_url')) ?>" target="_blank" rel="noopener" class="btn-secundario"><?= icono('ubicacion', 'h-4 w-4') ?> Waze</a>
+                <?php endif; ?>
                 <a href="<?= e(whatsapp_url('Hola, les escribo desde la página web.')) ?>" target="_blank" rel="noopener" class="btn-secundario"><?= icono('whatsapp', 'h-4 w-4') ?> WhatsApp</a>
             </div>
         </div>
