@@ -70,6 +70,14 @@ function whatsapp_url(string $mensaje = ''): string
 }
 
 /**
+ * Enlace para que el dueño le escriba a un cliente por WhatsApp (lo abre una persona; no es automático).
+ */
+function whatsapp_cliente_url(string $telefono, string $mensaje): string
+{
+    return 'https://wa.me/506' . preg_replace('/\D/', '', $telefono) . '?text=' . rawurlencode($mensaje);
+}
+
+/**
  * Ícono SVG en línea (trazos de Heroicons, licencia MIT). Ej: icono('carrito', 'h-6 w-6')
  */
 function icono(string $nombre, string $clases = 'h-5 w-5'): string

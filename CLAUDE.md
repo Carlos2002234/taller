@@ -30,8 +30,12 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 
 ## Estado actual del proyecto
 - **Fase:** MVP
-- **Último módulo completado:** 6 — admin: acceso, productos, categorías, usuarios (2026-10-22). Probado: roles, bloqueo de login, inactividad, CSRF, redirecciones externas, fotos reales de 7-9 MB y archivos tramposos, límite de 5 fotos, borrado protegido.
-- **Próximo módulo:** 7 — admin: pedidos y aprobación de pagos (lista con filtros, detalle, ver comprobante privado, Aprobar pago / Rechazar comprobante con motivo / Rechazar pedido / cambiar estado, notas internas, historial, dashboard: pendientes y ventas del mes). Proponer plan y esperar confirmación.
+- **Último módulo completado:** 7 — pedidos, aprobación de pagos y configuración (2026-10-22). Probado: reglas de aprobación, roles, transiciones inválidas, 4 aprobaciones simultáneas (solo 1 pasa), rechazo con motivo + nuevo comprobante, devolución de stock, ventas del mes, configuración y zonas.
+- **Próximo módulo:** 8 — páginas de Inicio (completa), Servicios y Contacto. Pendiente del dueño: lista de servicios, redes sociales, enlace de Google Maps, provincia/cantón. Proponer plan y esperar confirmación.
+- Pedidos admin (`app/modelos/pedidos-admin.php`): todo cambio pasa por `transicion_pedido()` (FOR UPDATE + estados permitidos + historial). **JAMÁS aprobar sin comprobante** (decisión del dueño): `aprobar_pago()` exige dueño, estado `comprobante_enviado`, comprobante `pendiente` y casilla "verifiqué el ingreso".
+- Permisos (decisión del dueño): empleado VE pedidos y comprobantes y marca en preparación/entregado; NO aprueba, rechaza ni cancela. Cancelar (aun pagado) solo el dueño, con motivo y aviso de devolver el dinero.
+- Comprobantes se sirven por `/admin/comprobantes/{id}` (ruta tipo 'archivo', con sesión). Ventas del mes = pedidos cuyo paso a `pagado` fue en el mes y no se cancelaron después.
+- Configuración (`/admin/configuracion`, solo dueño): datos de pago, contacto, prefijo/plazo, banner, redes y zonas de envío. WhatsApp se guarda como 506XXXXXXXX. Botón "WhatsApp al cliente" = enlace manual (no es la Fase 2).
 - Admin: `requerir_admin()` / `requerir_admin('duenio')` (`app/core/auth.php`). Páginas en `app/paginas/admin/`, `$meta['layout'] = 'admin/layout'`. Avisos de una vez: `avisar()` / `tomar_avisos()`. Sin permiso → `prohibido()` (403).
 - Roles (decisión del dueño): **empleado** = SOLO pedidos (no productos, categorías ni usuarios; nunca aprueba pagos). **dueño** = todo. Pantalla Usuarios solo para el dueño; siempre queda ≥1 dueño activo y nadie se desactiva/degrada a sí mismo.
 - Seguridad login: 5 fallos por correo o 10 por IP = 15 min de bloqueo; sesión expira tras 2 h sin uso; logout solo por POST.
@@ -78,9 +82,9 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 - Del prototipo NO (MVP): reseñas/estrellas, cuentas de cliente (checkout sin registro), newsletter (Fase 3). Precios siempre en ₡.
 
 ### Pendiente (el dueño lo enviará; no bloquea el Módulo 1)
-- Titular del SINPE; datos bancarios (banco, IBAN, titular, cédula). En `seed.sql` quedan como "PENDIENTE".
+- Titular del SINPE; datos bancarios (banco, IBAN, titular, cédula): el dueño los carga en Admin → Configuración.
 - ¿Precios con IVA incluido?
 - Provincia/cantón de La Puebla y enlace de Google Maps/Waze.
 - Lista completa de servicios del taller y redes sociales.
-- Tarifas reales de envío (el dueño dejó las de ejemplo; las cambia desde el admin antes de publicar).
+- Tarifas reales de envío: el dueño las ajusta en Admin → Configuración antes de publicar.
 - Correo para avisos de pedidos; dominio; plan de Hostinger.

@@ -63,6 +63,10 @@ function rutas(): array
         'admin/categorias'       => ['admin/categorias', false, 'html'],
         'admin/categorias/nueva' => ['admin/categoria-form', false, 'html'],
         'admin/categorias/{id}'  => ['admin/categoria-form', false, 'html'],
+        'admin/pedidos'          => ['admin/pedidos', false, 'html'],
+        'admin/pedidos/{numero}' => ['admin/pedido', false, 'html'],
+        'admin/comprobantes/{id}' => ['admin/comprobante-archivo', false, 'archivo'],
+        'admin/configuracion'    => ['admin/configuracion', false, 'html'],
         'admin/usuarios'         => ['admin/usuarios', false, 'html'],
         'admin/usuarios/nuevo'   => ['admin/usuario-form', false, 'html'],
         'admin/usuarios/{id}'    => ['admin/usuario-form', false, 'html'],
@@ -121,6 +125,18 @@ function despachar(): void
         header('Content-Type: application/json; charset=utf-8');
         header('Cache-Control: no-store');
         require RAIZ . '/app/paginas/' . $pagina . '.php';
+        return;
+    }
+
+    // Archivos (ej. comprobantes privados): la página envía sus propios encabezados y contenido
+    if ($tipo === 'archivo') {
+        try {
+            require RAIZ . '/app/paginas/' . $pagina . '.php';
+        } catch (PaginaNoEncontrada) {
+            mostrar_pagina('404', 404);
+        } catch (AccesoDenegado) {
+            mostrar_pagina('admin/sin-permiso', 403);
+        }
         return;
     }
 

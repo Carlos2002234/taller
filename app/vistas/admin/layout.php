@@ -9,12 +9,15 @@ $negocio = ajuste('negocio_nombre', 'Rivera Grupo Automotriz');
 $actual = ruta_actual();
 
 $menu = [];
+$porRevisar = 0;
 if ($usuario) {
+    $porRevisar = (int) db()->query("SELECT COUNT(*) FROM orders WHERE estado = 'comprobante_enviado'")->fetchColumn();
     $menu[] = ['admin', 'Inicio', 'inicio'];
-    $menu[] = ['admin/pedidos', 'Pedidos', 'pedido', true];   // Módulo 7
+    $menu[] = ['admin/pedidos', 'Pedidos', 'pedido'];
     if (es_duenio($usuario)) {
         $menu[] = ['admin/productos', 'Productos', 'tienda'];
         $menu[] = ['admin/categorias', 'Categorías', 'menu'];
+        $menu[] = ['admin/configuracion', 'Configuración', 'llave'];
         $menu[] = ['admin/usuarios', 'Usuarios', 'chat'];
     }
     $menu[] = ['admin/cuenta', 'Mi cuenta', 'escudo'];
@@ -44,7 +47,12 @@ $activo = fn (string $ruta): bool => $ruta === 'admin' ? $actual === 'admin' : s
                 <span class="block font-display text-base font-extrabold italic"><span class="text-rivera-rojo">R</span>IVERA</span>
                 <span class="block text-[9px] font-semibold uppercase tracking-[0.2em] text-neutral-400">Panel</span>
             </span>
-            <button type="button" class="ml-auto rounded-md p-2 text-neutral-200 lg:hidden"
+            <?php if ($porRevisar > 0): ?>
+                <a href="<?= e(url('admin/pedidos?ver=por-revisar')) ?>" class="ml-auto rounded-full bg-rivera-rojo px-2.5 py-1 text-xs font-bold lg:hidden">
+                    <?= $porRevisar ?> por revisar
+                </a>
+            <?php endif; ?>
+            <button type="button" class="<?= $porRevisar > 0 ? '' : 'ml-auto' ?> rounded-md p-2 text-neutral-200 lg:hidden"
                     data-menu-boton aria-controls="menu-movil" aria-expanded="false" aria-label="Abrir menú">
                 <span data-menu-icono-abrir><?= icono('menu', 'h-6 w-6') ?></span>
                 <span data-menu-icono-cerrar class="hidden"><?= icono('cerrar', 'h-6 w-6') ?></span>
@@ -53,20 +61,16 @@ $activo = fn (string $ruta): bool => $ruta === 'admin' ? $actual === 'admin' : s
 
         <div id="menu-movil" class="hidden border-t border-white/10 lg:flex lg:flex-1 lg:flex-col lg:border-0">
             <nav class="grid gap-1 p-3" aria-label="Panel">
-                <?php foreach ($menu as $item): ?>
-                    <?php [$ruta, $texto, $icono] = $item; $pronto = $item[3] ?? false; ?>
-                    <?php if ($pronto): ?>
-                        <span class="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm text-neutral-500">
-                            <?= icono($icono, 'h-5 w-5') ?> <?= e($texto) ?>
-                            <span class="ml-auto rounded bg-white/10 px-1.5 py-0.5 text-[10px] uppercase">Pronto</span>
-                        </span>
-                    <?php else: ?>
-                        <a href="<?= e(url($ruta)) ?>"
-                           class="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium <?= $activo($ruta) ? 'bg-rivera-rojo text-white' : 'text-neutral-300 hover:bg-white/5 hover:text-white' ?>"
-                           <?= $activo($ruta) ? 'aria-current="page"' : '' ?>>
-                            <?= icono($icono, 'h-5 w-5') ?> <?= e($texto) ?>
-                        </a>
-                    <?php endif; ?>
+                <?php foreach ($menu as [$ruta, $texto, $icono]): ?>
+                    <a href="<?= e(url($ruta)) ?>"
+                       class="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium <?= $activo($ruta) ? 'bg-rivera-rojo text-white' : 'text-neutral-300 hover:bg-white/5 hover:text-white' ?>"
+                       <?= $activo($ruta) ? 'aria-current="page"' : '' ?>>
+                        <?= icono($icono, 'h-5 w-5') ?> <?= e($texto) ?>
+                        <?php if ($ruta === 'admin/pedidos' && $porRevisar > 0): ?>
+                            <span class="ml-auto rounded-full px-2 text-xs font-bold <?= $activo($ruta) ? 'bg-white text-rivera-rojo' : 'bg-rivera-rojo text-white' ?>"
+                                  title="Comprobantes por revisar"><?= $porRevisar ?></span>
+                        <?php endif; ?>
+                    </a>
                 <?php endforeach; ?>
             </nav>
 
