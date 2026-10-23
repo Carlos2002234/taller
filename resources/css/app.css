@@ -3,9 +3,11 @@
  * se genera con  npm run css  (o  npm run css:watch  mientras se diseña).
  */
 
-@font-face { font-family: 'Montserrat'; font-weight: 700; font-style: normal; font-display: swap; src: url('../fonts/montserrat-latin-700-normal.woff2') format('woff2'); }
-@font-face { font-family: 'Montserrat'; font-weight: 800; font-style: normal; font-display: swap; src: url('../fonts/montserrat-latin-800-normal.woff2') format('woff2'); }
-@font-face { font-family: 'Montserrat'; font-weight: 800; font-style: italic; font-display: swap; src: url('../fonts/montserrat-latin-800-italic.woff2') format('woff2'); }
+@font-face { font-family: 'Saira'; font-weight: 600; font-style: italic; font-display: swap; src: url('../fonts/saira-latin-600-italic.woff2') format('woff2'); }
+@font-face { font-family: 'Saira'; font-weight: 700; font-style: normal; font-display: swap; src: url('../fonts/saira-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Saira'; font-weight: 700; font-style: italic; font-display: swap; src: url('../fonts/saira-latin-700-italic.woff2') format('woff2'); }
+@font-face { font-family: 'Saira'; font-weight: 800; font-style: normal; font-display: swap; src: url('../fonts/saira-latin-800-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Saira'; font-weight: 800; font-style: italic; font-display: swap; src: url('../fonts/saira-latin-800-italic.woff2') format('woff2'); }
 @font-face { font-family: 'Inter'; font-weight: 400; font-style: normal; font-display: swap; src: url('../fonts/inter-latin-400-normal.woff2') format('woff2'); }
 @font-face { font-family: 'Inter'; font-weight: 500; font-style: normal; font-display: swap; src: url('../fonts/inter-latin-500-normal.woff2') format('woff2'); }
 @font-face { font-family: 'Inter'; font-weight: 600; font-style: normal; font-display: swap; src: url('../fonts/inter-latin-600-normal.woff2') format('woff2'); }
@@ -16,7 +18,8 @@
 
 @layer base {
   html { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
-  h1, h2, h3 { @apply font-display font-bold; }
+  /* Títulos en itálica, como las letras del logo */
+  h1, h2, h3 { @apply font-display font-bold italic; }
   :focus-visible { @apply outline-none ring-2 ring-rivera-rojo ring-offset-2 ring-offset-rivera-negro; }
 }
 

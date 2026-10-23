@@ -39,7 +39,7 @@ $avisos = tomar_avisos();
         <div class="mb-8 flex items-center justify-center gap-3 text-white">
             <img src="<?= e(asset('img/logo.webp')) ?>" alt="" width="48" height="48" class="h-12 w-12">
             <span class="leading-none">
-                <span class="block font-display text-2xl font-extrabold italic"><span class="text-rivera-rojo">R</span>IVERA</span>
+                <img src="<?= e(asset('img/rivera-texto.webp')) ?>" alt="Rivera" width="203" height="22" class="block h-[22px] w-auto">
                 <span class="mt-1 block text-[10px] font-semibold uppercase tracking-[0.25em] text-neutral-400">Panel de administración</span>
             </span>
         </div>

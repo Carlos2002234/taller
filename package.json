@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "@fontsource/inter": "5.1.0",
-    "@fontsource/montserrat": "5.1.0",
+    "@fontsource/saira": "5.2.5",
     "sharp": "0.33.5",
     "tailwindcss": "3.4.17"
   }

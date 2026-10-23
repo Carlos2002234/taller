@@ -31,6 +31,14 @@ async function main() {
   await sharp(simbolo).resize(180).flatten({ background: '#0B0B0B' }).png().toFile(path.join(salida, 'apple-touch-icon.png'));
   console.log('✔ logo y favicons');
 
+  // Palabra "RIVERA" tal como está dibujada en el logo oficial (R roja, resto blanco,
+  // fondo transparente). Se recorta la franja del texto, debajo del engrane.
+  const oficial = path.join(raiz, 'assets', 'logo', 'logo-oscuro.png');
+  const franja = await sharp(oficial).extract({ left: 0, top: 2560, width: 7520, height: 560 }).png().toBuffer();
+  const palabra = await sharp(franja).trim().toBuffer();
+  await sharp(palabra).resize({ height: 72 }).webp({ quality: 90, alphaQuality: 100 }).toFile(path.join(salida, 'rivera-texto.webp'));
+  console.log('✔ texto RIVERA del logo');
+
   for (const [archivo, anchos] of listaFotos) {
     const base = path.parse(archivo).name;
     for (const ancho of anchos) {

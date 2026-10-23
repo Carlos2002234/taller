@@ -5,9 +5,12 @@ const path = require('path');
 
 const destino = path.join(__dirname, '..', 'public', 'fonts');
 const fuentes = [
-  'montserrat/files/montserrat-latin-700-normal.woff2',
-  'montserrat/files/montserrat-latin-800-normal.woff2',
-  'montserrat/files/montserrat-latin-800-italic.woff2',
+  // Saira: la más parecida a las letras del logo (itálica, ancha, esquinas rectas)
+  'saira/files/saira-latin-600-italic.woff2',
+  'saira/files/saira-latin-700-normal.woff2',
+  'saira/files/saira-latin-700-italic.woff2',
+  'saira/files/saira-latin-800-normal.woff2',
+  'saira/files/saira-latin-800-italic.woff2',
   'inter/files/inter-latin-400-normal.woff2',
   'inter/files/inter-latin-500-normal.woff2',
   'inter/files/inter-latin-600-normal.woff2',

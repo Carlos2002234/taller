@@ -92,6 +92,7 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 
 ### Identidad visual
 - Logo oficial: `assets/logo.jpg` (engrane + R). Header: símbolo + texto "RIVERA / Grupo Automotriz".
+- Tipografía (decisión del dueño): "RIVERA" es letra dibujada a mano (no existe como fuente) → se usa como imagen `img/rivera-texto.webp`, recortada de `assets/logo/logo-oscuro.png` (versión oficial para fondo oscuro) por `npm run imagenes`. Títulos (`font-display`) en **Saira** itálica (la fuente libre más parecida a "GRUPO AUTOMOTRIZ"); h1–h3 en itálica. Textos en Inter.
 - Paleta (extraída del logo): Rojo Rivera `#D11A21` (hover `#A8141A`) · Negro `#0B0B0B` · Carbón `#1A1A1A` · Blanco `#FFFFFF` · Gris apoyo `#F2F2F2`.
 - Referencia: `assets/referencia/prototipo.png` — fondos oscuros, acentos rojos, títulos en dos líneas (blanco + rojo), tarjetas de categoría/producto, catálogo con filtros sobre fondo claro, barra inferior en móvil.
 - Fotos: `assets/fotos/rivera-XX.jpg` (fachada 14/18, recepción 23, rótulo 01, auto cubierto 07).

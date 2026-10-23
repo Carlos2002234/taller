@@ -46,7 +46,7 @@ $activo = fn (string $ruta): bool => $ruta === 'admin' ? $actual === 'admin' : s
         <div class="flex h-14 items-center gap-2.5 px-4 lg:h-16">
             <img src="<?= e(asset('img/logo.webp')) ?>" alt="" width="32" height="32" class="h-8 w-8">
             <span class="leading-none">
-                <span class="block font-display text-base font-extrabold italic"><span class="text-rivera-rojo">R</span>IVERA</span>
+                <img src="<?= e(asset('img/rivera-texto.webp')) ?>" alt="Rivera" width="139" height="15" class="mb-1 block h-[15px] w-auto">
                 <span class="block text-[9px] font-semibold uppercase tracking-[0.2em] text-neutral-400">Panel</span>
             </span>
             <?php if ($porRevisar > 0): ?>

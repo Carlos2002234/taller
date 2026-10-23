@@ -51,7 +51,7 @@ $categorias = [
 
     <section>
         <h2 class="mb-4 text-lg">Tipografía</h2>
-        <p class="font-display text-4xl font-extrabold">Montserrat — Títulos</p>
+        <p class="font-display text-4xl font-extrabold">Saira — Títulos (como el logo)</p>
         <p class="mt-2 text-base text-neutral-300">Inter — Textos. Accesorios, repuestos y productos de calidad para tu auto. ₡28.000</p>
     </section>
 

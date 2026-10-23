@@ -17,8 +17,8 @@ $menu = [
         <a href="<?= e(url()) ?>" class="flex shrink-0 items-center gap-2.5" aria-label="<?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?> — Inicio">
             <img src="<?= e(asset('img/logo.webp')) ?>" alt="" width="40" height="40" class="h-10 w-10">
             <span class="leading-none">
-                <span class="block font-display text-xl font-extrabold italic tracking-wide"><span class="text-rivera-rojo">R</span>IVERA</span>
-                <span class="mt-0.5 block text-[9px] font-semibold uppercase tracking-[0.28em] text-neutral-400">Grupo Automotriz</span>
+                <img src="<?= e(asset('img/rivera-texto.webp')) ?>" alt="" width="166" height="18" class="block h-[18px] w-auto">
+                <span class="mt-1.5 block font-display text-[9px] font-semibold uppercase italic tracking-[0.32em] text-neutral-300">Grupo Automotriz</span>
             </span>
         </a>
 

@@ -19,7 +19,8 @@ module.exports = {
         dato: '#2a78d6',
       },
       fontFamily: {
-        display: ['Montserrat', 'system-ui', 'sans-serif'],
+        // Saira: la fuente libre más parecida a las letras del logo
+        display: ['Saira', 'system-ui', 'sans-serif'],
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       maxWidth: {
