@@ -123,8 +123,14 @@
 .encabezado-flotante > header { position: fixed; inset: 0 0 auto 0; background-color: transparent; border-color: transparent; backdrop-filter: none; transition: background-color .4s ease, border-color .4s ease, backdrop-filter .4s ease; }
 .encabezado-flotante.encabezado-solido > header { background-color: rgb(11 11 11 / .85); border-color: rgb(255 255 255 / .1); backdrop-filter: blur(12px); }
 
+/* Ventana del formulario de consulta (<dialog> nativo) */
+.ventana-consulta { @apply m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-xl overflow-y-auto rounded-2xl border border-white/10 bg-rivera-carbon p-0 text-white shadow-2xl shadow-black/70; }
+.ventana-consulta::backdrop { background-color: rgb(0 0 0 / .7); backdrop-filter: blur(4px); }
+.ventana-consulta[open] { animation: entrar-suave .3s cubic-bezier(.2, .65, .3, 1); }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  .ventana-consulta[open] { animation: none; }
   .portada-foto, .portada-entrar, .indicador-bajar, .escalonado.visible > * { animation: none; }
   .js .aparecer, .js .escalonado:not(.visible) > * { opacity: 1; transform: none; transition: none; }
   .tarjeta-interactiva, .btn { transition: none; }

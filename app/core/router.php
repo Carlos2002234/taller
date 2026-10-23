@@ -72,6 +72,9 @@ function rutas(): array
         'admin/comprobantes/{id}' => ['admin/comprobante-archivo', false, 'archivo'],
         'admin/configuracion'    => ['admin/configuracion', false, 'html'],
         'admin/reportes'         => ['admin/reportes', false, 'html'],
+        'admin/visitas'          => ['admin/visitas', false, 'html'],
+        'admin/consultas'        => ['admin/consultas', false, 'html'],
+        'admin/consultas/{id}'   => ['admin/consulta', false, 'html'],
         'admin/servicios'        => ['admin/servicios', false, 'html'],
         'admin/servicios/nuevo'  => ['admin/servicio-form', false, 'html'],
         'admin/servicios/{id}'   => ['admin/servicio-form', false, 'html'],
@@ -205,6 +208,12 @@ function mostrar_pagina(string $pagina, int $codigo = 200, array $parametros = [
         return;
     }
     $contenido = ob_get_clean();
+
+    // Visitas: solo páginas públicas que se mostraron bien (no el panel, ni 404, ni formularios con errores)
+    if ($meta['layout'] === 'layout' && http_response_code() === 200 && !in_array($pagina, ['404', 'estilos', 'instalacion'], true)) {
+        require_once RAIZ . '/app/modelos/visitas.php';
+        registrar_visita(ruta_actual());
+    }
 
     require RAIZ . '/app/vistas/' . $meta['layout'] . '.php';
 }

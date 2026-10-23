@@ -48,4 +48,6 @@ $meta['descripcion'] = 'Servicios de taller mecánico en ' . ajuste('negocio_nom
 
 <?php componente('video-taller'); ?>
 
+<?php componente('cta-consulta'); ?>
+
 <?php componente('visitanos'); ?>

@@ -124,3 +124,18 @@ function clase_ancho_barra(float $valor, float $maximo): string
     // Mínimo un paso visible para valores pequeños pero mayores que cero
     return $clases[max(1, (int) round($valor / $maximo * 20))];
 }
+
+/**
+ * Igual que clase_ancho_barra() pero para barras verticales (alto en pasos de 5%).
+ */
+function clase_alto_barra(float $valor, float $maximo): string
+{
+    static $clases = [
+        'h-0', 'h-[5%]', 'h-[10%]', 'h-[15%]', 'h-[20%]', 'h-[25%]', 'h-[30%]', 'h-[35%]', 'h-[40%]', 'h-[45%]', 'h-[50%]',
+        'h-[55%]', 'h-[60%]', 'h-[65%]', 'h-[70%]', 'h-[75%]', 'h-[80%]', 'h-[85%]', 'h-[90%]', 'h-[95%]', 'h-full',
+    ];
+    if ($maximo <= 0 || $valor <= 0) {
+        return 'h-0';
+    }
+    return $clases[max(1, (int) round($valor / $maximo * 20))];
+}

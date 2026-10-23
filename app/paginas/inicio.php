@@ -90,6 +90,8 @@ $servicios = servicios_activos(true);
 
 <?php componente('testimonios'); ?>
 
+<?php componente('cta-consulta'); ?>
+
 <?php componente('como-comprar'); ?>
 
 <?php componente('visitanos'); ?>

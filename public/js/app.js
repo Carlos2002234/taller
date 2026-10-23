@@ -122,6 +122,36 @@
     }
   } catch (e) { /* sin almacenamiento disponible */ }
 
+  // Formularios de consulta: se les agrega el origen guardado (máximo 30 días) para saber qué anuncio trajo el contacto
+  try {
+    var origenGuardado = JSON.parse(localStorage.getItem('utm') || 'null');
+    if (origenGuardado && Date.now() - origenGuardado.guardado < 30 * 24 * 3600 * 1000) {
+      document.querySelectorAll('[data-consulta] [data-utm]').forEach(function (campo) {
+        campo.value = origenGuardado[campo.getAttribute('data-utm')] || '';
+      });
+    }
+  } catch (e) { /* sin almacenamiento disponible */ }
+
+  // Ventana "¿Tienes preguntas?": el botón la abre (sin JavaScript, el enlace lleva a Contacto)
+  var ventanaConsulta = document.getElementById('ventana-consulta');
+  if (ventanaConsulta && typeof ventanaConsulta.showModal === 'function') {
+    document.querySelectorAll('[data-abrir-consulta]').forEach(function (enlace) {
+      enlace.addEventListener('click', function (evento) {
+        evento.preventDefault();
+        ventanaConsulta.showModal();
+        var primerCampo = ventanaConsulta.querySelector('input[name="nombre"]');
+        if (primerCampo) primerCampo.focus();
+      });
+    });
+    ventanaConsulta.querySelectorAll('[data-cerrar-consulta]').forEach(function (boton) {
+      boton.addEventListener('click', function () { ventanaConsulta.close(); });
+    });
+    // Clic en el fondo oscuro (fuera del recuadro) también la cierra
+    ventanaConsulta.addEventListener('click', function (evento) {
+      if (evento.target === ventanaConsulta) ventanaConsulta.close();
+    });
+  }
+
   // Botones "Copiar" (número SINPE, IBAN, monto)
   document.addEventListener('click', function (evento) {
     var boton = evento.target.closest('[data-copiar]');

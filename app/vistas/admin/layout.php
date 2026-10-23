@@ -10,12 +10,17 @@ $actual = ruta_actual();
 
 $menu = [];
 $porRevisar = 0;
+$consultasNuevas = 0;
 if ($usuario) {
+    require_once RAIZ . '/app/modelos/consultas.php';
     $porRevisar = (int) db()->query("SELECT COUNT(*) FROM orders WHERE estado = 'comprobante_enviado'")->fetchColumn();
+    $consultasNuevas = contar_consultas_nuevas();
     $menu[] = ['admin', 'Inicio', 'inicio'];
     $menu[] = ['admin/pedidos', 'Pedidos', 'pedido'];
+    $menu[] = ['admin/consultas', 'Consultas', 'buzon'];
     if (es_duenio($usuario)) {
         $menu[] = ['admin/reportes', 'Reportes', 'grafico'];
+        $menu[] = ['admin/visitas', 'Visitas', 'ojo'];
         $menu[] = ['admin/productos', 'Productos', 'tienda'];
         $menu[] = ['admin/categorias', 'Categorías', 'menu'];
         $menu[] = ['admin/servicios', 'Servicios', 'engranaje'];
@@ -71,6 +76,10 @@ $activo = fn (string $ruta): bool => $ruta === 'admin' ? $actual === 'admin' : s
                         <?php if ($ruta === 'admin/pedidos' && $porRevisar > 0): ?>
                             <span class="ml-auto rounded-full px-2 text-xs font-bold <?= $activo($ruta) ? 'bg-white text-rivera-rojo' : 'bg-rivera-rojo text-white' ?>"
                                   title="Comprobantes por revisar"><?= $porRevisar ?></span>
+                        <?php endif; ?>
+                        <?php if ($ruta === 'admin/consultas' && $consultasNuevas > 0): ?>
+                            <span class="ml-auto rounded-full px-2 text-xs font-bold <?= $activo($ruta) ? 'bg-white text-rivera-rojo' : 'bg-rivera-rojo text-white' ?>"
+                                  title="Consultas nuevas"><?= $consultasNuevas ?></span>
                         <?php endif; ?>
                     </a>
                 <?php endforeach; ?>
