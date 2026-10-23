@@ -35,7 +35,7 @@ function url(string $ruta = ''): string
  */
 function asset(string $ruta): string
 {
-    $archivo = RAIZ . '/public/' . ltrim($ruta, '/');
+    $archivo = PUBLICO . '/' . ltrim($ruta, '/');
     $version = is_file($archivo) ? filemtime($archivo) : 0;
     return url($ruta) . '?v=' . $version;
 }

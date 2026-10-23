@@ -6,8 +6,12 @@
 
 declare(strict_types=1);
 
-// Carpeta raíz del proyecto (donde están /app, /public, /storage, .env)
+// Carpeta raíz del proyecto (donde están /app, /storage, .env)
 define('RAIZ', dirname(__DIR__, 2));
+
+// Carpeta pública (raíz web). index.php la define con su propia ubicación, así funciona
+// tanto con "public" (local) como con "public_html" (Hostinger). Los scripts de terminal usan "public".
+defined('PUBLICO') || define('PUBLICO', RAIZ . '/public');
 
 require RAIZ . '/app/core/env.php';
 cargar_env(RAIZ . '/.env');
@@ -35,7 +39,7 @@ function config(string $clave, mixed $porDefecto = null): mixed
         'sesion.nombre' => env('SESSION_NAME', 'rivera_sesion'),
 
         // Rutas de archivos
-        'ruta.uploads'      => RAIZ . '/public/uploads',       // fotos de productos (públicas)
+        'ruta.uploads'      => PUBLICO . '/uploads',           // fotos de productos (públicas)
         'ruta.comprobantes' => RAIZ . '/storage/comprobantes', // comprobantes de pago (privados)
         'ruta.logs'         => RAIZ . '/storage/logs',
     ];

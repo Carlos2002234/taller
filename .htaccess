@@ -1,0 +1,6 @@
+# Raíz del proyecto (fuera de la carpeta pública). Protección extra por si el proyecto
+# se sube completo dentro de public_html por error: bloquea archivos ocultos (.env, .git)
+# y archivos internos. Las carpetas app/, database/, storage/... tienen su propio bloqueo.
+<FilesMatch "^\.|\.(md|sql|sh|lock|log|json|dist)$">
+    Require all denied
+</FilesMatch>

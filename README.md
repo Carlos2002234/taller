@@ -25,7 +25,8 @@ docs/       Guías y planes
 
 ## Empezar
 
-Sigue [docs/instalacion-local.md](docs/instalacion-local.md).
+- En tu computadora: [docs/instalacion-local.md](docs/instalacion-local.md)
+- Publicar en Hostinger: [docs/despliegue-hostinger.md](docs/despliegue-hostinger.md)
 
 ## Pruebas
 

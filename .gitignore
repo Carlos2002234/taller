@@ -24,6 +24,7 @@
 # Respaldos y volcados de base de datos
 *.sql.gz
 /backups/
+/storage/respaldos/
 *.bak
 
 # Logs y temporales

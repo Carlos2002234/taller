@@ -29,9 +29,12 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 - `public/index.php` solo carga config y llama `despachar()`. Usar `db()`, `ajuste()`, `e()`, `colones()`, `url()`, `csrf_campo()` / `verificar_csrf()`.
 
 ## Estado actual del proyecto
-- **Fase:** MVP
-- **Último módulo completado:** 9 — seguridad, pruebas y optimización (2026-10-22). Probado en Apache 2.4 real con .htaccess: rutas, HTTPS, archivos ocultos, carpeta de fotos (se corrigió ejecución de `foto.php.jpg`), CSP sin violaciones, caché/compresión, accesibilidad WCAG AA (axe) en 17 páginas, `tests/flujo-completo.sh` 29/29.
-- **Próximo módulo:** 10 — guía de despliegue en Hostinger (hPanel, base de datos, subir archivos, .env, dominio, SSL, cron, respaldos). Proponer plan y esperar confirmación.
+- **Fase:** MVP completo (módulos 0–10). Siguiente: publicación por el dueño; luego Fase 2 (WhatsApp) y Fase 3 (marketing).
+- **Último módulo completado:** 10 — guía de despliegue en Hostinger (2026-10-22): `docs/despliegue-hostinger.md`. Probado en estructura tipo Hostinger (`domains/tudominio.com/` + `public_html`) con Apache: 29/29 pruebas, fotos en public_html, proyecto subido por error dentro de la raíz web sin exponer nada, respaldo + restauración idénticos.
+- **Próximo paso:** el dueño publica siguiendo la guía (aún no contrata Hostinger ni dominio). Pendiente de Fase 2: `notificarPedido()` (WhatsApp). Fase 3: Meta Pixel / Analytics.
+- Carpeta pública: `index.php` define `PUBLICO` (funciona como `public` o `public_html`). Usar `PUBLICO`, nunca `RAIZ . '/public'`.
+- Cada carpeta interna (app, database, docs, tests, resources, scripts, assets, storage) tiene `.htaccess` con `Require all denied`; la raíz bloquea archivos ocultos y internos.
+- Respaldo: `app/tareas/respaldar-base.php` (cron diario) → `storage/respaldos/*.sql.gz`, conserva 14.
 - Seguridad: encabezados (CSP estricta, HSTS, etc.) en `encabezados_seguridad()` del router; NO usar JS ni `style=` dentro del HTML (rompería la CSP). `APP_ENV=produccion` fuerza debug apagado. Ver `docs/seguridad.md`.
 - Colores: `rivera-rojo-claro` (#F04A4F) SOLO para texto pequeño sobre fondo oscuro (contraste); el rojo de marca para botones, títulos grandes e íconos.
 - `componente()` usa variables internas `$__componente`/`$__datos` para no chocar con los datos (ej. 'nombre').
