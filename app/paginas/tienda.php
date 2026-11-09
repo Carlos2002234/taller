@@ -64,7 +64,8 @@ $meta['fondo_claro'] = true;
 $meta['noindex'] = $q !== '' || $marcasElegidas || $min !== null || $max !== null || $pagina > 1;
 ?>
 <section class="bg-rivera-negro text-white">
-    <div class="contenedor py-8 sm:py-10">
+    <div class="contenedor flex flex-wrap items-stretch gap-x-12">
+    <div class="flex-[1_1_28rem] py-9 sm:py-11">
         <nav class="mb-3 text-xs text-neutral-400" aria-label="Ruta">
             <a href="<?= e(url()) ?>" class="hover:text-white">Inicio</a>
             <span class="mx-1.5">/</span>
@@ -76,16 +77,45 @@ $meta['noindex'] = $q !== '' || $marcasElegidas || $min !== null || $max !== nul
                 <span class="text-neutral-200">Tienda</span>
             <?php endif; ?>
         </nav>
-        <h1 class="font-display text-3xl font-extrabold sm:text-4xl"><?= e($titulo) ?></h1>
+        <h1 class="mt-1 font-display text-5xl font-extrabold leading-[0.98] tracking-tight sm:text-6xl"><?= e($titulo) ?></h1>
         <?php if ($q !== ''): ?>
-            <p class="mt-2 text-neutral-300">Buscaste: <span class="font-semibold text-white">“<?= e($q) ?>”</span></p>
+            <p class="mt-3 text-neutral-300">Buscaste: <span class="font-semibold text-white">“<?= e($q) ?>”</span></p>
+        <?php else: ?>
+            <p class="mt-3 max-w-md leading-relaxed text-neutral-400">Accesorios y repuestos para tu auto. Pagas por SINPE Móvil o transferencia y retiras en el taller o recibes en la GAM.</p>
         <?php endif; ?>
     </div>
+    <!-- Foto del taller al lado (sin texto encima) -->
+    <figure class="relative hidden min-h-[13rem] flex-[0_1_28rem] overflow-hidden md:block">
+        <img src="<?= e(url('img/fotos/rivera-25-800.webp')) ?>" alt="Aceites Havoline y Castrol en exhibición en el taller"
+             class="absolute inset-0 h-full w-full object-cover" fetchpriority="high">
+    </figure>
+    </div>
+    <div class="h-[3px] bg-rivera-rojo"></div>
 </section>
 
-<div class="contenedor grid gap-8 py-8 lg:grid-cols-[15rem_1fr]">
+<!-- Accesos rápidos por categoría (solo las que tienen productos) -->
+<nav aria-label="Categorías" class="border-b border-neutral-200 bg-white">
+    <div class="contenedor flex flex-wrap gap-2 py-3.5">
+        <?php
+        $chips = [['', 'Todas', null]];
+        foreach ($categorias as $c) {
+            if ((int) $c['total_productos'] > 0) { $chips[] = [$c['slug'], $c['nombre'], (int) $c['total_productos']]; }
+        }
+        foreach ($chips as [$slug, $nombre, $total]):
+            $activa = ($categoria['slug'] ?? '') === $slug;
+            $enlace = url('tienda' . ($slug !== '' ? '?categoria=' . rawurlencode($slug) : ''));
+        ?>
+            <a href="<?= e($enlace) ?>" <?= $activa ? 'aria-current="page"' : '' ?>
+               class="inline-flex min-h-10 items-center gap-1.5 rounded-full border px-4 text-[0.82rem] font-semibold transition-colors <?= $activa ? 'border-rivera-negro bg-rivera-negro text-white' : 'border-neutral-300 bg-white text-rivera-negro hover:border-rivera-negro' ?>">
+                <?= e($nombre) ?><?php if ($total !== null): ?> <span class="font-medium opacity-60"><?= $total ?></span><?php endif; ?>
+            </a>
+        <?php endforeach; ?>
+    </div>
+</nav>
+
+<div class="contenedor grid gap-7 pb-16 pt-8 lg:grid-cols-[16.5rem_1fr]">
     <!-- Filtros de escritorio -->
-    <aside class="hidden lg:block" aria-label="Filtros">
+    <aside class="hidden self-start rounded border border-neutral-200 bg-white lg:block" aria-label="Filtros">
         <?php componente('filtros-tienda', compact('categorias', 'categoria', 'marcas', 'marcasElegidas', 'min', 'max', 'q', 'orden') + ['prefijo' => 'esc']); ?>
     </aside>
 
@@ -96,13 +126,13 @@ $meta['noindex'] = $q !== '' || $marcasElegidas || $min !== null || $max !== nul
                 <summary class="btn-claro w-full cursor-pointer list-none bg-white">
                     Filtrar<?= $filtrosActivos ? ' (' . $filtrosActivos . ')' : '' ?>
                 </summary>
-                <div class="tarjeta-clara mt-2 p-4">
+                <div class="tarjeta-clara mt-2">
                     <?php componente('filtros-tienda', compact('categorias', 'categoria', 'marcas', 'marcasElegidas', 'min', 'max', 'q', 'orden') + ['prefijo' => 'mov']); ?>
                 </div>
             </details>
 
             <p class="text-sm text-neutral-600">
-                <?= $resultado['total'] === 1 ? '1 producto' : $resultado['total'] . ' productos' ?>
+                <strong class="text-rivera-negro"><?= $resultado['total'] === 1 ? '1 producto' : $resultado['total'] . ' productos' ?></strong><?= $categoria ? ' en ' . e($categoria['nombre']) : '' ?>
             </p>
 
             <form action="<?= e(url('tienda')) ?>" method="get" class="ml-auto flex items-center gap-2">
@@ -130,16 +160,23 @@ $meta['noindex'] = $q !== '' || $marcasElegidas || $min !== null || $max !== nul
 
             <?php componente('paginacion', ['pagina' => $pagina, 'totalPaginas' => $totalPaginas, 'consulta' => $consulta]); ?>
         <?php else: ?>
-            <div class="tarjeta-clara px-6 py-14 text-center">
-                <span class="mx-auto block w-fit text-neutral-300"><?= icono('buscar', 'h-12 w-12') ?></span>
-                <h2 class="mt-4 text-xl">No encontramos productos</h2>
-                <p class="mt-2 text-sm text-neutral-600">Prueba con otros filtros o escríbenos: lo buscamos por ti.</p>
+            <div class="tarjeta-clara rounded px-6 py-14 text-center">
+                <h2 class="text-2xl font-extrabold">No encontramos productos</h2>
+                <p class="mt-2 text-sm text-neutral-600">Prueba con otra categoría o marca, o escríbenos: lo buscamos por ti.</p>
                 <div class="mt-6 flex flex-wrap justify-center gap-3">
                     <a href="<?= e(url('tienda')) ?>" class="btn-claro">Ver todos los productos</a>
-                    <a href="<?= e(whatsapp_url('Hola, busco un producto' . ($q !== '' ? ': ' . $q : '') . '. ¿Lo tienen?')) ?>"
-                       class="btn-primario" target="_blank" rel="noopener"><?= icono('whatsapp', 'h-4 w-4') ?> Preguntar por WhatsApp</a>
                 </div>
             </div>
         <?php endif; ?>
+
+        <!-- Ayuda para elegir -->
+        <div class="mt-7 flex flex-wrap items-center justify-between gap-x-8 gap-y-4 rounded bg-rivera-negro px-6 py-5 text-white sm:px-7">
+            <div>
+                <p class="font-display text-xl font-extrabold italic">¿No encuentras lo que buscas?</p>
+                <p class="mt-1 text-sm text-neutral-300">Escríbenos con la marca, modelo y año de tu auto y te ayudamos a elegir.</p>
+            </div>
+            <a href="<?= e(whatsapp_url('Hola, busco un producto' . ($q !== '' ? ': ' . $q : '') . ' para mi auto. ¿Lo tienen?')) ?>"
+               class="btn-primario" target="_blank" rel="noopener">Preguntar por WhatsApp</a>
+        </div>
     </div>
 </div>

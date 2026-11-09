@@ -72,7 +72,8 @@ E-commerce propio y sin mensualidades para un taller mecánico que vende accesor
 - `generar_numero_pedido()` salta números ya usados si el contador `order_sequences` quedó atrasado (ej. respaldo restaurado a medias): nunca bloquea las ventas.
 - Anti-abuso aprobado por el dueño: campo trampa, máx. 3 pedidos `pendiente_pago` por teléfono, máx. 5 pedidos/hora por IP.
 - Carrito: vive en `localStorage` como `[{id, cantidad}]` SOLAMENTE. Precios y stock siempre del servidor (`/api/carrito`); el checkout DEBE revalidar todo en el servidor dentro de una transacción.
-- Stock al cliente: "Disponible" / "¡Últimas N unidades!" (≤3) / "Agotado" (`estado_stock()`).
+- Stock al cliente: "Disponible" / "¡Últimas N unidades!" (≤3) / "Agotado" (`estado_stock()`). La tarjeta de producto muestra esa línea bajo el precio.
+- Tienda (rediseño aprobado 2026-11-08): encabezado negro con título grande + foto `rivera-25` al lado (sin texto encima) + línea roja; accesos rápidos por categoría (solo las que tienen productos); filtros en tarjeta blanca (`filtros-tienda`); conteo "N productos en Categoría"; franja negra "¿No encuentras lo que buscas?" con WhatsApp; sin íconos decorativos.
 - Admin: se crea con `php database/crear-admin.php` (no hay usuarios en `seed.sql`).
 - **Repositorio:** https://github.com/Carlos2002234/taller (rama `main`). Cada commit se sube con `git push`.
 

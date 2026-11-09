@@ -48,6 +48,10 @@ $descuento = $oferta ? (int) round(100 - $producto['precio'] * 100 / $producto['
             <?php endif; ?>
         </div>
 
+        <?php if (!$agotado && function_exists('estado_stock')): [$textoStock, $claseStock] = estado_stock((int) $producto['stock']); ?>
+            <p class="mt-1 text-xs <?= $claseStock === 'ultimas' ? 'font-semibold text-rivera-rojo-oscuro' : ($tono === 'claro' ? 'text-emerald-800' : 'text-emerald-400') ?>"><?= e($textoStock) ?></p>
+        <?php endif; ?>
+
         <div class="mt-auto pt-3">
             <button type="button" class="btn-primario btn-pequeno w-full sm:py-2.5"
                     data-agregar-carrito="<?= (int) ($producto['id'] ?? 0) ?>" data-stock="<?= (int) $producto['stock'] ?>"
