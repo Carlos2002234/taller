@@ -11,15 +11,23 @@ $menu = [
     'mi-pedido' => 'Mi pedido',
 ];
 ?>
-<header class="sticky top-0 z-40 border-b border-white/10 bg-rivera-negro/95 backdrop-blur">
-    <div class="contenedor flex h-16 items-center gap-6">
+<!-- Franja superior con horario y contacto (solo pantallas medianas en adelante) -->
+<div class="hidden border-b border-white/10 bg-black text-xs text-neutral-400 md:block">
+    <div class="contenedor flex items-center justify-between gap-6 py-2">
+        <span><?= e(ajuste('horario')) ?> · La Puebla</span>
+        <span class="flex gap-5">
+            <a href="<?= e(whatsapp_url('Hola, les escribo desde la página web.')) ?>" target="_blank" rel="noopener" class="hover:text-white">WhatsApp <strong class="font-semibold text-white"><?= e(ajuste('telefono')) ?></strong></a>
+            <span>Envíos en la GAM</span>
+        </span>
+    </div>
+</div>
+
+<!-- Barra negra sólida con el logo completo del manual de marca -->
+<header class="sticky top-0 z-40 border-b border-white/10 bg-rivera-negro">
+    <div class="contenedor flex h-20 items-center gap-6 lg:h-24">
         <!-- Logo -->
-        <a href="<?= e(url()) ?>" class="flex shrink-0 items-center gap-2.5" aria-label="<?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?> — Inicio">
-            <img src="<?= e(asset('img/logo.webp')) ?>" alt="" width="40" height="40" class="h-10 w-10">
-            <span class="leading-none">
-                <img src="<?= e(asset('img/rivera-texto.webp')) ?>" alt="" width="166" height="18" class="block h-[18px] w-auto">
-                <span class="mt-1.5 block font-display text-[9px] font-semibold uppercase italic tracking-[0.32em] text-neutral-300">Grupo Automotriz</span>
-            </span>
+        <a href="<?= e(url()) ?>" class="flex shrink-0 items-center" aria-label="<?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?> — Inicio">
+            <img src="<?= e(asset('img/logo-completo.webp')) ?>" alt="" width="816" height="480" class="h-14 w-auto lg:h-[4.5rem]">
         </a>
 
         <!-- Menú de escritorio -->

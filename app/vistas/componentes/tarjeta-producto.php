@@ -12,13 +12,13 @@ $enlace = url('producto/' . $producto['slug']);
 $descuento = $oferta ? (int) round(100 - $producto['precio'] * 100 / $producto['precio_anterior']) : 0;
 ?>
 <article class="<?= $tono === 'claro' ? 'tarjeta-clara' : 'tarjeta' ?> tarjeta-interactiva group flex flex-col">
-    <a href="<?= e($enlace) ?>" tabindex="-1" aria-hidden="true" class="relative block aspect-square overflow-hidden <?= $tono === 'claro' ? 'bg-white' : 'bg-neutral-900' ?>">
+    <a href="<?= e($enlace) ?>" tabindex="-1" aria-hidden="true" class="relative block aspect-square overflow-hidden <?= $tono === 'claro' ? 'bg-white' : 'bg-rivera-gris' ?>">
         <?php if (!empty($producto['imagen'])): ?>
             <img src="<?= e(url_foto($producto['imagen'], true)) ?>" alt=""
                  loading="lazy" class="h-full w-full object-contain p-4 transition-transform duration-500 ease-out group-hover:scale-110">
         <?php else: ?>
-            <span class="flex h-full w-full items-center justify-center <?= $tono === 'claro' ? 'text-neutral-300' : 'text-neutral-700' ?>">
-                <?= icono('llave', 'h-14 w-14') ?>
+            <span class="flex h-full w-full items-center justify-center text-[11px] uppercase tracking-[0.14em] text-neutral-500">
+                Foto próximamente
             </span>
         <?php endif; ?>
 
@@ -52,7 +52,6 @@ $descuento = $oferta ? (int) round(100 - $producto['precio'] * 100 / $producto['
             <button type="button" class="btn-primario btn-pequeno w-full sm:py-2.5"
                     data-agregar-carrito="<?= (int) ($producto['id'] ?? 0) ?>" data-stock="<?= (int) $producto['stock'] ?>"
                     <?= $agotado ? 'disabled' : '' ?>>
-                <?= icono('carrito', 'h-4 w-4') ?>
                 <?php if ($agotado): ?>
                     Agotado
                 <?php else: ?>

@@ -40,13 +40,12 @@ $testimonios = [
         <p class="etiqueta-seccion">Testimonios</p>
         <h2 id="testimonios" class="titulo-seccion">Lo que dicen <span class="text-rivera-rojo">nuestros clientes</span></h2>
     </div>
-    <div class="escalonado mx-auto mt-8 grid max-w-4xl items-start gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="escalonado mt-8 grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <?php foreach ($testimonios as $t): ?>
-            <figure class="tarjeta tarjeta-interactiva mx-auto w-full max-w-[280px]">
+            <figure class="tarjeta w-full rounded">
                 <img src="<?= e(asset('img/testimonios/' . $t['foto'])) ?>" width="<?= $t['ancho'] ?>" height="<?= $t['alto'] ?>"
-                     alt="Mensaje de un cliente: “<?= e($t['texto']) ?>”" loading="lazy" decoding="async" class="h-auto w-full">
-                <figcaption class="flex items-center gap-3 border-t border-white/10 px-4 py-3">
-                    <span class="shrink-0 text-rivera-rojo"><?= icono('whatsapp', 'h-5 w-5') ?></span>
+                     alt="Mensaje de un cliente: “<?= e($t['texto']) ?>”" loading="lazy" decoding="async" class="h-[22rem] w-full object-cover object-top">
+                <figcaption class="border-t border-white/10 px-4 py-3.5">
                     <span class="leading-tight">
                         <span class="block text-sm font-semibold text-white"><?= e($t['servicio']) ?></span>
                         <span class="block text-xs text-neutral-400">Cliente Omoda · vía WhatsApp</span>

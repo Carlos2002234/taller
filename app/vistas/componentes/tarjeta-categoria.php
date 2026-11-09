@@ -1,24 +1,20 @@
 <?php
 /**
- * Tarjeta de categoría con foto.
+ * Tarjeta de categoría con foto (si no tiene, un recuadro con texto, sin íconos).
  * Datos: $categoria (nombre, slug, ?imagen)
  */
 ?>
-<a href="<?= e(url('tienda?categoria=' . rawurlencode($categoria['slug']))) ?>" class="tarjeta tarjeta-interactiva group block">
-    <span class="block aspect-[4/3] overflow-hidden bg-neutral-900">
+<a href="<?= e(url('tienda?categoria=' . rawurlencode($categoria['slug']))) ?>" class="tarjeta tarjeta-interactiva group flex flex-col rounded">
+    <span class="relative block aspect-[4/3] overflow-hidden bg-[#1B1B1B]">
         <?php if (!empty($categoria['imagen'])): ?>
             <img src="<?= e(url_foto($categoria['imagen'], true)) ?>" alt="" loading="lazy"
-                 class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110">
+                 class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105">
         <?php else: ?>
-            <span class="flex h-full w-full items-center justify-center text-neutral-700">
-                <?= icono('tienda', 'h-12 w-12') ?>
-            </span>
+            <span class="flex h-full w-full items-center justify-center text-[11px] uppercase tracking-[0.14em] text-neutral-500">Foto pendiente</span>
         <?php endif; ?>
     </span>
-    <span class="block p-3">
-        <span class="block text-sm font-semibold"><?= e($categoria['nombre']) ?></span>
-        <span class="mt-1 inline-flex items-center gap-0.5 text-xs font-medium text-rivera-rojo-claro">
-            Ver productos <span class="transition-transform duration-300 group-hover:translate-x-1"><?= icono('flecha', 'h-3.5 w-3.5') ?></span>
-        </span>
+    <span class="flex items-center justify-between gap-2 px-4 py-3.5">
+        <span class="text-[0.95rem] font-semibold"><?= e($categoria['nombre']) ?></span>
+        <span class="shrink-0 text-rivera-rojo-claro transition-transform duration-300 group-hover:translate-x-1"><?= icono('flecha', 'h-4 w-4') ?></span>
     </span>
 </a>

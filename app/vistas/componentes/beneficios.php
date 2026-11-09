@@ -1,25 +1,25 @@
 <?php
 /**
- * Franja de beneficios bajo el banner principal.
+ * Franja de beneficios bajo la portada: solo texto con numeración roja (sin íconos).
  */
 
 $beneficios = [
-    ['celular', 'Pago con SINPE Móvil', 'o transferencia bancaria'],
-    ['camion',  'Envíos en la GAM',     'Entrega en ' . ajuste('envio_plazo', '48 horas')],
-    ['escudo',  'Productos originales', 'Marcas de confianza'],
-    ['chat',    'Asesoría por WhatsApp', 'Te ayudamos a elegir'],
+    ['Pago con SINPE Móvil',  'o transferencia bancaria'],
+    ['Envíos en la GAM',      'Entrega en ' . ajuste('envio_plazo', '48 horas')],
+    ['Productos originales',  'Marcas de confianza'],
+    ['Asesoría por WhatsApp', 'Te ayudamos a elegir'],
 ];
 ?>
-<section class="border-y border-white/10 bg-black/40" aria-label="Beneficios">
-    <ul class="escalonado contenedor grid grid-cols-2 gap-x-4 gap-y-6 py-7 lg:grid-cols-4 lg:divide-x lg:divide-white/10">
-        <?php foreach ($beneficios as [$icono, $titulo, $texto]): ?>
-            <li class="flex items-center gap-3 lg:justify-center lg:px-4">
-                <span class="shrink-0 text-rivera-rojo"><?= icono($icono, 'h-8 w-8') ?></span>
+<section class="border-b border-white/10 bg-[#111111]" aria-label="Beneficios">
+    <ol class="escalonado contenedor grid grid-cols-1 divide-y divide-white/10 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x">
+        <?php foreach ($beneficios as $i => [$titulo, $texto]): ?>
+            <li class="flex gap-4 py-5 sm:py-7 lg:px-6 lg:first:pl-0 lg:last:pr-0">
+                <span class="font-display text-sm font-extrabold italic text-rivera-rojo-claro" aria-hidden="true"><?= sprintf('%02d', $i + 1) ?></span>
                 <span>
-                    <span class="block text-sm font-semibold"><?= e($titulo) ?></span>
-                    <span class="block text-xs text-neutral-400"><?= e($texto) ?></span>
+                    <span class="block text-[0.95rem] font-semibold"><?= e($titulo) ?></span>
+                    <span class="mt-0.5 block text-sm text-neutral-400"><?= e($texto) ?></span>
                 </span>
             </li>
         <?php endforeach; ?>
-    </ul>
+    </ol>
 </section>

@@ -82,7 +82,7 @@ $galeria = [
 </section>
 
 <!-- Lista de servicios (fondo claro) -->
-<section id="lista-servicios" class="fondo-claro scroll-mt-20 bg-white text-rivera-negro">
+<section id="lista-servicios" class="fondo-claro scroll-mt-28 bg-white text-rivera-negro">
     <div class="contenedor py-16 sm:py-24">
         <div class="aparecer flex flex-wrap items-end justify-between gap-x-16 gap-y-6 pb-10">
             <div class="flex-[1_1_26rem]">
