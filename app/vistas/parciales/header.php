@@ -11,17 +11,6 @@ $menu = [
     'mi-pedido' => 'Mi pedido',
 ];
 ?>
-<!-- Franja superior con horario y contacto (solo pantallas medianas en adelante) -->
-<div class="hidden border-b border-white/10 bg-black text-xs text-neutral-400 md:block">
-    <div class="contenedor flex items-center justify-between gap-6 py-2">
-        <span><?= e(ajuste('horario')) ?> · La Puebla</span>
-        <span class="flex gap-5">
-            <a href="<?= e(whatsapp_url('Hola, les escribo desde la página web.')) ?>" target="_blank" rel="noopener" class="hover:text-white">WhatsApp <strong class="font-semibold text-white"><?= e(ajuste('telefono')) ?></strong></a>
-            <span>Envíos en la GAM</span>
-        </span>
-    </div>
-</div>
-
 <!-- Barra negra sólida con el logo completo del manual de marca -->
 <header class="sticky top-0 z-40 border-b border-white/10 bg-rivera-negro">
     <div class="contenedor flex h-20 items-center gap-6 lg:h-24">
