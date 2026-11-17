@@ -28,7 +28,7 @@
   .contenedor { @apply mx-auto w-full max-w-sitio px-4 sm:px-6 lg:px-8; }
 
   /* Botones */
-  .btn { @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold transition duration-300 disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold transition duration-300 ease-out active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50; }
   .btn-primario { @apply btn bg-rivera-rojo text-white shadow-lg shadow-rivera-rojo/25 hover:-translate-y-0.5 hover:bg-rivera-rojo-oscuro hover:shadow-xl hover:shadow-rivera-rojo/35 active:translate-y-0 disabled:translate-y-0 disabled:bg-neutral-500 disabled:opacity-60 disabled:shadow-none; }
   .btn-secundario { @apply btn border border-white/25 text-white backdrop-blur-sm hover:-translate-y-0.5 hover:border-white hover:bg-white/10; }
   .btn-claro { @apply btn border border-neutral-300 text-rivera-negro hover:border-rivera-negro; }
@@ -79,7 +79,7 @@
   .enlace-menu-activo { @apply text-white after:scale-x-100; }
 
   /* Tarjetas que se elevan al pasar el mouse (productos, categorías, servicios) */
-  .tarjeta-interactiva { @apply transition duration-300 ease-out hover:-translate-y-1 hover:border-white/20 hover:shadow-2xl hover:shadow-black/60; }
+  .tarjeta-interactiva { @apply transition duration-500 ease-out hover:-translate-y-[3px] hover:border-white/20 hover:shadow-2xl hover:shadow-black/60; transition-timing-function: var(--curva-suave); }
   .tarjeta-clara.tarjeta-interactiva { @apply hover:border-neutral-300 hover:shadow-xl hover:shadow-black/10; }
 }
 
@@ -89,35 +89,53 @@
    contenido solo se oculta para animarlo si el JavaScript está activo.
    ===================================================================== */
 
-/* Portada: acercamiento muy lento de la foto y entrada escalonada del texto */
+/* Curva de movimiento común: arranca ágil y frena suave (se siente natural, no "rebota") */
+:root { --curva-suave: cubic-bezier(.16, 1, .3, 1); }
+
+/* Cambio de página: fundido corto entre páginas (navegadores que lo soportan; los demás cambian normal).
+   El encabezado tiene nombre propio para quedarse fijo y no parpadear. */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: salir-pagina .18s ease-in both; }
+::view-transition-new(root) { animation: entrar-pagina .32s var(--curva-suave) both; }
+header { view-transition-name: encabezado; }
+@keyframes salir-pagina { to { opacity: 0; } }
+@keyframes entrar-pagina { from { opacity: 0; transform: translateY(6px); } }
+
+/* Portada: foto que aparece con fundido y un acercamiento mínimo; texto que entra escalonado */
 @keyframes acercamiento-lento { from { transform: scale(1.08); } to { transform: scale(1); } }
-@keyframes entrar-suave { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes foto-aparecer { from { opacity: 0; transform: scale(1.025); } to { opacity: 1; transform: none; } }
+@keyframes entrar-suave { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes indicar-abajo { 0%, 100% { transform: translateY(0); opacity: .6; } 50% { transform: translateY(6px); opacity: 1; } }
 
 .portada-foto { animation: acercamiento-lento 14s cubic-bezier(.2, .6, .3, 1) both; }
-.portada-entrar { animation: entrar-suave .8s cubic-bezier(.2, .65, .3, 1) both; }
-.portada-entrar-1 { animation-delay: .15s; }
-.portada-entrar-2 { animation-delay: .3s; }
-.portada-entrar-3 { animation-delay: .45s; }
-.portada-entrar-4 { animation-delay: .6s; }
+.foto-entrar { animation: foto-aparecer 1.4s var(--curva-suave) both; }
+.portada-entrar { animation: entrar-suave .9s var(--curva-suave) both; }
+.portada-entrar-1 { animation-delay: .1s; }
+.portada-entrar-2 { animation-delay: .2s; }
+.portada-entrar-3 { animation-delay: .3s; }
+.portada-entrar-4 { animation-delay: .4s; }
 .indicador-bajar { animation: indicar-abajo 2.2s ease-in-out infinite; }
 
 /* Secciones que aparecen al bajar */
-.js .aparecer { opacity: 0; transform: translateY(24px); transition: opacity .7s cubic-bezier(.2, .65, .3, 1), transform .7s cubic-bezier(.2, .65, .3, 1); }
+.js .aparecer { opacity: 0; transform: translateY(18px); transition: opacity .9s var(--curva-suave), transform .9s var(--curva-suave); }
 .js .aparecer.visible { opacity: 1; transform: none; }
 
 /* Elementos de una grilla que entran uno tras otro.
    Se usa una animación (no transición) que se retira al terminar ("backwards"),
    para que después funcione la elevación de las tarjetas al pasar el mouse. */
 .js .escalonado:not(.visible) > * { opacity: 0; }
-.escalonado.visible > * { animation: entrar-suave .6s cubic-bezier(.2, .65, .3, 1) backwards; }
-.escalonado.visible > *:nth-child(2) { animation-delay: 70ms; }
-.escalonado.visible > *:nth-child(3) { animation-delay: 140ms; }
-.escalonado.visible > *:nth-child(4) { animation-delay: 210ms; }
-.escalonado.visible > *:nth-child(5) { animation-delay: 280ms; }
-.escalonado.visible > *:nth-child(6) { animation-delay: 350ms; }
-.escalonado.visible > *:nth-child(7) { animation-delay: 420ms; }
-.escalonado.visible > *:nth-child(n+8) { animation-delay: 490ms; }
+.escalonado.visible > * { animation: entrar-suave .75s var(--curva-suave) backwards; }
+.escalonado.visible > *:nth-child(2) { animation-delay: 60ms; }
+.escalonado.visible > *:nth-child(3) { animation-delay: 120ms; }
+.escalonado.visible > *:nth-child(4) { animation-delay: 180ms; }
+.escalonado.visible > *:nth-child(5) { animation-delay: 240ms; }
+.escalonado.visible > *:nth-child(6) { animation-delay: 300ms; }
+.escalonado.visible > *:nth-child(7) { animation-delay: 360ms; }
+.escalonado.visible > *:nth-child(n+8) { animation-delay: 420ms; }
+
+/* Encabezado: gana una sombra suave al bajar (app.js pone la clase) */
+header { transition: box-shadow .4s var(--curva-suave); }
+.encabezado-sombra { box-shadow: 0 10px 30px -12px rgb(0 0 0 / .85); }
 
 /* Encabezado transparente sobre la portada que se vuelve sólido al bajar (solo en el inicio) */
 .encabezado-flotante > header { position: fixed; inset: 0 0 auto 0; background-color: transparent; border-color: transparent; backdrop-filter: none; transition: background-color .4s ease, border-color .4s ease, backdrop-filter .4s ease; }
@@ -131,8 +149,10 @@
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .ventana-consulta[open] { animation: none; }
-  .portada-foto, .portada-entrar, .indicador-bajar, .escalonado.visible > * { animation: none; }
+  .portada-foto, .foto-entrar, .portada-entrar, .indicador-bajar, .escalonado.visible > * { animation: none; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+  header { transition: none; }
   .js .aparecer, .js .escalonado:not(.visible) > * { opacity: 1; transform: none; transition: none; }
   .tarjeta-interactiva, .btn { transition: none; }
-  .tarjeta-interactiva:hover, .btn:hover { transform: none; }
+  .tarjeta-interactiva:hover, .btn:hover, .btn:active { transform: none; }
 }

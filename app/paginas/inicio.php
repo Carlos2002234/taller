@@ -24,13 +24,13 @@ $marcas = ['Havoline', 'Castrol', 'Chevron', 'Delo', 'Vonixx', 'Malco'];
 ?>
 <!-- Portada: la fachada completa, sin texto encima -->
 <section aria-label="Portada">
-    <picture class="block bg-rivera-carbon">
+    <picture class="block overflow-hidden bg-rivera-carbon">
         <source type="image/webp"
                 srcset="<?= e(url('img/fotos/rivera-14-960.webp')) ?> 960w, <?= e(url('img/fotos/rivera-14-1920.webp')) ?> 1920w"
                 sizes="100vw">
         <img src="<?= e(url('img/fotos/rivera-14-1920.webp')) ?>" width="1920" height="1080"
              alt="Fachada de <?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?> vista de frente"
-             class="block aspect-video h-auto w-full object-cover" fetchpriority="high">
+             class="foto-entrar block aspect-video h-auto w-full object-cover" fetchpriority="high">
     </picture>
     <div class="h-[3px] bg-rivera-rojo"></div>
 

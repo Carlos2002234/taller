@@ -89,6 +89,14 @@
     actualizarEncabezado();
   }
 
+  // Encabezado: sombra suave en cuanto se baja un poco (se ve que queda "flotando" sobre el contenido)
+  var encabezado = document.querySelector('header');
+  if (encabezado) {
+    var sombraEncabezado = function () { encabezado.classList.toggle('encabezado-sombra', window.scrollY > 8); };
+    window.addEventListener('scroll', sombraEncabezado, { passive: true });
+    sombraEncabezado();
+  }
+
   // Selects que envían su formulario al cambiar (ej. "Ordenar por" en la tienda)
   document.querySelectorAll('[data-auto-enviar]').forEach(function (select) {
     select.addEventListener('change', function () { select.form.submit(); });
