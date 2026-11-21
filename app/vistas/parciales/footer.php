@@ -31,6 +31,7 @@ $redes = array_filter([
             <ul class="mt-4 space-y-3 text-sm text-neutral-300">
                 <li class="flex gap-2.5"><?= e(ajuste('direccion')) ?></li>
                 <li class="flex gap-2.5"><?= e(horario_resumen()) ?></li>
+                <li><a href="<?= e(mapa_url()) ?>" target="_blank" rel="noopener" class="font-semibold text-white hover:text-rivera-rojo-claro">Cómo llegar (Google Maps)</a></li>
             </ul>
         </div>
 
