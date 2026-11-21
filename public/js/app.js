@@ -104,7 +104,6 @@
     var paneles = raiz.querySelectorAll('[data-testimonio]');
     var opciones = raiz.querySelectorAll('[data-testimonio-opcion]');
     var zona = raiz.querySelector('[data-testimonios-paneles]');
-    var estado = raiz.querySelector('[data-testimonios-estado]');
     var botonPausa = raiz.querySelector('[data-testimonios-pausa]');
     if (paneles.length < 2 || paneles.length !== opciones.length) return;
 
@@ -134,9 +133,12 @@
     var mostrarEstado = function () {
       if (detenido()) parar(); else seguir();
       raiz.classList.toggle('testimonios-en-pausa', detenido());
-      var enPausa = pausa.mouse || pausa.foco || pausa.usuario;
-      estado.textContent = enPausa ? 'En pausa' : 'Cambia solo cada ' + segundos + ' s';
+      // Sin texto de estado visible (pedido del dueño): el botón dice qué hará y su
+      // aria-label (que empieza con el texto visible) explica el estado a los lectores de pantalla.
       botonPausa.textContent = pausa.usuario ? 'Reanudar' : 'Pausar';
+      botonPausa.setAttribute('aria-label', pausa.usuario
+        ? 'Reanudar: los testimonios están en pausa'
+        : 'Pausar: los testimonios cambian solos cada ' + segundos + ' segundos');
     };
 
     // Reinicia la barra del activo (quitar la clase, forzar el redibujo y volver a ponerla)

@@ -138,10 +138,8 @@ $dos_digitos = fn (int $n): string => str_pad((string) $n, 2, '0', STR_PAD_LEFT)
                 </button>
             <?php endforeach; ?>
             <div class="mt-auto flex items-center justify-between gap-3 pt-2">
-                <span class="flex flex-wrap items-center gap-x-3 text-[0.8rem] text-[#8a8a8a]">
-                    <span data-testimonios-estado>Cambia solo cada <?= $segundos ?> s</span>
-                    <button type="button" class="min-h-11 font-semibold text-neutral-300 underline decoration-neutral-600 underline-offset-4 transition-colors hover:text-white hover:decoration-white" data-testimonios-pausa>Pausar</button>
-                </span>
+                <button type="button" class="min-h-11 text-[0.8rem] font-semibold text-neutral-300 underline decoration-neutral-600 underline-offset-4 transition-colors hover:text-white hover:decoration-white"
+                        aria-label="Pausar: los testimonios cambian solos cada <?= $segundos ?> segundos" data-testimonios-pausa>Pausar</button>
                 <span class="flex gap-2">
                     <button type="button" class="flex h-11 w-11 items-center justify-center rounded-full border border-[#333] text-white transition hover:border-white hover:bg-white hover:text-rivera-negro" aria-label="Testimonio anterior" data-testimonio-anterior>
                         <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
