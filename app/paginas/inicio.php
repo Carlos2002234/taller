@@ -46,7 +46,6 @@ $marcas = ['Havoline', 'Castrol', 'Chevron', 'Delo', 'Vonixx', 'Malco'];
              alt="Fachada de <?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?> vista de frente"
              class="foto-entrar block aspect-video h-auto w-full object-cover" fetchpriority="high">
     </picture>
-    <div class="h-[3px] bg-rivera-rojo"></div>
 
     <!-- Debajo de la foto: bloque racing sobre fondo oscuro liso (franjas, título, botones, beneficios y cinta).
          Estilos en "Portada del inicio, estilo racing" (resources/css/app.css). -->
@@ -165,4 +164,6 @@ $marcas = ['Havoline', 'Castrol', 'Chevron', 'Delo', 'Vonixx', 'Malco'];
 
 <?php componente('cta-consulta'); ?>
 
-<?php componente('visitanos'); ?>
+<?php componente('acceso-ubicacion'); ?>
+
+<div class="pb-20 sm:pb-24"></div>

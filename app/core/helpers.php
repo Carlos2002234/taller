@@ -204,9 +204,23 @@ function ahora_costa_rica(): DateTimeImmutable
     return new DateTimeImmutable('now', new DateTimeZone(HORARIO_ZONA));
 }
 
+/** 135 → "2 h 15 min"; 45 → "45 min"; 120 → "2 h". */
+function duracion_corta(int $minutos): string
+{
+    $h = intdiv($minutos, 60);
+    $m = $minutos % 60;
+    return trim(($h ? $h . ' h ' : '') . ($m || !$h ? $m . ' min' : ''));
+}
+
 /**
- * ¿Está abierto ahora? Devuelve ['abierto' => bool, 'texto' => 'Abierto ahora · cierra a las 5:00 p.m.' |
- * 'Cerrado · abre mañana a las 8:00 a.m.', 'hoy' => 1..7]. (app.js lo recalcula cada minuto con la misma regla.)
+ * ¿Está abierto ahora? (hora de Costa Rica). Devuelve:
+ *   abierto  bool
+ *   titulo   "Abierto ahora" | "Cerrado"
+ *   texto    "Abierto ahora · cierra a las 5:00 p.m." | "Cerrado · abre mañana a las 8:00 a.m."
+ *   cuenta   "Cierra en 2 h 15 min" | "Abre en 9 h 30 min" | "Abre el lunes a las 8:00 a.m." (si falta más de un día)
+ *   progreso 0–100: cuánto va de la jornada de hoy (null si está cerrado)
+ *   hoy      1–7 (1 = lunes)
+ * app.js (bloque "Horario") lo recalcula cada minuto con la misma regla.
  */
 function horario_estado(?DateTimeImmutable $ahora = null): array
 {
@@ -216,8 +230,15 @@ function horario_estado(?DateTimeImmutable $ahora = null): array
     $minuto = (int) $ahora->format('G') * 60 + (int) $ahora->format('i');
     $enMinutos = fn (string $h) => (int) substr($h, 0, 2) * 60 + (int) substr($h, 3, 2);
 
-    if ($semana[$hoy] && $minuto >= $enMinutos($semana[$hoy][0]) && $minuto < $enMinutos($semana[$hoy][1])) {
-        return ['abierto' => true, 'texto' => 'Abierto ahora · cierra a las ' . hora_12($semana[$hoy][1]), 'hoy' => $hoy];
+    if ($semana[$hoy] && $minuto >= ($abre = $enMinutos($semana[$hoy][0])) && $minuto < ($cierra = $enMinutos($semana[$hoy][1]))) {
+        return [
+            'abierto'  => true,
+            'titulo'   => 'Abierto ahora',
+            'texto'    => 'Abierto ahora · cierra a las ' . hora_12($semana[$hoy][1]),
+            'cuenta'   => 'Cierra en ' . duracion_corta($cierra - $minuto),
+            'progreso' => (int) round(($minuto - $abre) * 100 / ($cierra - $abre)),
+            'hoy'      => $hoy,
+        ];
     }
     for ($i = 0; $i <= 7; $i++) {
         $dia = ($hoy - 1 + $i) % 7 + 1;
@@ -225,10 +246,25 @@ function horario_estado(?DateTimeImmutable $ahora = null): array
         if (!$horas || ($i === 0 && $minuto >= $enMinutos($horas[0]))) {
             continue;
         }
+        $faltan = $i * 1440 + $enMinutos($horas[0]) - $minuto;
         $cuando = $i === 0 ? 'hoy' : ($i === 1 ? 'mañana' : 'el ' . DIAS_SEMANA[$dia]);
-        return ['abierto' => false, 'texto' => 'Cerrado · abre ' . $cuando . ' a las ' . hora_12($horas[0]), 'hoy' => $hoy];
+        return [
+            'abierto'  => false,
+            'titulo'   => 'Cerrado',
+            'texto'    => 'Cerrado · abre ' . $cuando . ' a las ' . hora_12($horas[0]),
+            'cuenta'   => $faltan < 1440 ? 'Abre en ' . duracion_corta($faltan) : 'Abre ' . $cuando . ' a las ' . hora_12($horas[0]),
+            'progreso' => null,
+            'hoy'      => $hoy,
+        ];
     }
-    return ['abierto' => false, 'texto' => 'Cerrado', 'hoy' => $hoy];
+    return ['abierto' => false, 'titulo' => 'Cerrado', 'texto' => 'Cerrado', 'cuenta' => '', 'progreso' => null, 'hoy' => $hoy];
+}
+
+/** Enlace para incrustar el mapa en el punto exacto del taller (se carga solo si la persona lo pide). */
+function mapa_embed_url(): ?string
+{
+    $punto = coordenadas_negocio();
+    return $punto ? 'https://maps.google.com/maps?q=' . rawurlencode($punto[0] . ',' . $punto[1]) . '&z=16&output=embed' : null;
 }
 
 /**

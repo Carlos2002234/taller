@@ -7,6 +7,7 @@ $menu = [
     ''          => 'Inicio',
     'tienda'    => 'Tienda',
     'servicios' => 'Servicios',
+    'ubicacion' => 'Ubicación',
     'contacto'  => 'Contacto',
     'mi-pedido' => 'Mi pedido',
 ];

@@ -29,7 +29,7 @@ $pasos = [
 // Marcas de los productos que se usan en el taller (texto, sin logos)
 $marcas = ['Havoline', 'Castrol', 'Delo', 'Chevron', 'Vonixx', 'Malco'];
 
-// Galería: foto => texto (la sala de espera ya sale en "Visítanos")
+// Galería: foto => texto (la ubicación y el horario están en la página /ubicacion)
 $galeria = [
     'rivera-07' => ['Auto cubierto en el área de detallado', 'Área de detallado', '960', '1920'],
     'rivera-06' => ['Pared del taller con publicidad de lubricantes Chevron', 'Lubricantes Chevron', '800', '1600'],
@@ -187,4 +187,6 @@ $galeria = [
 
 <?php componente('cta-consulta'); ?>
 
-<?php componente('visitanos'); ?>
+<?php componente('acceso-ubicacion'); ?>
+
+<div class="pb-20 sm:pb-24"></div>
