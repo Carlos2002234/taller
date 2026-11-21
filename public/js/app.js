@@ -17,9 +17,9 @@
     });
   }
 
-  // Animaciones al bajar: las secciones .aparecer y las grillas .escalonado se muestran UNA vez,
+  // Animaciones al bajar: las secciones .aparecer, las grillas .escalonado y el bloque racing del inicio se muestran UNA vez,
   // cuando el 15% entra en pantalla (los estilos están en "Movimiento", resources/css/app.css)
-  var animables = document.querySelectorAll('.aparecer, .escalonado');
+  var animables = document.querySelectorAll('.aparecer, .escalonado, .portada-racing');
   if ('IntersectionObserver' in window) {
     var observador = new IntersectionObserver(function (entradas) {
       entradas.forEach(function (entrada) {

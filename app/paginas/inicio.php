@@ -1,9 +1,11 @@
 <?php
 /**
- * Inicio: portada racing (foto rivera-07 en panel diagonal, título grande, beneficios y cinta de categorías),
+ * Inicio: fachada del taller completa (sin nada encima) y debajo el bloque racing (título grande, botones,
+ * beneficios y cinta de categorías sobre fondo oscuro liso),
  * categorías, destacados, marcas, taller y testimonios. Todo sale de la base de datos (editable desde el admin).
  *
- * Decisión del dueño (2026-11-21): portada estilo deportivo/racing; reemplaza la fachada completa (2026-11-08).
+ * Decisiones del dueño: la foto del inicio se ve COMPLETA, sin texto ni sombras encima (2026-11-08, ratificado
+ * 2026-11-21: "salía la imagen principal del taller"); el bloque de debajo, estilo racing (2026-11-21).
  * Encabezado en barra negra sólida con el logo completo del manual de marca.
  */
 
@@ -34,55 +36,65 @@ if (count($cinta) < 3) {
 // Marcas de los productos que se usan y venden (texto, sin logos)
 $marcas = ['Havoline', 'Castrol', 'Chevron', 'Delo', 'Vonixx', 'Malco'];
 ?>
-<!-- Portada racing: foto en panel diagonal, título grande con contorno, botones en paralelogramo,
-     beneficios y cinta de categorías. Estilos en "Portada del inicio, estilo racing" (resources/css/app.css). -->
-<section class="portada-racing" aria-labelledby="titulo-portada">
-    <div class="portada-panel" aria-hidden="true">
-        <img src="<?= e(url('img/fotos/rivera-07-1920.webp')) ?>"
-             srcset="<?= e(url('img/fotos/rivera-07-960.webp')) ?> 960w, <?= e(url('img/fotos/rivera-07-1920.webp')) ?> 1920w"
-             sizes="(min-width: 1024px) 64vw, 100vw" width="1920" height="1080" alt="" fetchpriority="high">
-    </div>
-    <div class="portada-franja portada-franja-1" aria-hidden="true"></div>
-    <div class="portada-franja portada-franja-2" aria-hidden="true"></div>
+<!-- Portada: la fachada completa, sin texto encima -->
+<section aria-labelledby="titulo-portada">
+    <picture class="block overflow-hidden bg-rivera-carbon">
+        <source type="image/webp"
+                srcset="<?= e(url('img/fotos/rivera-14-960.webp')) ?> 960w, <?= e(url('img/fotos/rivera-14-1920.webp')) ?> 1920w"
+                sizes="100vw">
+        <img src="<?= e(url('img/fotos/rivera-14-1920.webp')) ?>" width="1920" height="1080"
+             alt="Fachada de <?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?> vista de frente"
+             class="foto-entrar block aspect-video h-auto w-full object-cover" fetchpriority="high">
+    </picture>
+    <div class="h-[3px] bg-rivera-rojo"></div>
 
-    <div class="contenedor pt-14 sm:pt-20 lg:pt-28">
-        <div class="racing-entra flex flex-wrap items-center gap-x-3.5 gap-y-2">
-            <span class="inline-flex h-[30px] -skew-x-12 items-center bg-rivera-rojo px-3 font-display text-[0.8rem] font-extrabold italic tracking-[0.12em]"><span class="skew-x-12">RIVERA</span></span>
-            <span class="text-xs font-semibold uppercase tracking-[0.22em] text-neutral-300"><?= e(ajuste('banner_etiqueta', 'Accesorios y repuestos para tu auto')) ?></span>
-        </div>
+    <!-- Debajo de la foto: bloque racing sobre fondo oscuro liso (franjas, título, botones, beneficios y cinta).
+         Estilos en "Portada del inicio, estilo racing" (resources/css/app.css). -->
+    <div class="portada-racing">
+        <div class="contenedor pt-12 sm:pt-16 lg:pt-20">
+            <!-- Etiqueta + título; las franjas van detrás, a la derecha, desde la línea roja hasta el título -->
+            <div class="relative">
+            <div class="portada-franja portada-franja-1" aria-hidden="true"></div>
+            <div class="portada-franja portada-franja-2" aria-hidden="true"></div>
+            <div class="racing-entra flex flex-wrap items-center gap-x-3.5 gap-y-2">
+                <span class="inline-flex h-[30px] -skew-x-12 items-center bg-rivera-rojo px-3 font-display text-[0.8rem] font-extrabold italic tracking-[0.12em]"><span class="skew-x-12">RIVERA</span></span>
+                <span class="text-xs font-semibold uppercase tracking-[0.22em] text-neutral-300"><?= e(ajuste('banner_etiqueta', 'Accesorios y repuestos para tu auto')) ?></span>
+            </div>
 
-        <h1 id="titulo-portada" class="titulo-racing mt-7">
-            <?php if ($titulo_inicio !== ''): ?><span class="derrape block"><?= e($titulo_inicio) ?></span><?php endif; ?>
-            <span class="derrape derrape-2 texto-contorno block"><?= e($titulo_contorno) ?></span>
-            <span class="derrape derrape-2 flex items-center gap-6 text-rivera-rojo"><?= e(ajuste('banner_titulo_rojo', 'con lo mejor')) ?><span class="lineas-velocidad hidden sm:block" aria-hidden="true"></span></span>
-        </h1>
+            <h1 id="titulo-portada" class="titulo-racing mt-7">
+                <?php if ($titulo_inicio !== ''): ?><span class="derrape block"><?= e($titulo_inicio) ?></span><?php endif; ?>
+                <span class="derrape derrape-2 texto-contorno block"><?= e($titulo_contorno) ?></span>
+                <span class="derrape derrape-2 flex items-center gap-6 text-rivera-rojo"><?= e(ajuste('banner_titulo_rojo', 'con lo mejor')) ?><span class="lineas-velocidad hidden sm:block" aria-hidden="true"></span></span>
+            </h1>
+            </div>
 
-        <div class="mt-10 flex flex-wrap items-end justify-between gap-x-12 gap-y-7">
-            <?php if (ajuste('banner_texto') !== ''): ?>
-                <p class="racing-entra racing-entra-1 max-w-[420px] text-lg leading-relaxed text-neutral-300"><?= e(ajuste('banner_texto')) ?></p>
-            <?php endif; ?>
-            <div class="racing-entra racing-entra-2 flex flex-wrap gap-3.5 pl-2">
-                <a href="<?= e(url('tienda')) ?>" class="btn-sesgo btn-sesgo-rojo"><span>Ver la tienda
-                    <svg class="flechita h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
-                <a href="<?= e(url('servicios')) ?>" class="btn-sesgo btn-sesgo-linea"><span>Servicios del taller</span></a>
+            <div class="mt-10 flex flex-wrap items-end justify-between gap-x-12 gap-y-7">
+                <?php if (ajuste('banner_texto') !== ''): ?>
+                    <p class="racing-entra racing-entra-1 max-w-[420px] text-lg leading-relaxed text-neutral-300"><?= e(ajuste('banner_texto')) ?></p>
+                <?php endif; ?>
+                <div class="racing-entra racing-entra-2 flex flex-wrap gap-3.5 pl-2">
+                    <a href="<?= e(url('tienda')) ?>" class="btn-sesgo btn-sesgo-rojo"><span>Ver la tienda
+                        <svg class="flechita h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+                    <a href="<?= e(url('servicios')) ?>" class="btn-sesgo btn-sesgo-linea"><span>Servicios del taller</span></a>
+                </div>
+            </div>
+
+            <div class="mt-16 lg:mt-[72px]">
+                <?php componente('beneficios', ['animar' => true]); ?>
             </div>
         </div>
 
-        <div class="mt-16 lg:mt-[72px]">
-            <?php componente('beneficios', ['animar' => true]); ?>
-        </div>
-    </div>
-
-    <!-- Cinta con las categorías (decorativa: las mismas categorías están en la sección siguiente y en la tienda) -->
-    <div class="cinta-racing mb-10 mt-2 overflow-hidden bg-rivera-rojo py-4" aria-hidden="true">
-        <div class="cinta-racing-pista font-display text-2xl font-black uppercase italic tracking-[0.04em] text-white">
-            <?php for ($copia = 0; $copia < 2; $copia++): ?>
-                <span class="flex shrink-0 items-center gap-10 pr-10">
-                    <?php foreach ($cinta as $nombre): ?>
-                        <span class="whitespace-nowrap"><?= e($nombre) ?></span><span class="text-rivera-negro">///</span>
-                    <?php endforeach; ?>
-                </span>
-            <?php endfor; ?>
+        <!-- Cinta con las categorías (decorativa: las mismas categorías están en la sección siguiente y en la tienda) -->
+        <div class="cinta-racing mb-10 mt-2 overflow-hidden bg-rivera-rojo py-4" aria-hidden="true">
+            <div class="cinta-racing-pista font-display text-2xl font-black uppercase italic tracking-[0.04em] text-white">
+                <?php for ($copia = 0; $copia < 2; $copia++): ?>
+                    <span class="flex shrink-0 items-center gap-10 pr-10">
+                        <?php foreach ($cinta as $nombre): ?>
+                            <span class="whitespace-nowrap"><?= e($nombre) ?></span><span class="text-rivera-negro">///</span>
+                        <?php endforeach; ?>
+                    </span>
+                <?php endfor; ?>
+            </div>
         </div>
     </div>
 </section>
