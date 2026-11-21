@@ -408,6 +408,35 @@ header, header > .contenedor { transition: transform var(--dur-media) var(--curv
 @keyframes franjas-lentas { to { transform: translate3d(-160px, 0, 0); } }
 
 /* ---------------------------------------------------------------------
+   Ubicación y horario (componentes visitanos y horario-semana; app.js recalcula el estado cada minuto)
+   --------------------------------------------------------------------- */
+/* Indicador "Abierto ahora" (punto verde con pulso suave) / "Cerrado · abre …" (punto gris) */
+.estado-horario { @apply inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-neutral-300; transition: color var(--dur-media) var(--curva), border-color var(--dur-media) var(--curva); }
+.estado-horario-punto { position: relative; width: .5rem; height: .5rem; border-radius: 999px; background-color: theme('colors.neutral.500'); }
+.estado-horario.abierto { @apply border-emerald-400/40 text-emerald-300; }
+.estado-horario.abierto .estado-horario-punto { background-color: theme('colors.emerald.400'); }
+.estado-horario.abierto .estado-horario-punto::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background-color: theme('colors.emerald.400'); animation: pulso-abierto 2.4s var(--curva) infinite; }
+@keyframes pulso-abierto { 0% { transform: scale(1); opacity: .7; } 70%, 100% { transform: scale(3); opacity: 0; } }
+
+/* Tabla del horario: días a la izquierda, horas a la derecha; hoy resaltado con barra roja */
+.tabla-horario { border-collapse: collapse; font-size: .9rem; }
+.tabla-horario tr { border-bottom: 1px solid rgb(255 255 255 / .08); }
+.tabla-horario tr:last-child { border-bottom: 0; }
+.tabla-horario th, .tabla-horario td { padding: .6rem 0; color: theme('colors.neutral.400'); font-weight: 400; }
+.tabla-horario th { text-align: left; padding-left: .85rem; position: relative; }
+.tabla-horario td { text-align: right; font-variant-numeric: tabular-nums; }
+.tabla-horario th::before { content: ''; position: absolute; left: 0; top: 25%; bottom: 25%; width: 3px; border-radius: 2px; background-color: theme('colors.rivera.rojo'); transform: scaleY(0); transition: transform var(--dur-media) var(--curva); }
+.tabla-horario .hoy th, .tabla-horario .hoy td { color: #fff; font-weight: 600; }
+.tabla-horario .hoy th::before { transform: none; }
+.tabla-horario-hoy { display: none; margin-left: .5rem; border-radius: .25rem; background-color: theme('colors.rivera.rojo'); padding: .1rem .4rem; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #fff; vertical-align: middle; }
+.tabla-horario .hoy .tabla-horario-hoy { display: inline-block; }
+
+/* Franjas rojas diagonales en la esquina de la foto (detalle racing) */
+.visitanos-franja { position: absolute; top: -10%; bottom: -10%; right: 9%; width: 12px; background-color: theme('colors.rivera.rojo'); transform: skewX(-24deg); box-shadow: 24px 0 0 -4px rgb(209 26 33 / .55); pointer-events: none; }
+.js .revelar:not(.visible) .visitanos-franja { transform: skewX(-24deg) translateY(-110%); }
+.js .revelar .visitanos-franja { transition: transform 900ms var(--curva-corte) 300ms; }
+
+/* ---------------------------------------------------------------------
    "Reducir movimiento": todo aparece y cambia sin animación.
    Va al FINAL del archivo para ganarle a los :hover anteriores (misma especificidad).
    --------------------------------------------------------------------- */
@@ -420,6 +449,8 @@ header, header > .contenedor { transition: transform var(--dur-media) var(--curv
   .escalonado-alterno.visible > :nth-child(odd), .escalonado-alterno.visible > :nth-child(even),
   .titulo-lineas .linea > span, .foto-mascara { animation: fundir var(--dur-lenta) linear both; }
   .etiqueta-dibuja::before { animation: none; }
+  .estado-horario.abierto .estado-horario-punto::after { animation: none; display: none; }
+  .js .revelar:not(.visible) .visitanos-franja { transform: skewX(-24deg); }
   .js .aparecer:not(.visible) .etiqueta-seccion::before { transform: none; }
   .fila-numero, .fila-titulo, .fila-servicio .btn-claro svg, .fila-servicio::after, .tarjeta-foto img, .paso-numero { transition: none; }
   .fila-servicio:hover .fila-numero, .fila-servicio:hover .fila-titulo, .fila-servicio:hover .btn-claro svg, .tarjeta-foto:hover img, .paso.activo .paso-numero { transform: none; }

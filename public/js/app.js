@@ -240,6 +240,58 @@
     mostrarEstado();
   });
 
+  // Horario: "Abierto ahora" / "Cerrado · abre …" y el día de hoy, con la hora de Costa Rica.
+  // Misma regla que horario_estado() en PHP (que ya dejó el texto correcto); aquí se actualiza cada minuto.
+  (function () {
+    var bloques = document.querySelectorAll('[data-horario]');
+    if (!bloques.length || !window.Intl) return;
+    var DIAS = ['', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
+    var NUM = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7 };
+    var hora12 = function (h) {
+      var p = h.split(':'), hh = parseInt(p[0], 10);
+      return (hh % 12 === 0 ? 12 : hh % 12) + ':' + p[1] + ' ' + (hh >= 12 && hh < 24 ? 'p.m.' : 'a.m.');
+    };
+    var minutos = function (h) { var p = h.split(':'); return parseInt(p[0], 10) * 60 + parseInt(p[1], 10); };
+    var ahoraCR = function () {
+      var partes = {};
+      new Intl.DateTimeFormat('en-US', { timeZone: 'America/Costa_Rica', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
+        .formatToParts(new Date()).forEach(function (p) { partes[p.type] = p.value; });
+      return { dia: NUM[partes.weekday], minuto: (parseInt(partes.hour, 10) % 24) * 60 + parseInt(partes.minute, 10) };
+    };
+    var actualizar = function () {
+      var ahora;
+      try { ahora = ahoraCR(); } catch (e) { return; }
+      bloques.forEach(function (bloque) {
+        var semana;
+        try { semana = JSON.parse(bloque.getAttribute('data-horario')); } catch (e) { return; }
+        var hoy = semana[ahora.dia], abierto = false, texto = 'Cerrado';
+        if (hoy && ahora.minuto >= minutos(hoy[0]) && ahora.minuto < minutos(hoy[1])) {
+          abierto = true;
+          texto = 'Abierto ahora · cierra a las ' + hora12(hoy[1]);
+        } else {
+          for (var i = 0; i <= 7; i++) {
+            var d = (ahora.dia - 1 + i) % 7 + 1, h = semana[d];
+            if (!h || (i === 0 && ahora.minuto >= minutos(h[0]))) continue;
+            texto = 'Cerrado · abre ' + (i === 0 ? 'hoy' : i === 1 ? 'mañana' : 'el ' + DIAS[d]) + ' a las ' + hora12(h[0]);
+            break;
+          }
+        }
+        var estado = bloque.querySelector('[data-horario-estado]');
+        if (estado) {
+          estado.classList.toggle('abierto', abierto);
+          estado.querySelector('[data-horario-texto]').textContent = texto;
+        }
+        bloque.querySelectorAll('[data-dia]').forEach(function (fila) {
+          var esHoy = parseInt(fila.getAttribute('data-dia'), 10) === ahora.dia;
+          fila.classList.toggle('hoy', esHoy);
+          if (esHoy) fila.setAttribute('aria-current', 'date'); else fila.removeAttribute('aria-current');
+        });
+      });
+    };
+    actualizar();
+    setInterval(actualizar, 60000);
+  })();
+
   // Encabezado transparente sobre la portada: se vuelve sólido al bajar o al abrir el menú
   var cuerpo = document.querySelector('[data-encabezado]');
   if (cuerpo && cuerpo.classList.contains('encabezado-flotante')) {

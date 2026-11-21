@@ -16,7 +16,7 @@ $meta['titulo'] = 'Servicios del taller';
 $meta['descripcion'] = 'Servicios de taller mecánico en ' . ajuste('negocio_nombre', 'Rivera Grupo Automotriz') . ': '
     . implode(', ', array_map(fn ($s) => mb_strtolower($s['nombre']), array_slice($servicios, 0, 5))) . '. Cotiza por WhatsApp.';
 
-$horario = ajuste('horario');
+$horario = horario_resumen();
 
 // Cómo trabajamos (el último paso va resaltado en rojo)
 $pasos = [

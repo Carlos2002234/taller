@@ -30,7 +30,7 @@ $redes = array_filter([
             <h2 class="text-sm font-semibold uppercase tracking-wider">Visítanos</h2>
             <ul class="mt-4 space-y-3 text-sm text-neutral-300">
                 <li class="flex gap-2.5"><?= e(ajuste('direccion')) ?></li>
-                <li class="flex gap-2.5"><?= e(ajuste('horario')) ?></li>
+                <li class="flex gap-2.5"><?= e(horario_resumen()) ?></li>
             </ul>
         </div>
 

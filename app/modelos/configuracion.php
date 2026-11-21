@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 /**
  * Campos editables agrupados por sección: clave => [etiqueta, tipo, ayuda]
- * tipo: texto | telefono | iban | url | entero | prefijo | correo | largo
+ * tipo: texto | telefono | iban | url | entero | prefijo | correo | largo | horario
  */
 const CONFIGURACION_CAMPOS = [
     'Pagos' => [
@@ -25,7 +25,7 @@ const CONFIGURACION_CAMPOS = [
         'direccion'      => ['Dirección', 'largo', ''],
         'mapa_url'       => ['Enlace de Google Maps', 'url', 'En Google Maps: Compartir → Copiar enlace.'],
         'waze_url'       => ['Enlace de Waze', 'url', 'En Waze: Compartir ubicación → Copiar enlace. Vacío = no se muestra el botón.'],
-        'horario'        => ['Horario', 'texto', ''],
+        'horario_semana' => ['Horario por día', 'horario', 'Una línea por día o rango, ej. «Lunes a sábado: 8:00-17:00» y «Domingo: cerrado» (formato 24 h). Se usa en toda la web y en Google; vacío = lunes a sábado de 8:00 a 17:00.'],
     ],
     'Pedidos y envíos' => [
         'prefijo_pedido'          => ['Prefijo del número de pedido', 'prefijo', 'Letras al inicio del número (ej. RGA → RGA-2026-0001).'],
@@ -78,6 +78,9 @@ function configuracion_validar(string $tipo, string $valor, string $etiqueta): a
                         ? [$valor, null] : [$valor, "«{$etiqueta}» debe ser un número entre 1 y 168."],
         'prefijo'  => preg_match('/^[A-Z0-9]{2,5}$/', $p = strtoupper($valor)) ? [$p, null] : [$valor, "«{$etiqueta}» debe tener de 2 a 5 letras o números."],
         'legal'    => [mb_substr(str_replace("\r\n", "\n", $valor), 0, 20000), null],
+        'horario'  => horario_parsear($valor) !== null
+                        ? [mb_substr(str_replace("\r\n", "\n", $valor), 0, 500), null]
+                        : [$valor, "«{$etiqueta}» no se entiende. Usa una línea por día, ej. «Lunes a sábado: 8:00-17:00» y «Domingo: cerrado»."],
         default    => [mb_substr($valor, 0, $tipo === 'largo' ? 500 : 150), null],
     };
 }
