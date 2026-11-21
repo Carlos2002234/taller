@@ -112,7 +112,7 @@ $marcas = ['Havoline', 'Castrol', 'Chevron', 'Delo', 'Vonixx', 'Malco'];
 
 <?php if ($destacados): ?>
     <section class="contenedor pt-16 sm:pt-24">
-        <div class="aparecer">
+        <div class="aparecer desde-izq">
             <?php componente('titulo-seccion', ['etiqueta' => 'Lo más buscado', 'titulo' => 'Productos destacados', 'enlace' => url('tienda'), 'enlace_texto' => 'Ver todos los productos']); ?>
         </div>
         <div class="escalonado grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
@@ -125,7 +125,7 @@ $marcas = ['Havoline', 'Castrol', 'Chevron', 'Delo', 'Vonixx', 'Malco'];
 <section aria-label="Marcas con las que trabajamos" class="fondo-claro mt-16 bg-white text-rivera-negro sm:mt-24">
     <div class="contenedor flex flex-wrap items-center justify-between gap-x-12 gap-y-5 py-10">
         <p class="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-600">Marcas con las que trabajamos</p>
-        <ul class="flex flex-wrap gap-x-12 gap-y-3 font-display text-xl font-extrabold uppercase italic tracking-wide text-neutral-800 sm:text-2xl">
+        <ul class="escalonado flex flex-wrap gap-x-12 gap-y-3 font-display text-xl font-extrabold uppercase italic tracking-wide text-neutral-800 sm:text-2xl">
             <?php foreach ($marcas as $marca): ?><li><?= e($marca) ?></li><?php endforeach; ?>
         </ul>
     </div>
@@ -134,13 +134,13 @@ $marcas = ['Havoline', 'Castrol', 'Chevron', 'Delo', 'Vonixx', 'Malco'];
 <?php if ($servicios): ?>
     <!-- Taller: foto + lista numerada -->
     <section class="contenedor grid items-stretch gap-10 pt-16 sm:pt-24 lg:grid-cols-2 lg:gap-14" aria-labelledby="taller">
-        <figure class="aparecer relative min-h-[18rem] overflow-hidden rounded bg-rivera-carbon sm:min-h-[26rem]">
+        <figure class="revelar relative min-h-[18rem] overflow-hidden rounded bg-rivera-carbon sm:min-h-[26rem]">
             <img src="<?= e(url('img/fotos/rivera-08-1600.webp')) ?>"
                  srcset="<?= e(url('img/fotos/rivera-08-800.webp')) ?> 800w, <?= e(url('img/fotos/rivera-08-1600.webp')) ?> 1600w"
                  sizes="(min-width: 1024px) 50vw, 100vw" loading="lazy"
                  alt="Zona de lavado del taller con un sedán gris" class="absolute inset-0 h-full w-full object-cover">
         </figure>
-        <div class="aparecer flex flex-col justify-center">
+        <div class="aparecer desde-der flex flex-col justify-center">
             <p class="etiqueta-seccion">Taller de servicio</p>
             <h2 id="taller" class="mt-3 text-3xl font-extrabold leading-[1.02] tracking-tight sm:text-4xl xl:text-5xl">Cuidamos tu auto<br><span class="text-rivera-rojo">como si fuera nuestro</span></h2>
             <ol class="mt-7 border-t border-white/10">

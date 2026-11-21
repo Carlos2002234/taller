@@ -19,6 +19,9 @@
 
 @layer base {
   html { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+  /* Las entradas "desde los lados" se desplazan antes de aparecer: que eso nunca cree scroll lateral.
+     "clip" (no "hidden") no crea contenedor de scroll; en <main> y no en <body> para que no pase al viewport. */
+  main { overflow-x: clip; }
   /* Títulos en itálica, como las letras del logo */
   h1, h2, h3 { @apply font-display font-bold italic; }
   :focus-visible { @apply outline-none ring-2 ring-rivera-rojo ring-offset-2 ring-offset-rivera-negro; }
@@ -35,7 +38,7 @@
      Hover común: sube 2px y aclara el borde/fondo; al tocarlo se hunde un poco. */
   .btn, .btn-primario, .btn-secundario, .btn-claro {
     @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50;
-    transition-property: color, background-color, border-color, box-shadow, transform;
+    transition-property: color, background-color, border-color, box-shadow, transform, translate;
     transition-duration: var(--dur-rapida);
     transition-timing-function: var(--curva);
   }
@@ -165,7 +168,6 @@ header { view-transition-name: encabezado; }
 .escalonado.visible > *:nth-child(n+4) { animation-delay: calc(var(--escalon) * 3); }
 
 /* Encabezado: gana una sombra suave al bajar (app.js pone la clase) */
-header { transition: box-shadow var(--dur-media) var(--curva); }
 .encabezado-sombra { box-shadow: 0 10px 30px -12px rgb(0 0 0 / .85); }
 
 /* Ventana del formulario de consulta (<dialog> nativo) */
@@ -183,23 +185,41 @@ header { transition: box-shadow var(--dur-media) var(--curva); }
 .js .testimonios-controles { display: flex; }
 .js .testimonios-paneles { display: grid; gap: 0; }
 .js .testimonio { grid-area: 1 / 1; }
-.js .testimonio:not(.activo) { visibility: hidden; }
+.js .testimonio:not(.activo):not(.saliendo) { visibility: hidden; }
+.js .testimonio.saliendo { pointer-events: none; }
 @media (min-width: 1024px) {
   .js .testimonios-rejilla { grid-template-columns: minmax(0, 1fr) 21rem; }
 }
+/* Se puede deslizar con el dedo (el scroll vertical sigue funcionando) */
+.js .testimonios-paneles { touch-action: pan-y; }
+.testimonios-paneles:focus-visible { outline: 2px solid #fff; outline-offset: 4px; border-radius: .75rem; box-shadow: none; }
 
-/* Contenido nuevo al cambiar: texto escalonado y captura con un acercamiento mínimo */
-.testimonio.animar .testimonio-entra { animation: entrar var(--dur-lenta) var(--curva) both; }
-.testimonio.animar .testimonio-retraso-1 { animation-delay: calc(var(--escalon) * 1); }
-.testimonio.animar .testimonio-retraso-2 { animation-delay: calc(var(--escalon) * 2); }
-.testimonio.animar .testimonio-retraso-3 { animation-delay: calc(var(--escalon) * 3); }
-.testimonio.animar .testimonio-foto { animation: foto-aparecer var(--dur-lenta) var(--curva) both; }
+/* Cambio de testimonio (app.js pone las clases; "atras" invierte la dirección):
+   - el saliente se desliza y se desvanece con un leve desenfoque;
+   - el entrante se revela con una máscara (clip-path) de lado a lado,
+     su texto entra escalonado y la captura gira un poco en 3D hasta quedar de frente. */
+@keyframes testimonio-salir { to { opacity: 0; transform: translate3d(-40px, 0, 0) scale(.98); filter: blur(4px); } }
+@keyframes testimonio-salir-atras { to { opacity: 0; transform: translate3d(40px, 0, 0) scale(.98); filter: blur(4px); } }
+@keyframes testimonio-mascara { from { clip-path: inset(0 0 0 100% round .75rem); } to { clip-path: inset(0 0 0 0 round .75rem); } }
+@keyframes testimonio-mascara-atras { from { clip-path: inset(0 100% 0 0 round .75rem); } to { clip-path: inset(0 0 0 0 round .75rem); } }
+@keyframes captura-girar { from { opacity: 0; transform: perspective(900px) rotateY(-18deg) rotateZ(2deg) scale(.92); } to { opacity: 1; transform: perspective(900px) rotateY(0) rotateZ(0) scale(1); } }
+@keyframes fundir { from { opacity: 0; } }
+@keyframes desfundir { to { opacity: 0; } }
 
-/* Barra de progreso del testimonio activo: su animación marca el tiempo (app.js cambia al terminar) */
+.testimonio.saliendo { animation: testimonio-salir var(--dur-media) var(--curva) forwards; }
+.testimonio.saliendo.atras { animation-name: testimonio-salir-atras; }
+.testimonio.animar { animation: testimonio-mascara var(--dur-lenta) var(--curva) both; }
+.testimonio.animar.atras { animation-name: testimonio-mascara-atras; }
+.testimonio.animar .testimonio-entra { animation: entrar var(--dur-lenta) var(--curva) both; animation-delay: 120ms; }
+.testimonio.animar .testimonio-retraso-1 { animation-delay: calc(120ms + var(--escalon) * 1); }
+.testimonio.animar .testimonio-retraso-2 { animation-delay: calc(120ms + var(--escalon) * 2); }
+.testimonio.animar .testimonio-retraso-3 { animation-delay: calc(120ms + var(--escalon) * 3); }
+.testimonio.animar .testimonio-foto { animation: captura-girar 900ms var(--curva) 160ms both; }
+
+/* Barra de progreso del testimonio activo (el tiempo lo lleva app.js; la barra lo muestra) */
 .testimonio-barra { transform: scaleX(0); transform-origin: left center; }
 .testimonio-barra.corriendo { animation: llenar-barra var(--testimonio-duracion, 8s) linear forwards; }
 .testimonios-en-pausa .testimonio-barra.corriendo { animation-play-state: paused; }
-.testimonios-manual [aria-pressed="true"] .testimonio-barra { transform: none; }
 
 /* ---------------------------------------------------------------------
    Bloque racing del inicio, debajo de la fachada (diseño 2026-11-21; app/paginas/inicio.php)
@@ -221,7 +241,7 @@ header { transition: box-shadow var(--dur-media) var(--curva); }
 .lineas-velocidad { flex: 1 1 auto; min-width: 2.5rem; max-width: 20rem; height: 10px; transform: skewX(-24deg); background-image: repeating-linear-gradient(90deg, rgb(255 255 255 / .55) 0 60px, transparent 60px 160px); }
 
 /* Botones en paralelogramo: la caja se inclina y el contenido se endereza */
-.btn-sesgo { @apply inline-flex min-h-14 items-center px-7 font-display text-[1.05rem] font-extrabold uppercase italic tracking-[0.04em]; transform: skewX(-12deg); transition: transform var(--dur-rapida) var(--curva), background-color var(--dur-rapida) var(--curva), color var(--dur-rapida) var(--curva), border-color var(--dur-rapida) var(--curva), box-shadow var(--dur-rapida) var(--curva); }
+.btn-sesgo { @apply inline-flex min-h-14 items-center px-7 font-display text-[1.05rem] font-extrabold uppercase italic tracking-[0.04em]; transform: skewX(-12deg); transition: transform var(--dur-rapida) var(--curva), translate var(--dur-media) var(--curva), background-color var(--dur-rapida) var(--curva), color var(--dur-rapida) var(--curva), border-color var(--dur-rapida) var(--curva), box-shadow var(--dur-rapida) var(--curva); }
 .btn-sesgo > span { display: inline-flex; align-items: center; gap: .625rem; transform: skewX(12deg); }
 .btn-sesgo:focus-visible { --tw-ring-shadow: 0 0 #0000; box-shadow: none; outline: 2px solid #fff; outline-offset: 4px; }
 .btn-sesgo-rojo { background-color: theme('colors.rivera.rojo'); color: #fff; }
@@ -268,21 +288,80 @@ header { transition: box-shadow var(--dur-media) var(--curva); }
 .js .portada-racing:not(.visible) :is(.portada-franja, .derrape, .racing-entra) { animation-play-state: paused; }
 
 /* ---------------------------------------------------------------------
+   Interacción y movimiento al bajar (pedido del dueño 2026-11-21: "una página que la gente disfrute").
+   La lógica está en public/js/movimiento.js. Sin JavaScript todo se ve normal y quieto.
+   --------------------------------------------------------------------- */
+
+/* Variantes de entrada (se combinan con .aparecer): desde los lados */
+.js .aparecer.desde-izq:not(.visible) { transform: translate3d(-48px, 0, 0); }
+.js .aparecer.desde-der:not(.visible) { transform: translate3d(48px, 0, 0); }
+/* Revelado con máscara para fotos: la caja se destapa de abajo hacia arriba y la foto se asienta */
+.js .revelar:not(.visible) { clip-path: inset(100% 0 0 0); }
+.js .revelar.visible { clip-path: inset(-3rem); transition: clip-path 900ms var(--curva-corte); }
+.js .revelar:not(.visible) img, .js .revelar:not(.visible) video { transform: scale(1.12); }
+.js .revelar img, .js .revelar video { transition: transform 1.2s var(--curva); }
+
+/* Barra de progreso de lectura (arriba del todo) */
+.barra-lectura { position: fixed; inset: 0 0 auto 0; z-index: 60; height: 3px; background-color: theme('colors.rivera.rojo'); transform: scaleX(0); transform-origin: left center; pointer-events: none; }
+
+/* Encabezado que se compacta al bajar: solo transform (la altura real no cambia, nada se mueve debajo) */
+header > .contenedor img { transform-origin: left center; transition: transform var(--dur-media) var(--curva); }
+header, header > .contenedor { transition: transform var(--dur-media) var(--curva), box-shadow var(--dur-media) var(--curva); }
+.encabezado-compacto { transform: translateY(-12px); }
+.encabezado-compacto > .contenedor { transform: translateY(6px); }
+.encabezado-compacto > .contenedor img { transform: scale(.8); }
+@media (min-width: 1024px) {
+  .encabezado-compacto { transform: translateY(-20px); }
+  .encabezado-compacto > .contenedor { transform: translateY(10px); }
+}
+
+/* Tarjetas: inclinación 3D que sigue al cursor (solo mouse; movimiento.js pone --rx/--ry)
+   y un brillo diagonal que las recorre al entrar el cursor */
+.tarjeta-interactiva { position: relative; }
+.tarjeta-interactiva.inclinando { transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-3px); transition-duration: var(--dur-rapida); }
+.tarjeta-interactiva::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / .14) 50%, transparent 65%); transform: translateX(-110%); }
+.tarjeta-clara.tarjeta-interactiva::after { background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / .55) 50%, transparent 65%); }
+@media (hover: hover) and (pointer: fine) {
+  .tarjeta-interactiva:hover::after { transform: translateX(110%); transition: transform 900ms var(--curva); }
+}
+
+/* Carrito: el ícono rebota y el contador hace "pop" al agregar; la miniatura vuela hasta él */
+@keyframes rebote-carrito { 0% { transform: none; } 30% { transform: translateY(-6px) rotate(-8deg); } 55% { transform: translateY(0) rotate(5deg); } 75% { transform: translateY(-2px) rotate(-2deg); } 100% { transform: none; } }
+@keyframes pop-contador { 0% { transform: scale(1); } 40% { transform: scale(1.5); } 100% { transform: scale(1); } }
+.carrito-rebota > svg { animation: rebote-carrito var(--dur-lenta) var(--curva); }
+.carrito-rebota [data-carrito-contador] { animation: pop-contador var(--dur-media) var(--curva); }
+.miniatura-vuela { position: fixed; z-index: 70; pointer-events: none; border-radius: .5rem; object-fit: contain; background-color: #fff; box-shadow: 0 12px 30px -8px rgb(0 0 0 / .6); }
+
+/* Botones con efecto magnético (movimiento.js usa la propiedad "translate", que se suma al transform del hover) */
+.magnetico { transition-property: color, background-color, border-color, box-shadow, transform, translate; }
+
+/* ---------------------------------------------------------------------
    "Reducir movimiento": todo aparece y cambia sin animación.
    Va al FINAL del archivo para ganarle a los :hover anteriores (misma especificidad).
    --------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .portada-foto, .foto-entrar, .portada-entrar, .escalonado.visible > *, .ventana-consulta[open],
-  .testimonio.animar .testimonio-entra, .testimonio.animar .testimonio-foto,
-  .portada-franja, .derrape, .lineas-velocidad, .racing-entra, .cinta-racing-pista { animation: none; }
+  /* Sin desplazamientos, giros ni máscaras: solo fundidos */
+  .portada-foto, .foto-entrar, .portada-entrar, .ventana-consulta[open],
+  .portada-franja, .derrape, .racing-entra, .escalonado.visible > * { animation: fundir var(--dur-lenta) linear both; }
+  .lineas-velocidad, .cinta-racing-pista, .carrito-rebota > svg, .carrito-rebota [data-carrito-contador] { animation: none; }
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
-  .js .aparecer, .js .escalonado:not(.visible) > * { opacity: 1; transform: none; filter: none; transition: none; }
-  header, .btn, .btn-primario, .btn-secundario, .btn-claro, .tarjeta-interactiva,
+  .js .aparecer, .js .aparecer.desde-izq:not(.visible), .js .aparecer.desde-der:not(.visible) { transform: none; filter: none; }
+  .js .aparecer.visible { transition: opacity var(--dur-lenta) linear; }
+  .js .revelar:not(.visible) { clip-path: none; opacity: 0; }
+  .js .revelar.visible { clip-path: none; opacity: 1; transition: opacity var(--dur-lenta) linear; }
+  .js .revelar:not(.visible) img, .js .revelar:not(.visible) video { transform: none; }
+  /* Testimonios: siguen rotando solos (se pueden pausar con el botón), pero con un fundido simple */
+  .testimonio.saliendo, .testimonio.saliendo.atras { animation: desfundir var(--dur-media) linear forwards; }
+  .testimonio.animar, .testimonio.animar.atras { animation: fundir var(--dur-media) linear both; }
+  .testimonio.animar .testimonio-entra, .testimonio.animar .testimonio-foto { animation: none; }
+  header, header > .contenedor, header > .contenedor img, .btn, .btn-primario, .btn-secundario, .btn-claro, .tarjeta-interactiva,
   .btn-sesgo, .btn-sesgo-rojo .flechita, .beneficio::before, .beneficio-numero, .beneficio-texto { transition: none; }
-  .btn-sesgo-rojo:hover { transform: skewX(-12deg); }
-  .btn-sesgo-rojo:hover .flechita { transform: none; }
+  .encabezado-compacto, .encabezado-compacto > .contenedor, .encabezado-compacto > .contenedor img { transform: none; }
   .btn:hover, .btn-primario:hover, .btn-secundario:hover, .btn-claro:hover,
   .btn:active, .btn-primario:active, .btn-secundario:active, .btn-claro:active,
-  .tarjeta-interactiva:hover { transform: none; }
+  .tarjeta-interactiva:hover, .tarjeta-interactiva.inclinando { transform: none; }
+  .tarjeta-interactiva::after { display: none; }
+  .btn-sesgo-rojo:hover { transform: skewX(-12deg); }
+  .btn-sesgo-rojo:hover .flechita { transform: none; }
 }

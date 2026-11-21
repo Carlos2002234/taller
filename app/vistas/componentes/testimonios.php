@@ -3,7 +3,8 @@
  * Bloque "Lo que dicen nuestros clientes": mensajes reales de WhatsApp.
  * Diseño (2026-11-21, aprobado por el dueño): una tarjeta grande con UN testimonio a la vez (frase destacada,
  * resto del mensaje y la captura original en un marco de teléfono) y al lado la lista de los 3 para elegir.
- * Cambia solo cada 8 s (se pausa con el mouse encima, con el foco del teclado o con el botón "Pausar");
+ * Cambia solo cada 8 s (también con "reducir movimiento", con fundido). Se pausa con el mouse sobre la tarjeta,
+ * con el foco del teclado o con el botón "Pausar"; se cambia con la lista, las flechas, ← → o deslizando el dedo;
  * la lógica está en public/js/app.js ([data-testimonios]) y los estilos en resources/css/app.css.
  * Mejora progresiva: sin JavaScript se ven los 3 testimonios completos, uno debajo del otro.
  * Las capturas se recortaron a la burbuja del mensaje para quitar los números de teléfono
@@ -82,9 +83,10 @@ $dos_digitos = fn (int $n): string => str_pad((string) $n, 2, '0', STR_PAD_LEFT)
         </div>
     </div>
 
-    <div class="testimonios-rejilla aparecer mt-12 grid gap-5" data-testimonios data-segundos="<?= $segundos ?>">
+    <div class="testimonios-rejilla aparecer desde-izq mt-12 grid gap-5" data-testimonios data-segundos="<?= $segundos ?>">
         <!-- Testimonios: sin JavaScript se ven los 3; con JavaScript, uno a la vez (el resto queda oculto) -->
-        <div id="testimonios-paneles" class="testimonios-paneles flex min-w-0 flex-col gap-5" aria-live="polite" data-testimonios-paneles>
+        <div id="testimonios-paneles" class="testimonios-paneles flex min-w-0 flex-col gap-5" aria-live="polite" tabindex="0"
+             role="group" aria-roledescription="carrusel" aria-label="Testimonios (flechas ← → para cambiar)" data-testimonios-paneles>
             <?php foreach ($testimonios as $i => $t): ?>
                 <figure id="testimonio-<?= $i + 1 ?>" class="testimonio <?= $i === 0 ? 'activo' : '' ?> flex min-w-0 flex-col gap-10 rounded-xl border border-rivera-borde bg-[#141414] p-7 sm:flex-row sm:p-12" data-testimonio>
                     <div class="flex min-w-0 flex-1 flex-col">

@@ -17,7 +17,7 @@ $accesos = [
             <li>
                 <a href="<?= e(url($ruta)) ?>"
                    class="relative flex h-full flex-col items-center justify-center gap-1 text-[11px] font-medium <?= $activo ? 'text-rivera-rojo-claro' : 'text-neutral-400' ?>"
-                   <?= $activo ? 'aria-current="page"' : '' ?>>
+                   <?= $activo ? 'aria-current="page"' : '' ?> <?= $ruta === 'carrito' ? 'data-carrito-icono' : '' ?>>
                     <?= icono($icono, 'h-6 w-6') ?>
                     <?= e($texto) ?>
                     <?php if ($ruta === 'carrito'): ?>

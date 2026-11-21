@@ -11,7 +11,9 @@ $menu = [
     'mi-pedido' => 'Mi pedido',
 ];
 ?>
-<!-- Barra negra sólida con el logo completo del manual de marca -->
+<!-- Barra fina roja de progreso de lectura (movimiento.js la llena al bajar) -->
+<div class="barra-lectura" data-barra-lectura aria-hidden="true"></div>
+<!-- Barra negra sólida con el logo completo del manual de marca (se compacta al bajar) -->
 <header class="sticky top-0 z-40 border-b border-white/10 bg-rivera-negro">
     <div class="contenedor flex h-20 items-center gap-6 lg:h-24">
         <!-- Logo -->
@@ -38,7 +40,7 @@ $menu = [
             </form>
 
             <!-- Carrito -->
-            <a href="<?= e(url('carrito')) ?>" class="relative rounded-md p-2 text-neutral-200 hover:text-white" aria-label="Ver carrito">
+            <a href="<?= e(url('carrito')) ?>" class="relative rounded-md p-2 text-neutral-200 hover:text-white" aria-label="Ver carrito" data-carrito-icono>
                 <?= icono('carrito', 'h-6 w-6') ?>
                 <span data-carrito-contador
                       class="absolute -right-0.5 -top-0.5 hidden h-5 min-w-5 items-center justify-center rounded-full bg-rivera-rojo px-1 text-[11px] font-semibold text-white">0</span>

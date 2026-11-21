@@ -19,17 +19,26 @@
 
   // Animaciones al bajar: las secciones .aparecer, las grillas .escalonado y el bloque racing del inicio se muestran UNA vez,
   // cuando el 15% entra en pantalla (los estilos están en "Movimiento", resources/css/app.css)
-  var animables = document.querySelectorAll('.aparecer, .escalonado, .portada-racing');
+  var animables = document.querySelectorAll('.aparecer, .escalonado, .revelar, .portada-racing');
   if ('IntersectionObserver' in window) {
+    // Un .revelar empieza recortado por completo (clip-path) y el navegador no lo cuenta como "visible":
+    // se observa su contenedor y, al entrar, se destapa el elemento.
+    var destinos = new Map();
     var observador = new IntersectionObserver(function (entradas) {
       entradas.forEach(function (entrada) {
         if (entrada.isIntersecting) {
-          entrada.target.classList.add('visible');
+          (destinos.get(entrada.target) || []).forEach(function (el) { el.classList.add('visible'); });
+          destinos.delete(entrada.target);
           observador.unobserve(entrada.target);
         }
       });
     }, { threshold: 0.15 });
-    animables.forEach(function (el) { observador.observe(el); });
+    animables.forEach(function (el) {
+      var mirar = el.classList.contains('revelar') ? el.parentElement : el;
+      if (!destinos.has(mirar)) destinos.set(mirar, []);
+      destinos.get(mirar).push(el);
+      observador.observe(mirar);
+    });
   } else {
     animables.forEach(function (el) { el.classList.add('visible'); });
   }
@@ -78,14 +87,18 @@
     }
   });
 
-  // Testimonios del inicio: un testimonio a la vez que cambia solo cada N segundos.
-  // - El tiempo lo marca la animación de la barra roja del activo: al terminar, pasa al siguiente.
-  //   Así la pausa (mouse encima, foco del teclado, botón "Pausar" o sección fuera de pantalla)
-  //   congela la barra y el temporizador juntos, sin relojes que se desfasen.
-  // - Elegir uno a mano (lista o flechas) reinicia el tiempo.
-  // - Con "reducir movimiento" no cambia solo ni anima: se elige con la lista o las flechas.
-  // - Mientras cambia solo, la zona no se anuncia (aria-live="off") para no interrumpir cada 8 s
-  //   a quien usa lector de pantalla; al elegir a mano sí se anuncia ("polite").
+  // Testimonios del inicio: un testimonio a la vez que cambia SOLO cada N segundos.
+  // Por qué antes "no cambiaban" (revisado 2026-11-21):
+  //   1) con "Reducir movimiento" (macOS/iOS) la rotación se apagaba por completo;
+  //   2) se pausaba con el cursor en CUALQUIER parte de la tarjeta o de la lista;
+  //   3) solo corría si se veía el 35% de toda la rejilla, que en el celular mide más
+  //      que la pantalla: en teléfonos bajos nunca arrancaba.
+  // Ahora: rota siempre (con "reducir movimiento" solo con fundido), pausa con el cursor
+  // sobre la tarjeta activa, con el foco del teclado o con el botón Pausar/Reanudar, y
+  // mira si se ve la tarjeta (no toda la rejilla). El tiempo lo lleva un temporizador
+  // propio que recuerda cuánto faltaba al pausar; la barra roja solo lo muestra.
+  // También: deslizar con el dedo y flechas ← → del teclado cuando el carrusel tiene foco.
+  // Mientras cambia solo, la zona no se anuncia (aria-live="off"); al elegir a mano sí ("polite").
   // Sin JavaScript, el CSS muestra los 3 testimonios completos y oculta los controles.
   document.querySelectorAll('[data-testimonios]').forEach(function (raiz) {
     var paneles = raiz.querySelectorAll('[data-testimonio]');
@@ -96,22 +109,31 @@
     if (paneles.length < 2 || paneles.length !== opciones.length) return;
 
     var segundos = parseInt(raiz.getAttribute('data-segundos'), 10) || 8;
-    var reducido = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var duracion = segundos * 1000;
     var activo = 0;
     var pausa = { mouse: false, foco: false, usuario: false, fuera: true };
+    var temporizador = null, inicio = 0, restante = duracion;
 
     raiz.style.setProperty('--testimonio-duracion', segundos + 's');
-    raiz.classList.toggle('testimonios-manual', reducido);
 
-    var detenido = function () { return reducido || pausa.mouse || pausa.foco || pausa.usuario || pausa.fuera; };
+    var detenido = function () { return pausa.mouse || pausa.foco || pausa.usuario || pausa.fuera; };
+
+    // Temporizador que se puede pausar y reanudar sin perder lo que ya avanzó
+    var parar = function () {
+      if (temporizador === null) return;
+      clearTimeout(temporizador);
+      temporizador = null;
+      restante = Math.max(0, restante - (Date.now() - inicio));
+    };
+    var seguir = function () {
+      if (temporizador !== null || detenido()) return;
+      inicio = Date.now();
+      temporizador = setTimeout(function () { temporizador = null; restante = duracion; ir(activo + 1, false, false); }, restante);
+    };
 
     var mostrarEstado = function () {
+      if (detenido()) parar(); else seguir();
       raiz.classList.toggle('testimonios-en-pausa', detenido());
-      if (reducido) {
-        estado.textContent = 'Usa las flechas para cambiar';
-        botonPausa.hidden = true;
-        return;
-      }
       var enPausa = pausa.mouse || pausa.foco || pausa.usuario;
       estado.textContent = enPausa ? 'En pausa' : 'Cambia solo cada ' + segundos + ' s';
       botonPausa.textContent = pausa.usuario ? 'Reanudar' : 'Pausar';
@@ -120,39 +142,50 @@
     // Reinicia la barra del activo (quitar la clase, forzar el redibujo y volver a ponerla)
     var arrancarBarra = function () {
       opciones.forEach(function (opcion) { opcion.querySelector('[data-testimonio-barra]').classList.remove('corriendo'); });
-      if (reducido) return;
       var barra = opciones[activo].querySelector('[data-testimonio-barra]');
       void barra.offsetWidth;
       barra.classList.add('corriendo');
     };
 
-    var ir = function (indice, manual) {
-      activo = (indice + paneles.length) % paneles.length;
+    var ir = function (indice, manual, atras) {
+      var nuevo = (indice + paneles.length) % paneles.length;
+      if (nuevo === activo) return;
+      var anterior = paneles[activo];
+      activo = nuevo;
       zona.setAttribute('aria-live', manual ? 'polite' : 'off');
-      paneles.forEach(function (panel, i) {
-        var esActivo = i === activo;
-        panel.classList.toggle('activo', esActivo);
-        panel.classList.remove('animar');
-        if (esActivo) { void panel.offsetWidth; panel.classList.add('animar'); }
-      });
+
+      paneles.forEach(function (panel) { panel.classList.remove('saliendo', 'animar', 'atras'); });
+      // El saliente se queda visible mientras se va (la clase se quita al terminar su animación)
+      anterior.classList.remove('activo');
+      anterior.classList.toggle('atras', !!atras);
+      anterior.classList.add('saliendo');
+      setTimeout(function () { anterior.classList.remove('saliendo', 'atras'); }, 600);
+
+      var entrante = paneles[activo];
+      entrante.classList.add('activo');
+      entrante.classList.toggle('atras', !!atras);
+      void entrante.offsetWidth;
+      entrante.classList.add('animar');
+
       opciones.forEach(function (opcion, i) { opcion.setAttribute('aria-pressed', i === activo ? 'true' : 'false'); });
+      parar();
+      restante = duracion;
       arrancarBarra();
+      mostrarEstado();
     };
 
     opciones.forEach(function (opcion, i) {
-      opcion.addEventListener('click', function () { ir(i, true); });
-      opcion.querySelector('[data-testimonio-barra]').addEventListener('animationend', function () {
-        ir(activo + 1, false); // solo termina si estaba corriendo (en pausa la animación se congela)
-      });
+      opcion.addEventListener('click', function () { ir(i, true, i < activo); });
     });
-    raiz.querySelector('[data-testimonio-anterior]').addEventListener('click', function () { ir(activo - 1, true); });
-    raiz.querySelector('[data-testimonio-siguiente]').addEventListener('click', function () { ir(activo + 1, true); });
+    raiz.querySelector('[data-testimonio-anterior]').addEventListener('click', function () { ir(activo - 1, true, true); });
+    raiz.querySelector('[data-testimonio-siguiente]').addEventListener('click', function () { ir(activo + 1, true, false); });
     botonPausa.addEventListener('click', function () { pausa.usuario = !pausa.usuario; mostrarEstado(); });
 
-    // Pausa con el mouse encima (solo mouse: en el celular un toque no debe dejarlo pausado para siempre)
-    raiz.addEventListener('pointerenter', function (evento) { if (evento.pointerType === 'mouse') { pausa.mouse = true; mostrarEstado(); } });
-    raiz.addEventListener('pointerleave', function (evento) { if (evento.pointerType === 'mouse') { pausa.mouse = false; mostrarEstado(); } });
-    // Pausa con el foco del teclado (el foco que deja un clic no cuenta: si no, quedaría pausado tras elegir)
+    // Pausa solo con el cursor sobre la tarjeta activa (no sobre la lista ni los botones)
+    zona.addEventListener('pointerenter', function (evento) { if (evento.pointerType === 'mouse') { pausa.mouse = true; mostrarEstado(); } });
+    zona.addEventListener('pointerleave', function (evento) { if (evento.pointerType === 'mouse') { pausa.mouse = false; mostrarEstado(); } });
+
+    // Pausa con el foco del teclado (el foco que deja un clic no cuenta)
     raiz.addEventListener('focusin', function (evento) {
       var conTeclado = true;
       try { conTeclado = evento.target.matches(':focus-visible'); } catch (e) { /* navegador viejo: se asume teclado */ }
@@ -162,15 +195,44 @@
     raiz.addEventListener('focusout', function (evento) {
       if (!raiz.contains(evento.relatedTarget)) { pausa.foco = false; mostrarEstado(); }
     });
-    // Solo corre mientras se ve en pantalla (así nadie llega a la sección a mitad de un cambio)
+
+    // Flechas del teclado cuando el foco está dentro del carrusel
+    raiz.addEventListener('keydown', function (evento) {
+      if (evento.key === 'ArrowRight') { evento.preventDefault(); ir(activo + 1, true, false); }
+      if (evento.key === 'ArrowLeft') { evento.preventDefault(); ir(activo - 1, true, true); }
+    });
+
+    // Deslizar con el dedo sobre la tarjeta (horizontal; el scroll vertical no se toca)
+    var toque = null;
+    zona.addEventListener('pointerdown', function (evento) {
+      if (evento.pointerType !== 'mouse') toque = { x: evento.clientX, y: evento.clientY };
+    });
+    zona.addEventListener('pointerup', function (evento) {
+      if (!toque) return;
+      var dx = evento.clientX - toque.x, dy = evento.clientY - toque.y;
+      toque = null;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3) ir(activo + (dx < 0 ? 1 : -1), true, dx > 0);
+    });
+    zona.addEventListener('pointercancel', function () { toque = null; });
+
+    // Solo corre mientras la tarjeta se ve (no hace falta ver toda la rejilla)
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(function (entradas) {
         pausa.fuera = !entradas[0].isIntersecting;
         mostrarEstado();
-      }, { threshold: 0.35 }).observe(raiz);
+      }, { threshold: 0.25 }).observe(zona);
     } else {
       pausa.fuera = false;
     }
+    // Pestaña oculta: se congela y al volver sigue donde iba
+    document.addEventListener('visibilitychange', function () {
+      pausa.fuera = document.hidden || pausa.fuera;
+      if (!document.hidden && 'IntersectionObserver' in window) {
+        var caja = zona.getBoundingClientRect();
+        pausa.fuera = caja.bottom < 0 || caja.top > window.innerHeight;
+      }
+      mostrarEstado();
+    });
 
     arrancarBarra();
     mostrarEstado();
