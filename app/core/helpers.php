@@ -198,6 +198,30 @@ function horario_resumen(): string
     return $partes ? implode(' · ', $partes) : 'Escríbenos para coordinar tu visita';
 }
 
+/**
+ * El horario en pocas líneas, incluidos los días cerrados, ej.
+ * ["Lunes a sábado 8:00 a.m. – 5:00 p.m.", "Domingo cerrado"] (agrupa días seguidos iguales).
+ */
+function horario_lineas(): array
+{
+    $grupos = [];
+    foreach (horario_semana() as $dia => $horas) {
+        $ultimo = count($grupos) - 1;
+        if ($ultimo >= 0 && $grupos[$ultimo]['horas'] === $horas && $grupos[$ultimo]['hasta'] === $dia - 1) {
+            $grupos[$ultimo]['hasta'] = $dia;
+        } else {
+            $grupos[] = ['desde' => $dia, 'hasta' => $dia, 'horas' => $horas];
+        }
+    }
+    $lineas = [];
+    foreach ($grupos as $g) {
+        $dias = DIAS_SEMANA[$g['desde']] . ($g['hasta'] !== $g['desde'] ? ($g['hasta'] - $g['desde'] > 1 ? ' a ' : ' y ') . DIAS_SEMANA[$g['hasta']] : '');
+        $dias = mb_strtoupper(mb_substr($dias, 0, 1)) . mb_substr($dias, 1);
+        $lineas[] = $dias . ' ' . ($g['horas'] ? hora_12($g['horas'][0]) . ' – ' . hora_12($g['horas'][1]) : 'cerrado');
+    }
+    return $lineas;
+}
+
 /** Fecha y hora actual en Costa Rica. */
 function ahora_costa_rica(): DateTimeImmutable
 {
@@ -219,6 +243,7 @@ function duracion_corta(int $minutos): string
  *   texto    "Abierto ahora · cierra a las 5:00 p.m." | "Cerrado · abre mañana a las 8:00 a.m."
  *   cuenta   "Cierra en 2 h 15 min" | "Abre en 9 h 30 min" | "Abre el lunes a las 8:00 a.m." (si falta más de un día)
  *   progreso 0–100: cuánto va de la jornada de hoy (null si está cerrado)
+ *   simple   "Abierto hoy hasta las 5:00 p.m." | "Cerrado · abrimos el lunes a las 8:00 a.m." (texto sobrio de /ubicacion)
  *   hoy      1–7 (1 = lunes)
  * app.js (bloque "Horario") lo recalcula cada minuto con la misma regla.
  */
@@ -235,6 +260,7 @@ function horario_estado(?DateTimeImmutable $ahora = null): array
             'abierto'  => true,
             'titulo'   => 'Abierto ahora',
             'texto'    => 'Abierto ahora · cierra a las ' . hora_12($semana[$hoy][1]),
+            'simple'   => 'Abierto hoy hasta las ' . hora_12($semana[$hoy][1]),
             'cuenta'   => 'Cierra en ' . duracion_corta($cierra - $minuto),
             'progreso' => (int) round(($minuto - $abre) * 100 / ($cierra - $abre)),
             'hoy'      => $hoy,
@@ -252,19 +278,20 @@ function horario_estado(?DateTimeImmutable $ahora = null): array
             'abierto'  => false,
             'titulo'   => 'Cerrado',
             'texto'    => 'Cerrado · abre ' . $cuando . ' a las ' . hora_12($horas[0]),
+            'simple'   => 'Cerrado · abrimos ' . $cuando . ' a las ' . hora_12($horas[0]),
             'cuenta'   => $faltan < 1440 ? 'Abre en ' . duracion_corta($faltan) : 'Abre ' . $cuando . ' a las ' . hora_12($horas[0]),
             'progreso' => null,
             'hoy'      => $hoy,
         ];
     }
-    return ['abierto' => false, 'titulo' => 'Cerrado', 'texto' => 'Cerrado', 'cuenta' => '', 'progreso' => null, 'hoy' => $hoy];
+    return ['abierto' => false, 'titulo' => 'Cerrado', 'texto' => 'Cerrado', 'cuenta' => '', 'progreso' => null, 'simple' => 'Cerrado', 'hoy' => $hoy];
 }
 
 /** Enlace para incrustar el mapa en el punto exacto del taller (se carga solo si la persona lo pide). */
 function mapa_embed_url(): ?string
 {
     $punto = coordenadas_negocio();
-    return $punto ? 'https://maps.google.com/maps?q=' . rawurlencode($punto[0] . ',' . $punto[1]) . '&z=16&output=embed' : null;
+    return $punto ? 'https://maps.google.com/maps?q=' . rawurlencode($punto[0] . ',' . $punto[1]) . '&z=17&output=embed' : null;
 }
 
 /**

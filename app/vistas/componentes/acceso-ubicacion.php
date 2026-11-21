@@ -1,22 +1,12 @@
 <?php
 /**
- * Acceso discreto a la página /ubicacion (Inicio y Servicios): estado "Abierto ahora / Cerrado"
- * (se actualiza solo cada minuto, app.js [data-horario]) + dirección corta + enlace "Ver ubicación y horario".
+ * Acceso discreto a /ubicacion (Inicio y Servicios): una línea de texto simple
+ * "Cómo llegar · Abierto hoy hasta las 5:00 p.m." (el estado se refresca cada minuto, app.js [data-horario]).
  */
-$estado = horario_estado();
 ?>
-<section class="contenedor pt-5" aria-label="Ubicación y horario">
-    <a href="<?= e(url('ubicacion')) ?>" class="acceso-ubicacion aparecer group" data-horario="<?= e(json_encode(horario_semana())) ?>">
-        <span class="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2">
-            <span class="estado-horario <?= $estado['abierto'] ? 'abierto' : '' ?>" data-horario-estado>
-                <span class="estado-horario-punto" aria-hidden="true"></span>
-                <span data-horario-texto><?= e($estado['texto']) ?></span>
-            </span>
-            <span class="text-sm text-neutral-300"><?= e(ajuste('direccion')) ?></span>
-        </span>
-        <span class="flex shrink-0 items-center gap-2 font-display text-sm font-bold uppercase italic tracking-wide text-white">
-            Ver ubicación y horario
-            <span class="text-rivera-rojo-claro transition-transform motion-safe:group-hover:translate-x-1"><?= icono('flecha', 'h-4 w-4') ?></span>
-        </span>
-    </a>
+<section class="contenedor pt-8" aria-label="Ubicación">
+    <p class="text-sm text-neutral-400" data-horario="<?= e(json_encode(horario_semana())) ?>">
+        <a href="<?= e(url('ubicacion')) ?>" class="font-semibold text-white underline decoration-white/30 underline-offset-4 hover:decoration-white">Cómo llegar</a>
+        <span aria-hidden="true"> · </span><span data-horario-simple><?= e(horario_estado()['simple']) ?></span>
+    </p>
 </section>

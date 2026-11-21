@@ -19,7 +19,7 @@
 
   // Animaciones al bajar: las secciones .aparecer, las grillas .escalonado y el bloque racing del inicio se muestran UNA vez,
   // cuando el 15% entra en pantalla (los estilos están en "Movimiento", resources/css/app.css)
-  var animables = document.querySelectorAll('.aparecer, .escalonado, .revelar, .mapa-recorte, .portada-racing');
+  var animables = document.querySelectorAll('.aparecer, .escalonado, .revelar, .portada-racing');
   if ('IntersectionObserver' in window) {
     // Un .revelar empieza recortado por completo (clip-path) y el navegador no lo cuenta como "visible":
     // se observa su contenedor y, al entrar, se destapa el elemento.
@@ -34,7 +34,7 @@
       });
     }, { threshold: 0.15 });
     animables.forEach(function (el) {
-      var mirar = el.classList.contains('revelar') || el.classList.contains('mapa-recorte') ? el.parentElement : el;
+      var mirar = el.classList.contains('revelar') ? el.parentElement : el;
       if (!destinos.has(mirar)) destinos.set(mirar, []);
       destinos.get(mirar).push(el);
       observador.observe(mirar);
@@ -265,10 +265,11 @@
       bloques.forEach(function (bloque) {
         var semana;
         try { semana = JSON.parse(bloque.getAttribute('data-horario')); } catch (e) { return; }
-        var hoy = semana[ahora.dia], abierto = false, texto = 'Cerrado', cuenta = '', progreso = 0;
+        var hoy = semana[ahora.dia], abierto = false, texto = 'Cerrado', cuenta = '', progreso = 0, simple = 'Cerrado';
         if (hoy && ahora.minuto >= minutos(hoy[0]) && ahora.minuto < minutos(hoy[1])) {
           abierto = true;
           texto = 'Abierto ahora · cierra a las ' + hora12(hoy[1]);
+          simple = 'Abierto hoy hasta las ' + hora12(hoy[1]);
           cuenta = 'Cierra en ' + duracion(minutos(hoy[1]) - ahora.minuto);
           progreso = Math.round((ahora.minuto - minutos(hoy[0])) * 100 / (minutos(hoy[1]) - minutos(hoy[0])));
         } else {
@@ -278,6 +279,7 @@
             var cuando = i === 0 ? 'hoy' : i === 1 ? 'mañana' : 'el ' + DIAS[d];
             var faltan = i * 1440 + minutos(h[0]) - ahora.minuto;
             texto = 'Cerrado · abre ' + cuando + ' a las ' + hora12(h[0]);
+            simple = 'Cerrado · abrimos ' + cuando + ' a las ' + hora12(h[0]);
             cuenta = faltan < 1440 ? 'Abre en ' + duracion(faltan) : 'Abre ' + cuando + ' a las ' + hora12(h[0]);
             break;
           }
@@ -287,6 +289,7 @@
         poner('[data-horario-texto]', texto);
         poner('[data-horario-titulo]', abierto ? 'Abierto ahora' : 'Cerrado');
         poner('[data-horario-cuenta]', cuenta);
+        poner('[data-horario-simple]', simple);
         var barra = bloque.querySelector('[data-horario-progreso]');
         if (barra) barra.style.width = progreso + '%'; // CSSOM (permitido por la CSP)
         bloque.querySelectorAll('[data-dia]').forEach(function (fila) {
@@ -299,26 +302,6 @@
     actualizar();
     setInterval(actualizar, 60000);
   })();
-
-  // Visítanos: el mapa interactivo de Google se carga solo si la persona lo pide (más rápido y más privado).
-  // Sin JavaScript, el mismo botón abre Google Maps en una pestaña nueva.
-  document.addEventListener('click', function (evento) {
-    var boton = evento.target.closest('[data-cargar-mapa]');
-    if (!boton) return;
-    var contenedor = boton.closest('[data-mapa]');
-    if (!contenedor) return;
-    evento.preventDefault();
-    var mapa = document.createElement('iframe');
-    mapa.src = boton.getAttribute('data-cargar-mapa');
-    mapa.title = boton.getAttribute('data-mapa-titulo') || 'Mapa de ubicación';
-    mapa.loading = 'lazy';
-    mapa.referrerPolicy = 'no-referrer-when-downgrade';
-    mapa.className = 'mapa-iframe';
-    mapa.setAttribute('allowfullscreen', '');
-    contenedor.insertBefore(mapa, contenedor.firstChild);
-    contenedor.classList.add('mapa-cargado');
-    mapa.focus();
-  });
 
   // Encabezado transparente sobre la portada: se vuelve sólido al bajar o al abrir el menú
   var cuerpo = document.querySelector('[data-encabezado]');
