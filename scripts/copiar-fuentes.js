@@ -11,6 +11,7 @@ const fuentes = [
   'saira/files/saira-latin-700-italic.woff2',
   'saira/files/saira-latin-800-normal.woff2',
   'saira/files/saira-latin-800-italic.woff2',
+  'saira/files/saira-latin-900-italic.woff2', // título de la portada (racing)
   'inter/files/inter-latin-400-normal.woff2',
   'inter/files/inter-latin-500-normal.woff2',
   'inter/files/inter-latin-600-normal.woff2',
