@@ -143,7 +143,7 @@ $marcas = ['Havoline', 'Castrol', 'Chevron', 'Delo', 'Vonixx', 'Malco'];
         <div class="aparecer desde-der flex flex-col justify-center">
             <p class="etiqueta-seccion">Taller de servicio</p>
             <h2 id="taller" class="mt-3 text-3xl font-extrabold leading-[1.02] tracking-tight sm:text-4xl xl:text-5xl">Cuidamos tu auto<br><span class="text-rivera-rojo">como si fuera nuestro</span></h2>
-            <ol class="mt-7 border-t border-white/10">
+            <ol class="escalonado mt-7 border-t border-white/10">
                 <?php foreach ($servicios as $i => $servicio): ?>
                     <li class="flex min-h-[3.25rem] items-center gap-4 border-b border-white/10">
                         <span class="w-7 font-display text-sm font-bold italic text-rivera-rojo-claro" aria-hidden="true"><?= sprintf('%02d', $i + 1) ?></span>

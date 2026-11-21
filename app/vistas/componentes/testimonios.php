@@ -61,26 +61,10 @@ $segundos = 8;
 $dos_digitos = fn (int $n): string => str_pad((string) $n, 2, '0', STR_PAD_LEFT);
 ?>
 <section class="contenedor pt-20 sm:pt-28" aria-labelledby="testimonios">
-    <div class="aparecer flex flex-wrap items-end justify-between gap-x-16 gap-y-6 border-b border-white/10 pb-9">
-        <div>
-            <p class="etiqueta-seccion">Testimonios</p>
-            <h2 id="testimonios" class="mt-3 text-4xl font-extrabold leading-none tracking-tight sm:text-5xl">Lo que dicen<br><span class="text-rivera-rojo">nuestros clientes</span></h2>
-        </div>
-        <div class="flex max-w-sm flex-col gap-4">
-            <p class="text-[0.95rem] leading-relaxed text-neutral-400">
-                Mensajes reales que nos enviaron por WhatsApp después de su mantenimiento. Solo ocultamos los números de teléfono y las placas.
-            </p>
-            <ul class="flex flex-wrap gap-2" aria-label="Sobre estos testimonios">
-                <li class="inline-flex items-center gap-1.5 rounded-full border border-rivera-borde px-2.5 py-1.5 text-xs text-neutral-300">
-                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                    Clientes verificados
-                </li>
-                <li class="inline-flex items-center gap-1.5 rounded-full border border-rivera-borde px-2.5 py-1.5 text-xs text-neutral-300">
-                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20.5l1.6-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>
-                    Captura original incluida
-                </li>
-            </ul>
-        </div>
+    <!-- Encabezado (sin el párrafo ni las píldoras, quitados por el dueño 2026-11-21) -->
+    <div class="aparecer border-b border-white/10 pb-9">
+        <p class="etiqueta-seccion">Testimonios</p>
+        <h2 id="testimonios" class="mt-3 text-4xl font-extrabold leading-none tracking-tight sm:text-5xl">Lo que dicen<br><span class="text-rivera-rojo">nuestros clientes</span></h2>
     </div>
 
     <div class="testimonios-rejilla aparecer desde-izq mt-12 grid gap-5" data-testimonios data-segundos="<?= $segundos ?>">

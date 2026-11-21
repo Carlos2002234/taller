@@ -21,6 +21,10 @@
   var encabezado = document.querySelector('header');
   var fachada = escritorio && punteroFino && !reducido ? document.querySelector('main picture > img.foto-entrar') : null;
   var pista = reducido ? null : document.querySelector('.cinta-racing-pista');
+  // Línea de tiempo de "Cómo trabajamos" (servicios): se llena con el scroll y enciende cada número al llegar.
+  // Con "reducir movimiento" no se ata al scroll: queda llena (sin JS también, por CSS).
+  var lineasTiempo = reducido ? [] : Array.prototype.slice.call(document.querySelectorAll('[data-linea-tiempo]'));
+  lineasTiempo.forEach(function (linea) { linea.setAttribute('data-linea-lista', ''); });
   var animacionCinta = null;
   var velocidadCinta = 1;
   var ultimoY = window.scrollY;
@@ -47,6 +51,19 @@
         fachada.style.translate = '0 ' + desplazamiento.toFixed(1) + 'px';
       }
     }
+
+    // Línea de tiempo: empieza cuando la lista asoma por abajo y termina antes de que salga por arriba
+    lineasTiempo.forEach(function (linea) {
+      var caja = linea.getBoundingClientRect();
+      var alto = window.innerHeight;
+      var avance = Math.max(0, Math.min(1, (alto * 0.85 - caja.top) / (caja.height + alto * 0.35)));
+      var pasos = linea.children;
+      for (var i = 0; i < pasos.length; i++) {
+        var llenado = Math.max(0, Math.min(1, avance * pasos.length - i));
+        pasos[i].style.setProperty('--llenado', llenado.toFixed(3));
+        pasos[i].classList.toggle('activo', llenado > 0.02);
+      }
+    });
 
     // Cinta: más rápida mientras se baja rápido; vuelve sola a su ritmo
     if (pista) {

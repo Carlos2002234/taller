@@ -336,6 +336,78 @@ header, header > .contenedor { transition: transform var(--dur-media) var(--curv
 .magnetico { transition-property: color, background-color, border-color, box-shadow, transform, translate; }
 
 /* ---------------------------------------------------------------------
+   Página de servicios (y piezas compartidas con el inicio). Pedido del dueño 2026-11-21:
+   "más animaciones y transiciones, que se vea más elegante, como una web profesional".
+   Sin JavaScript todo se ve completo; con "reducir movimiento", solo fundidos.
+   --------------------------------------------------------------------- */
+
+/* Etiquetas de sección: la línea roja se dibuja de izquierda a derecha al aparecer */
+.etiqueta-seccion::before { transform-origin: left center; }
+.js .aparecer:not(.visible) .etiqueta-seccion::before { transform: scaleX(0); }
+.js .aparecer.visible .etiqueta-seccion::before { transform: none; transition: transform var(--dur-lenta) var(--curva-corte) 120ms; }
+.etiqueta-dibuja::before { animation: dibujar-linea var(--dur-lenta) var(--curva-corte) 200ms both; }
+@keyframes dibujar-linea { from { transform: scaleX(0); } }
+
+/* Titular por líneas: cada línea sube desde detrás de una máscara (el padding deja respirar la itálica) */
+.titulo-lineas .linea { display: block; overflow: hidden; padding: 0 .12em .1em 0; margin-bottom: -.1em; }
+.titulo-lineas .linea > span { display: inline-block; animation: subir-linea 900ms var(--curva) both; }
+.titulo-lineas .linea:nth-child(1) > span { animation-delay: 120ms; }
+.titulo-lineas .linea:nth-child(2) > span { animation-delay: calc(120ms + var(--escalon) * 2); }
+@keyframes subir-linea { from { transform: translate3d(0, 105%, 0) skewY(4deg); } }
+
+/* Foto de la portada: se destapa de derecha a izquierda */
+.foto-mascara { animation: destapar-foto 1.1s var(--curva-corte) 150ms both; }
+@keyframes destapar-foto { from { clip-path: inset(0 0 0 100% round .5rem); } to { clip-path: inset(0 0 0 0 round .5rem); } }
+
+/* Filas que entran alternando lados (se combina con .escalonado) */
+@keyframes entrar-izq { from { opacity: 0; transform: translate3d(-48px, 0, 0); filter: blur(6px); } }
+@keyframes entrar-der { from { opacity: 0; transform: translate3d(48px, 0, 0); filter: blur(6px); } }
+.escalonado-alterno.visible > :nth-child(odd) { animation-name: entrar-izq; }
+.escalonado-alterno.visible > :nth-child(even) { animation-name: entrar-der; }
+
+/* Fila de servicio: fondo suave, línea roja que se dibuja abajo, número y título que avanzan, flecha que se adelanta */
+.fila-servicio { position: relative; isolation: isolate; }
+.fila-servicio::before { content: ''; position: absolute; inset: 0 -1rem; z-index: -1; border-radius: .5rem; background-color: theme('colors.neutral.50'); opacity: 0; transition: opacity var(--dur-rapida) var(--curva); }
+.fila-servicio::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background-color: theme('colors.rivera.rojo'); transform: scaleX(0); transform-origin: left center; transition: transform var(--dur-media) var(--curva-corte); }
+.fila-numero, .fila-titulo, .fila-servicio .btn-claro svg { transition: transform var(--dur-media) var(--curva), color var(--dur-rapida) var(--curva); }
+@media (hover: hover) {
+  .fila-servicio:hover::before { opacity: 1; }
+  .fila-servicio:hover::after { transform: scaleX(1); }
+  .fila-servicio:hover .fila-numero { transform: translateX(4px); color: theme('colors.rivera.rojo'); }
+  .fila-servicio:hover .fila-titulo { transform: translateX(6px); }
+  .fila-servicio:hover .btn-claro { border-color: theme('colors.rivera.negro'); }
+  .fila-servicio:hover .btn-claro svg { transform: translateX(4px); }
+}
+.fila-servicio:focus-within::after { transform: scaleX(1); }
+
+/* Fotos tipo tarjeta (servicios): sin borde; el revelado con máscara viene de .revelar, la inclinación de movimiento.js */
+.tarjeta-foto { border: 0; }
+.tarjeta-foto img { transition: transform var(--dur-lenta) var(--curva); }
+@media (hover: hover) { .tarjeta-foto:hover img { transform: scale(1.05); } }
+/* Sobre fondo claro, una sombra más liviana (la de las tarjetas oscuras se ve como una mancha gris) */
+.fondo-claro .tarjeta-foto.tarjeta-interactiva:hover { box-shadow: 0 22px 40px -24px rgb(0 0 0 / .45); }
+.js .revelar.tarjeta-interactiva.visible { transition: clip-path 900ms var(--curva-corte), transform var(--dur-media) var(--curva), box-shadow var(--dur-media) var(--curva); }
+.js .revelar.tarjeta-interactiva.inclinando { transition-duration: 900ms, var(--dur-rapida), var(--dur-media); }
+.js .revelar.revelar-retraso.visible { transition-delay: 140ms, 0s, 0s; }
+
+/* Cómo trabajamos: línea de tiempo. Cada paso tiene su tramo (gris de fondo + rojo que se llena con --llenado)
+   y su número se enciende al llegar la línea. Sin JavaScript, todo lleno. */
+.paso { position: relative; }
+.paso::before, .paso::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background-color: theme('colors.neutral.700'); }
+.paso::after { height: 2px; background-color: theme('colors.rivera.rojo'); transform: scaleX(var(--llenado, 1)); transform-origin: left center; }
+.js .linea-tiempo[data-linea-lista] .paso::after { transform: scaleX(var(--llenado, 0)); }
+.paso-numero { color: theme('colors.neutral.600'); transition: color var(--dur-media) var(--curva), transform var(--dur-media) var(--curva); transform-origin: left bottom; }
+.paso.activo .paso-numero, .paso-final .paso-numero { color: theme('colors.rivera.rojo'); }
+.js .linea-tiempo[data-linea-lista] .paso:not(.activo) .paso-numero { color: theme('colors.neutral.600'); }
+.paso.activo .paso-numero { transform: scale(1.06); }
+
+/* Llamada final: franjas diagonales que se mueven muy lento y una franja roja de acento */
+.cta-franjas { position: relative; overflow: hidden; isolation: isolate; }
+.cta-franjas::before { content: ''; position: absolute; inset: -60% -20%; z-index: -1; pointer-events: none; background-image: repeating-linear-gradient(-55deg, transparent 0 46px, rgb(209 26 33 / .08) 46px 48px); animation: franjas-lentas 18s ease-in-out infinite alternate; }
+.cta-franjas::after { content: ''; position: absolute; top: -20%; bottom: -20%; right: 12%; width: 10px; z-index: -1; pointer-events: none; background-color: theme('colors.rivera.rojo'); opacity: .55; transform: skewX(-24deg); box-shadow: 22px 0 0 -3px rgb(209 26 33 / .35); }
+@keyframes franjas-lentas { to { transform: translate3d(-160px, 0, 0); } }
+
+/* ---------------------------------------------------------------------
    "Reducir movimiento": todo aparece y cambia sin animación.
    Va al FINAL del archivo para ganarle a los :hover anteriores (misma especificidad).
    --------------------------------------------------------------------- */
@@ -344,7 +416,13 @@ header, header > .contenedor { transition: transform var(--dur-media) var(--curv
   /* Sin desplazamientos, giros ni máscaras: solo fundidos */
   .portada-foto, .foto-entrar, .portada-entrar, .ventana-consulta[open],
   .portada-franja, .derrape, .racing-entra, .escalonado.visible > * { animation: fundir var(--dur-lenta) linear both; }
-  .lineas-velocidad, .cinta-racing-pista, .carrito-rebota > svg, .carrito-rebota [data-carrito-contador] { animation: none; }
+  .lineas-velocidad, .cinta-racing-pista, .carrito-rebota > svg, .carrito-rebota [data-carrito-contador], .cta-franjas::before { animation: none; }
+  .escalonado-alterno.visible > :nth-child(odd), .escalonado-alterno.visible > :nth-child(even),
+  .titulo-lineas .linea > span, .foto-mascara { animation: fundir var(--dur-lenta) linear both; }
+  .etiqueta-dibuja::before { animation: none; }
+  .js .aparecer:not(.visible) .etiqueta-seccion::before { transform: none; }
+  .fila-numero, .fila-titulo, .fila-servicio .btn-claro svg, .fila-servicio::after, .tarjeta-foto img, .paso-numero { transition: none; }
+  .fila-servicio:hover .fila-numero, .fila-servicio:hover .fila-titulo, .fila-servicio:hover .btn-claro svg, .tarjeta-foto:hover img, .paso.activo .paso-numero { transform: none; }
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
   .js .aparecer, .js .aparecer.desde-izq:not(.visible), .js .aparecer.desde-der:not(.visible) { transform: none; filter: none; }
   .js .aparecer.visible { transition: opacity var(--dur-lenta) linear; }
