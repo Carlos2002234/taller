@@ -189,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <?= $campo['tipo_entrega'] !== 'envio' ? 'checked' : '' ?>>
                         <span>
                             <span class="block text-sm font-semibold">Retiro en el taller</span>
-                            <span class="block text-xs text-neutral-600">Gratis · <?= e(ajuste('horario')) ?></span>
+                            <span class="block text-xs text-neutral-600">Gratis · <?= e(horario_resumen()) ?></span>
                         </span>
                     </label>
                     <label class="flex cursor-pointer gap-3 rounded-lg border-2 border-neutral-200 p-4 has-[:checked]:border-rivera-rojo has-[:checked]:bg-red-50/40 <?= $zonas ? '' : 'pointer-events-none opacity-50' ?>">

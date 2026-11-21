@@ -5,7 +5,7 @@
  */
 ?>
 <article class="tarjeta tarjeta-interactiva group flex flex-col p-6 hover:border-rivera-rojo/50">
-    <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-rivera-rojo/10 text-rivera-rojo transition duration-300 group-hover:scale-110 group-hover:bg-rivera-rojo group-hover:text-white">
+    <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-rivera-rojo/10 text-rivera-rojo transition motion-safe:group-hover:scale-110 group-hover:bg-rivera-rojo group-hover:text-white">
         <?= icono($servicio['icono'], 'h-7 w-7') ?>
     </span>
     <h3 class="mt-4 font-display text-lg font-bold"><?= e($servicio['nombre']) ?></h3>

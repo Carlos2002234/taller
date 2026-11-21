@@ -47,6 +47,7 @@ function rutas(): array
         'checkout'           => ['checkout', false, 'html'],
         'pedido-confirmado'  => ['pedido-confirmado', false, 'html'],
         'servicios'          => ['servicios', false, 'html'],
+        'ubicacion'          => ['ubicacion', false, 'html'],
         'contacto'           => ['contacto', false, 'html'],
         'terminos'           => ['legal', false, 'html'],
         'privacidad'         => ['legal', false, 'html'],
@@ -132,7 +133,9 @@ function buscar_ruta(string $url): ?array
 function encabezados_seguridad(): void
 {
     header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; "
-        . "font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'");
+        . "font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; "
+        // Solo el mapa de Google de "Visítanos" (se carga cuando la persona toca "Ver mapa interactivo")
+        . "frame-src 'self' https://maps.google.com https://www.google.com");
     header('X-Content-Type-Options: nosniff');
     header('X-Frame-Options: SAMEORIGIN');
     header('Referrer-Policy: strict-origin-when-cross-origin');

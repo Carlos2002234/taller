@@ -9,7 +9,7 @@ $tiktok = ajuste('tiktok_url');
 ?>
 <section class="contenedor pt-20 sm:pt-24" aria-labelledby="asi-trabajamos">
     <div class="grid items-center gap-10 lg:grid-cols-2">
-        <div class="aparecer">
+        <div class="aparecer desde-izq">
             <p class="etiqueta-seccion">Conoce el taller</p>
             <h2 id="asi-trabajamos" class="titulo-seccion">Así trabajamos <span class="text-rivera-rojo">en Rivera</span></h2>
             <p class="mt-5 max-w-xl text-neutral-300">
@@ -23,7 +23,7 @@ $tiktok = ajuste('tiktok_url');
                 <?php endif; ?>
             </div>
         </div>
-        <div class="aparecer relative mx-auto w-full max-w-[260px] sm:max-w-[300px]" data-video>
+        <div class="revelar relative mx-auto w-full max-w-[260px] sm:max-w-[300px]" data-video>
             <video class="aspect-[9/16] w-full rounded-[2rem] bg-rivera-carbon object-cover shadow-2xl shadow-black/60 ring-1 ring-white/10"
                    width="540" height="960" muted loop playsinline preload="none" disablepictureinpicture
                    poster="<?= e(asset('video/taller-portada.webp')) ?>" data-video-auto
