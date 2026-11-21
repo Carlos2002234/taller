@@ -17,7 +17,8 @@
     });
   }
 
-  // Animaciones al bajar: las secciones .aparecer y las grillas .escalonado se muestran al entrar en pantalla
+  // Animaciones al bajar: las secciones .aparecer y las grillas .escalonado se muestran UNA vez,
+  // cuando el 15% entra en pantalla (los estilos están en "Movimiento", resources/css/app.css)
   var animables = document.querySelectorAll('.aparecer, .escalonado');
   if ('IntersectionObserver' in window) {
     var observador = new IntersectionObserver(function (entradas) {
@@ -27,7 +28,7 @@
           observador.unobserve(entrada.target);
         }
       });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+    }, { threshold: 0.15 });
     animables.forEach(function (el) { observador.observe(el); });
   } else {
     animables.forEach(function (el) { el.classList.add('visible'); });
@@ -75,6 +76,104 @@
         if (!enPantalla && !video.paused) video.pause();
       }, { threshold: 0.35 }).observe(video);
     }
+  });
+
+  // Testimonios del inicio: un testimonio a la vez que cambia solo cada N segundos.
+  // - El tiempo lo marca la animación de la barra roja del activo: al terminar, pasa al siguiente.
+  //   Así la pausa (mouse encima, foco del teclado, botón "Pausar" o sección fuera de pantalla)
+  //   congela la barra y el temporizador juntos, sin relojes que se desfasen.
+  // - Elegir uno a mano (lista o flechas) reinicia el tiempo.
+  // - Con "reducir movimiento" no cambia solo ni anima: se elige con la lista o las flechas.
+  // - Mientras cambia solo, la zona no se anuncia (aria-live="off") para no interrumpir cada 8 s
+  //   a quien usa lector de pantalla; al elegir a mano sí se anuncia ("polite").
+  // Sin JavaScript, el CSS muestra los 3 testimonios completos y oculta los controles.
+  document.querySelectorAll('[data-testimonios]').forEach(function (raiz) {
+    var paneles = raiz.querySelectorAll('[data-testimonio]');
+    var opciones = raiz.querySelectorAll('[data-testimonio-opcion]');
+    var zona = raiz.querySelector('[data-testimonios-paneles]');
+    var estado = raiz.querySelector('[data-testimonios-estado]');
+    var botonPausa = raiz.querySelector('[data-testimonios-pausa]');
+    if (paneles.length < 2 || paneles.length !== opciones.length) return;
+
+    var segundos = parseInt(raiz.getAttribute('data-segundos'), 10) || 8;
+    var reducido = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var activo = 0;
+    var pausa = { mouse: false, foco: false, usuario: false, fuera: true };
+
+    raiz.style.setProperty('--testimonio-duracion', segundos + 's');
+    raiz.classList.toggle('testimonios-manual', reducido);
+
+    var detenido = function () { return reducido || pausa.mouse || pausa.foco || pausa.usuario || pausa.fuera; };
+
+    var mostrarEstado = function () {
+      raiz.classList.toggle('testimonios-en-pausa', detenido());
+      if (reducido) {
+        estado.textContent = 'Usa las flechas para cambiar';
+        botonPausa.hidden = true;
+        return;
+      }
+      var enPausa = pausa.mouse || pausa.foco || pausa.usuario;
+      estado.textContent = enPausa ? 'En pausa' : 'Cambia solo cada ' + segundos + ' s';
+      botonPausa.textContent = pausa.usuario ? 'Reanudar' : 'Pausar';
+    };
+
+    // Reinicia la barra del activo (quitar la clase, forzar el redibujo y volver a ponerla)
+    var arrancarBarra = function () {
+      opciones.forEach(function (opcion) { opcion.querySelector('[data-testimonio-barra]').classList.remove('corriendo'); });
+      if (reducido) return;
+      var barra = opciones[activo].querySelector('[data-testimonio-barra]');
+      void barra.offsetWidth;
+      barra.classList.add('corriendo');
+    };
+
+    var ir = function (indice, manual) {
+      activo = (indice + paneles.length) % paneles.length;
+      zona.setAttribute('aria-live', manual ? 'polite' : 'off');
+      paneles.forEach(function (panel, i) {
+        var esActivo = i === activo;
+        panel.classList.toggle('activo', esActivo);
+        panel.classList.remove('animar');
+        if (esActivo) { void panel.offsetWidth; panel.classList.add('animar'); }
+      });
+      opciones.forEach(function (opcion, i) { opcion.setAttribute('aria-pressed', i === activo ? 'true' : 'false'); });
+      arrancarBarra();
+    };
+
+    opciones.forEach(function (opcion, i) {
+      opcion.addEventListener('click', function () { ir(i, true); });
+      opcion.querySelector('[data-testimonio-barra]').addEventListener('animationend', function () {
+        ir(activo + 1, false); // solo termina si estaba corriendo (en pausa la animación se congela)
+      });
+    });
+    raiz.querySelector('[data-testimonio-anterior]').addEventListener('click', function () { ir(activo - 1, true); });
+    raiz.querySelector('[data-testimonio-siguiente]').addEventListener('click', function () { ir(activo + 1, true); });
+    botonPausa.addEventListener('click', function () { pausa.usuario = !pausa.usuario; mostrarEstado(); });
+
+    // Pausa con el mouse encima (solo mouse: en el celular un toque no debe dejarlo pausado para siempre)
+    raiz.addEventListener('pointerenter', function (evento) { if (evento.pointerType === 'mouse') { pausa.mouse = true; mostrarEstado(); } });
+    raiz.addEventListener('pointerleave', function (evento) { if (evento.pointerType === 'mouse') { pausa.mouse = false; mostrarEstado(); } });
+    // Pausa con el foco del teclado (el foco que deja un clic no cuenta: si no, quedaría pausado tras elegir)
+    raiz.addEventListener('focusin', function (evento) {
+      var conTeclado = true;
+      try { conTeclado = evento.target.matches(':focus-visible'); } catch (e) { /* navegador viejo: se asume teclado */ }
+      pausa.foco = conTeclado;
+      mostrarEstado();
+    });
+    raiz.addEventListener('focusout', function (evento) {
+      if (!raiz.contains(evento.relatedTarget)) { pausa.foco = false; mostrarEstado(); }
+    });
+    // Solo corre mientras se ve en pantalla (así nadie llega a la sección a mitad de un cambio)
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entradas) {
+        pausa.fuera = !entradas[0].isIntersecting;
+        mostrarEstado();
+      }, { threshold: 0.35 }).observe(raiz);
+    } else {
+      pausa.fuera = false;
+    }
+
+    arrancarBarra();
+    mostrarEstado();
   });
 
   // Encabezado transparente sobre la portada: se vuelve sólido al bajar o al abrir el menú

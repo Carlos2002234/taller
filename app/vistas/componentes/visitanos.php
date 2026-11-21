@@ -9,7 +9,7 @@
         <picture class="aparecer group block overflow-hidden rounded-2xl shadow-2xl shadow-black/60 ring-1 ring-white/10">
             <source type="image/webp" srcset="<?= e(url('img/fotos/rivera-23-800.webp')) ?> 800w, <?= e(url('img/fotos/rivera-23-1600.webp')) ?> 1600w" sizes="(min-width: 1024px) 50vw, 100vw">
             <img src="<?= e(url('img/fotos/rivera-23-1600.webp')) ?>" alt="Recepción de <?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?>" loading="lazy"
-                 class="aspect-[16/10] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105">
+                 class="aspect-[16/10] w-full object-cover transition-transform duration-lenta ease-suave motion-safe:group-hover:scale-105">
         </picture>
         <div class="aparecer">
             <p class="etiqueta-seccion">Te esperamos</p>

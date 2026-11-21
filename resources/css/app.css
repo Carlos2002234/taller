@@ -27,11 +27,23 @@
   /* Ancho máximo y márgenes laterales del sitio */
   .contenedor { @apply mx-auto w-full max-w-sitio px-4 sm:px-6 lg:px-8; }
 
-  /* Botones */
-  .btn { @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold transition duration-300 ease-out active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50; }
-  .btn-primario { @apply btn bg-rivera-rojo text-white shadow-lg shadow-rivera-rojo/25 hover:-translate-y-0.5 hover:bg-rivera-rojo-oscuro hover:shadow-xl hover:shadow-rivera-rojo/35 active:translate-y-0 disabled:translate-y-0 disabled:bg-neutral-500 disabled:opacity-60 disabled:shadow-none; }
-  .btn-secundario { @apply btn border border-white/25 text-white backdrop-blur-sm hover:-translate-y-0.5 hover:border-white hover:bg-white/10; }
-  .btn-claro { @apply btn border border-neutral-300 text-rivera-negro hover:border-rivera-negro; }
+  /* Botones.
+     La base se comparte con una lista de selectores (NO con "@apply btn"): @apply de una clase propia
+     copia también sus reglas de @media, y así se colaban reglas de "reducir movimiento" en medio del CSS
+     que luego el :hover pisaba (por eso aparecían ".btn-primario{transition:none}" sueltos en el compilado).
+     Hover común: sube 2px y aclara el borde/fondo; al tocarlo se hunde un poco. */
+  .btn, .btn-primario, .btn-secundario, .btn-claro {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50;
+    transition-property: color, background-color, border-color, box-shadow, transform;
+    transition-duration: var(--dur-rapida);
+    transition-timing-function: var(--curva);
+  }
+  .btn:hover, .btn-primario:hover, .btn-secundario:hover, .btn-claro:hover { transform: translateY(-2px); }
+  .btn:active, .btn-primario:active, .btn-secundario:active, .btn-claro:active { transform: translateY(0) scale(.98); }
+  .btn:disabled, .btn-primario:disabled, .btn-secundario:disabled, .btn-claro:disabled { transform: none; }
+  .btn-primario { @apply bg-rivera-rojo text-white shadow-lg shadow-rivera-rojo/25 hover:bg-rivera-rojo-oscuro hover:shadow-xl hover:shadow-rivera-rojo/35 disabled:bg-neutral-500 disabled:opacity-60 disabled:shadow-none; }
+  .btn-secundario { @apply border border-white/25 text-white backdrop-blur-sm hover:border-white hover:bg-white/10; }
+  .btn-claro { @apply border border-neutral-300 text-rivera-negro hover:border-rivera-negro; }
   .btn-pequeno { @apply px-3 py-2 text-xs; }
 
   /* Títulos de sección: etiqueta roja + título (con segunda línea roja opcional) */
@@ -75,84 +87,128 @@
   .texto-legal ul { @apply mb-4 list-disc space-y-1.5 pl-6 text-neutral-700; }
 
   /* Enlaces del menú: línea roja que crece al pasar el mouse */
-  .enlace-menu { @apply relative py-1 text-sm font-medium text-neutral-300 transition-colors duration-300 after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-rivera-rojo after:transition-transform after:duration-300 after:content-[''] hover:text-white hover:after:scale-x-100; }
+  .enlace-menu { @apply relative py-1 text-sm font-medium text-neutral-300 transition-colors duration-rapida ease-suave after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-rivera-rojo after:transition-transform after:duration-rapida after:ease-suave after:content-[''] hover:text-white hover:after:scale-x-100; }
   .enlace-menu-activo { @apply text-white after:scale-x-100; }
 
-  /* Tarjetas que se elevan al pasar el mouse (productos, categorías, servicios) */
-  .tarjeta-interactiva { @apply transition duration-500 ease-out hover:-translate-y-[3px] hover:border-white/20 hover:shadow-2xl hover:shadow-black/60; transition-timing-function: var(--curva-suave); }
+  /* Tarjetas que se elevan al pasar el mouse (productos, categorías, servicios): suben 3px y aclaran el borde */
+  .tarjeta-interactiva {
+    transition-property: transform, border-color, box-shadow;
+    transition-duration: var(--dur-media);
+    transition-timing-function: var(--curva);
+    @apply hover:-translate-y-[3px] hover:border-white/20 hover:shadow-2xl hover:shadow-black/60;
+  }
   .tarjeta-clara.tarjeta-interactiva { @apply hover:border-neutral-300 hover:shadow-xl hover:shadow-black/10; }
 }
 
+
 /* =====================================================================
-   Animaciones (elegantes y sutiles). Se apagan con "reducir movimiento".
-   El HTML recibe la clase "js" antes de dibujarse (js/precarga.js), así el
-   contenido solo se oculta para animarlo si el JavaScript está activo.
+   Movimiento (sistema de transiciones, diseño aprobado 2026-11-21).
+   UNA curva y TRES duraciones para todo el sitio:
+     --dur-rapida  300 ms  hover y foco (botones, enlaces, colores)
+     --dur-media   450 ms  cambios de estado (tarjetas que se elevan, opciones elegidas)
+     --dur-lenta   700 ms  entrada de secciones y contenido nuevo
+   En Tailwind existen como  ease-suave  duration-rapida / duration-media / duration-lenta
+   (y "transition" sin más ya usa la curva y 300 ms; ver tailwind.config.js).
+   Solo se animan opacity, transform y filter (y colores en hover): nunca tamaños ni márgenes.
+   El HTML recibe la clase "js" antes de dibujarse (js/precarga.js), así el contenido
+   solo se oculta para animarlo si el JavaScript está activo.
+   Todo se apaga con "reducir movimiento" (bloque al final del archivo).
    ===================================================================== */
 
-/* Curva de movimiento común: arranca ágil y frena suave (se siente natural, no "rebota") */
-:root { --curva-suave: cubic-bezier(.16, 1, .3, 1); }
+:root {
+  --curva: cubic-bezier(.22, 1, .36, 1); /* arranca rápido y frena con calma; no rebota */
+  --dur-rapida: 300ms;
+  --dur-media: 450ms;
+  --dur-lenta: 700ms;
+  --escalon: 70ms; /* retraso entre elementos hermanos (60–80 ms), máximo 4 en cadena */
+}
+
+/* Entrada común: opacidad 0→1, sube 14px y se enfoca desde 6px de desenfoque */
+@keyframes entrar { from { opacity: 0; transform: translate3d(0, 14px, 0); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes foto-aparecer { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: none; } }
+@keyframes acercamiento-lento { from { transform: scale(1.08); } to { transform: scale(1); } }
+@keyframes llenar-barra { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
 /* Cambio de página: fundido corto entre páginas (navegadores que lo soportan; los demás cambian normal).
    El encabezado tiene nombre propio para quedarse fijo y no parpadear. */
 @view-transition { navigation: auto; }
 ::view-transition-old(root) { animation: salir-pagina .18s ease-in both; }
-::view-transition-new(root) { animation: entrar-pagina .32s var(--curva-suave) both; }
+::view-transition-new(root) { animation: entrar-pagina var(--dur-rapida) var(--curva) both; }
 header { view-transition-name: encabezado; }
 @keyframes salir-pagina { to { opacity: 0; } }
 @keyframes entrar-pagina { from { opacity: 0; transform: translateY(6px); } }
 
-/* Portada: foto que aparece con fundido y un acercamiento mínimo; texto que entra escalonado */
-@keyframes acercamiento-lento { from { transform: scale(1.08); } to { transform: scale(1); } }
-@keyframes foto-aparecer { from { opacity: 0; transform: scale(1.025); } to { opacity: 1; transform: none; } }
-@keyframes entrar-suave { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-@keyframes indicar-abajo { 0%, 100% { transform: translateY(0); opacity: .6; } 50% { transform: translateY(6px); opacity: 1; } }
-
+/* Portadas: la foto aparece con fundido y un acercamiento mínimo; el texto entra escalonado (máx. 4) */
 .portada-foto { animation: acercamiento-lento 14s cubic-bezier(.2, .6, .3, 1) both; }
-.foto-entrar { animation: foto-aparecer 1.4s var(--curva-suave) both; }
-.portada-entrar { animation: entrar-suave .9s var(--curva-suave) both; }
-.portada-entrar-1 { animation-delay: .1s; }
-.portada-entrar-2 { animation-delay: .2s; }
-.portada-entrar-3 { animation-delay: .3s; }
-.portada-entrar-4 { animation-delay: .4s; }
-.indicador-bajar { animation: indicar-abajo 2.2s ease-in-out infinite; }
+.foto-entrar { animation: foto-aparecer 1s var(--curva) both; }
+.portada-entrar { animation: entrar var(--dur-lenta) var(--curva) both; }
+.portada-entrar-1 { animation-delay: calc(var(--escalon) * 1); }
+.portada-entrar-2 { animation-delay: calc(var(--escalon) * 2); }
+.portada-entrar-3 { animation-delay: calc(var(--escalon) * 3); }
+.portada-entrar-4 { animation-delay: calc(var(--escalon) * 4); }
 
-/* Secciones que aparecen al bajar */
-.js .aparecer { opacity: 0; transform: translateY(18px); transition: opacity .9s var(--curva-suave), transform .9s var(--curva-suave); }
-.js .aparecer.visible { opacity: 1; transform: none; }
+/* Secciones que aparecen al bajar (una sola vez; app.js pone "visible" al entrar el 15% en pantalla) */
+.js .aparecer { opacity: 0; transform: translate3d(0, 14px, 0); filter: blur(6px); }
+.js .aparecer.visible { opacity: 1; transform: none; filter: none; transition: opacity var(--dur-lenta) var(--curva), transform var(--dur-lenta) var(--curva), filter var(--dur-lenta) var(--curva); }
 
-/* Elementos de una grilla que entran uno tras otro.
-   Se usa una animación (no transición) que se retira al terminar ("backwards"),
-   para que después funcione la elevación de las tarjetas al pasar el mouse. */
+/* Grillas cuyos elementos entran uno tras otro (70 ms entre cada uno; del 4.º en adelante, juntos).
+   Es una animación (no transición) con "backwards": al terminar se retira sola y
+   vuelve a funcionar la elevación de las tarjetas al pasar el mouse. */
 .js .escalonado:not(.visible) > * { opacity: 0; }
-.escalonado.visible > * { animation: entrar-suave .75s var(--curva-suave) backwards; }
-.escalonado.visible > *:nth-child(2) { animation-delay: 60ms; }
-.escalonado.visible > *:nth-child(3) { animation-delay: 120ms; }
-.escalonado.visible > *:nth-child(4) { animation-delay: 180ms; }
-.escalonado.visible > *:nth-child(5) { animation-delay: 240ms; }
-.escalonado.visible > *:nth-child(6) { animation-delay: 300ms; }
-.escalonado.visible > *:nth-child(7) { animation-delay: 360ms; }
-.escalonado.visible > *:nth-child(n+8) { animation-delay: 420ms; }
+.escalonado.visible > * { animation: entrar var(--dur-lenta) var(--curva) backwards; }
+.escalonado.visible > *:nth-child(2) { animation-delay: calc(var(--escalon) * 1); }
+.escalonado.visible > *:nth-child(3) { animation-delay: calc(var(--escalon) * 2); }
+.escalonado.visible > *:nth-child(n+4) { animation-delay: calc(var(--escalon) * 3); }
 
 /* Encabezado: gana una sombra suave al bajar (app.js pone la clase) */
-header { transition: box-shadow .4s var(--curva-suave); }
+header { transition: box-shadow var(--dur-media) var(--curva); }
 .encabezado-sombra { box-shadow: 0 10px 30px -12px rgb(0 0 0 / .85); }
-
-/* Encabezado transparente sobre la portada que se vuelve sólido al bajar (solo en el inicio) */
-.encabezado-flotante > header { position: fixed; inset: 0 0 auto 0; background-color: transparent; border-color: transparent; backdrop-filter: none; transition: background-color .4s ease, border-color .4s ease, backdrop-filter .4s ease; }
-.encabezado-flotante.encabezado-solido > header { background-color: rgb(11 11 11 / .85); border-color: rgb(255 255 255 / .1); backdrop-filter: blur(12px); }
 
 /* Ventana del formulario de consulta (<dialog> nativo) */
 .ventana-consulta { @apply m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-xl overflow-y-auto rounded-2xl border border-white/10 bg-rivera-carbon p-0 text-white shadow-2xl shadow-black/70; }
 .ventana-consulta::backdrop { background-color: rgb(0 0 0 / .7); backdrop-filter: blur(4px); }
-.ventana-consulta[open] { animation: entrar-suave .3s cubic-bezier(.2, .65, .3, 1); }
+.ventana-consulta[open] { animation: entrar var(--dur-media) var(--curva); }
 
+/* ---------------------------------------------------------------------
+   Testimonios (componente testimonios.php + app.js)
+   Sin JavaScript se ven los 3 testimonios uno debajo del otro y no hay controles.
+   Con JavaScript: los paneles se apilan en la misma celda (la tarjeta toma la altura
+   del más largo y no "salta" al cambiar) y solo se ve el activo.
+   --------------------------------------------------------------------- */
+.testimonios-controles { display: none; }
+.js .testimonios-controles { display: flex; }
+.js .testimonios-paneles { display: grid; gap: 0; }
+.js .testimonio { grid-area: 1 / 1; }
+.js .testimonio:not(.activo) { visibility: hidden; }
+@media (min-width: 1024px) {
+  .js .testimonios-rejilla { grid-template-columns: minmax(0, 1fr) 21rem; }
+}
+
+/* Contenido nuevo al cambiar: texto escalonado y captura con un acercamiento mínimo */
+.testimonio.animar .testimonio-entra { animation: entrar var(--dur-lenta) var(--curva) both; }
+.testimonio.animar .testimonio-retraso-1 { animation-delay: calc(var(--escalon) * 1); }
+.testimonio.animar .testimonio-retraso-2 { animation-delay: calc(var(--escalon) * 2); }
+.testimonio.animar .testimonio-retraso-3 { animation-delay: calc(var(--escalon) * 3); }
+.testimonio.animar .testimonio-foto { animation: foto-aparecer var(--dur-lenta) var(--curva) both; }
+
+/* Barra de progreso del testimonio activo: su animación marca el tiempo (app.js cambia al terminar) */
+.testimonio-barra { transform: scaleX(0); transform-origin: left center; }
+.testimonio-barra.corriendo { animation: llenar-barra var(--testimonio-duracion, 8s) linear forwards; }
+.testimonios-en-pausa .testimonio-barra.corriendo { animation-play-state: paused; }
+.testimonios-manual [aria-pressed="true"] .testimonio-barra { transform: none; }
+
+/* ---------------------------------------------------------------------
+   "Reducir movimiento": todo aparece y cambia sin animación.
+   Va al FINAL del archivo para ganarle a los :hover anteriores (misma especificidad).
+   --------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .ventana-consulta[open] { animation: none; }
-  .portada-foto, .foto-entrar, .portada-entrar, .indicador-bajar, .escalonado.visible > * { animation: none; }
+  .portada-foto, .foto-entrar, .portada-entrar, .escalonado.visible > *, .ventana-consulta[open],
+  .testimonio.animar .testimonio-entra, .testimonio.animar .testimonio-foto { animation: none; }
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
-  header { transition: none; }
-  .js .aparecer, .js .escalonado:not(.visible) > * { opacity: 1; transform: none; transition: none; }
-  .tarjeta-interactiva, .btn { transition: none; }
-  .tarjeta-interactiva:hover, .btn:hover, .btn:active { transform: none; }
+  .js .aparecer, .js .escalonado:not(.visible) > * { opacity: 1; transform: none; filter: none; transition: none; }
+  header, .btn, .btn-primario, .btn-secundario, .btn-claro, .tarjeta-interactiva { transition: none; }
+  .btn:hover, .btn-primario:hover, .btn-secundario:hover, .btn-claro:hover,
+  .btn:active, .btn-primario:active, .btn-secundario:active, .btn-claro:active,
+  .tarjeta-interactiva:hover { transform: none; }
 }

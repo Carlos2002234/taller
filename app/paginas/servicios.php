@@ -170,7 +170,7 @@ $galeria = [
                     <img src="<?= e(url("img/fotos/{$foto}-{$chico}.webp")) ?>"
                          srcset="<?= e(url("img/fotos/{$foto}-{$chico}.webp")) ?> <?= $chico ?>w, <?= e(url("img/fotos/{$foto}-{$grande}.webp")) ?> <?= $grande ?>w"
                          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" loading="lazy" alt="<?= e($alt) ?>"
-                         class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105">
+                         class="aspect-[4/3] w-full object-cover transition-transform duration-lenta ease-suave motion-safe:group-hover:scale-105">
                 </div>
                 <figcaption class="mt-3 text-sm font-medium text-neutral-200"><?= e($texto) ?></figcaption>
             </figure>

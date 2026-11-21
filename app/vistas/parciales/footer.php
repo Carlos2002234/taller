@@ -18,7 +18,7 @@ $redes = array_filter([
                 <div class="mt-5 flex gap-2.5">
                     <?php foreach ($redes as $red => $enlace): ?>
                         <a href="<?= e($enlace) ?>" target="_blank" rel="noopener" aria-label="<?= e($red) ?> de <?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?>"
-                           class="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-neutral-300 transition duration-300 hover:-translate-y-0.5 hover:border-rivera-rojo hover:bg-rivera-rojo hover:text-white">
+                           class="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-neutral-300 transition motion-safe:hover:-translate-y-0.5 hover:border-rivera-rojo hover:bg-rivera-rojo hover:text-white">
                             <?= icono(strtolower($red), 'h-[18px] w-[18px]') ?>
                         </a>
                     <?php endforeach; ?>

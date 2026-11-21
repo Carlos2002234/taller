@@ -26,6 +26,18 @@ module.exports = {
       maxWidth: {
         sitio: '80rem',
       },
+      // Sistema de movimiento (ver "Movimiento" en resources/css/app.css): una curva y tres duraciones.
+      // "transition" sin más usa la curva y 300 ms.
+      transitionTimingFunction: {
+        DEFAULT: 'cubic-bezier(.22, 1, .36, 1)',
+        suave: 'cubic-bezier(.22, 1, .36, 1)',
+      },
+      transitionDuration: {
+        DEFAULT: '300ms',
+        rapida: '300ms',
+        media: '450ms',
+        lenta: '700ms',
+      },
     },
   },
   plugins: [],
