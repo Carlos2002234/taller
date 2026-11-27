@@ -351,18 +351,28 @@ function texto_legal_html(string $texto): string
 
 /**
  * Datos del negocio para Google (schema.org AutoRepair = taller mecánico, un tipo de LocalBusiness):
- * dirección, coordenadas (del enlace de Waze) y horario por día (de horario_semana()).
+ * dirección, coordenadas (del enlace de Waze), horario (de horario_semana()) y calificación de Google
+ * (aggregateRating, de app/datos/resenas-google.php). Es el ÚNICO bloque AutoRepair del sitio:
+ * teléfono, dirección y horario salen de Configuración; la URL, de APP_URL (en producción https://riveraautomotriz.com).
  */
 function datos_negocio(): array
 {
+    require_once RAIZ . '/app/modelos/resenas.php';
     $redes = array_values(array_filter([ajuste('facebook_url'), ajuste('instagram_url'), ajuste('tiktok_url')]));
     $nombresSchema = [1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday', 7 => 'Sunday'];
-    $horario = [];
+    // Días con el mismo horario van juntos (lunes a sábado 08:00–17:00 = una sola entrada)
+    $grupos = [];
     foreach (horario_semana() as $dia => $horas) {
         if ($horas) {
-            $horario[] = ['@type' => 'OpeningHoursSpecification', 'dayOfWeek' => 'https://schema.org/' . $nombresSchema[$dia], 'opens' => $horas[0], 'closes' => $horas[1]];
+            $grupos[$horas[0] . '-' . $horas[1]]['horas'] = $horas;
+            $grupos[$horas[0] . '-' . $horas[1]]['dias'][] = $nombresSchema[$dia];
         }
     }
+    $horario = [];
+    foreach ($grupos as $grupo) {
+        $horario[] = ['@type' => 'OpeningHoursSpecification', 'dayOfWeek' => $grupo['dias'], 'opens' => $grupo['horas'][0], 'closes' => $grupo['horas'][1]];
+    }
+    $resenas = resenas_google();
     $punto = coordenadas_negocio();
     return array_filter([
         '@context'           => 'https://schema.org',
@@ -372,13 +382,20 @@ function datos_negocio(): array
         'image'              => url('img/og-imagen.jpg'),
         'logo'               => url('img/logo.png'),
         'telephone'          => '+506 ' . ajuste('telefono'),
-        'address'            => ['@type' => 'PostalAddress', 'streetAddress' => ajuste('direccion'), 'addressLocality' => 'La Puebla', 'addressCountry' => 'CR'],
+        'address'            => ['@type' => 'PostalAddress', 'streetAddress' => ajuste('direccion'), 'addressLocality' => 'La Puebla', 'addressRegion' => 'Heredia', 'addressCountry' => 'CR'],
         'geo'                => $punto ? ['@type' => 'GeoCoordinates', 'latitude' => $punto[0], 'longitude' => $punto[1]] : null,
         'hasMap'             => mapa_url(),
         'openingHoursSpecification' => $horario ?: null,
         'currenciesAccepted' => 'CRC',
         'paymentAccepted'    => 'SINPE Móvil, transferencia bancaria',
         'sameAs'             => $redes ?: null,
+        'aggregateRating'    => $resenas['total'] > 0 ? [
+            '@type'       => 'AggregateRating',
+            'ratingValue' => calificacion_texto($resenas['calificacion']),
+            'reviewCount' => $resenas['total'],
+            'bestRating'  => 5,
+            'worstRating' => 1,
+        ] : null,
     ]);
 }
 
