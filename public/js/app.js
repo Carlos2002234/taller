@@ -43,38 +43,67 @@
     animables.forEach(function (el) { el.classList.add('visible'); });
   }
 
-  // Preguntas frecuentes: <details> nativo (sin JS abre al instante). Aquí solo se anima:
-  // al abrir, el navegador pone [open] y en el cuadro siguiente se agrega "abierto" (0fr → 1fr en CSS);
-  // al cerrar, se quita "abierto" y [open] se retira cuando termina la transición.
+  // Preguntas frecuentes: acordeón EXCLUSIVO (al abrir una pregunta se cierran las demás).
+  // - Sin JS: <details name="preguntas-frecuentes"> (acordeón exclusivo nativo; los navegadores viejos
+  //   simplemente dejan abrir varias). Abre y cierra al instante.
+  // - Con JS: se quita el "name" para que el navegador no cierre la anterior de golpe (saltaría el
+  //   contenido) y aquí se hace lo mismo animado: la anterior se cierra (1fr → 0fr) mientras la nueva se
+  //   abre (0fr → 1fr), con la misma curva y duración, así la altura total cambia de forma continua.
+  //   Esto también sirve de respaldo en navegadores que no soportan el "name".
+  // Al abrir, el navegador pone [open] y en el cuadro siguiente se agrega "abierto"; al cerrar, se quita
+  // "abierto" y [open] se retira cuando termina la transición (así el lector de pantalla sigue el estado real).
   document.querySelectorAll('[data-faq]').forEach(function (seccion) {
     var reducido = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var items = Array.prototype.slice.call(seccion.querySelectorAll('[data-faq-item]'));
     seccion.classList.add('faq-js');
-    seccion.querySelectorAll('[data-faq-item]').forEach(function (item) {
-      var respuesta = item.querySelector('.faq-respuesta');
-      var espera = null;
-      if (item.open) item.classList.add('abierto');
 
+    var cerrar = function (item) {
+      if (!item.open || !item.classList.contains('abierto')) return;
+      var respuesta = item.querySelector('.faq-respuesta');
+      item.classList.remove('abierto');
+      var espera = null;
+      var terminar = function () {
+        clearTimeout(espera);
+        respuesta.removeEventListener('transitionend', alTerminar);
+        if (!item.classList.contains('abierto')) item.open = false;
+      };
+      var alTerminar = function (e) { if (e.target === respuesta && e.propertyName === 'grid-template-rows') terminar(); };
+      if (reducido) { terminar(); return; }
+      respuesta.addEventListener('transitionend', alTerminar);
+      espera = setTimeout(terminar, 600); // por si el navegador no anima grid-template-rows
+    };
+
+    var cerrarOtras = function (actual) {
+      items.forEach(function (otra) { if (otra !== actual) cerrar(otra); });
+    };
+
+    // Si el HTML llega con varias abiertas, queda solo la primera
+    var primeraAbierta = null;
+    items.forEach(function (item) {
+      item.removeAttribute('name');
+      if (!item.open) return;
+      if (primeraAbierta) { item.open = false; return; }
+      primeraAbierta = item;
+      item.classList.add('abierto');
+    });
+
+    items.forEach(function (item) {
       // Abre por clic, teclado o "buscar en la página" (Chrome abre el <details> solo): todo pasa por "toggle"
       item.addEventListener('toggle', function () {
-        if (item.open && !item.classList.contains('abierto')) {
-          requestAnimationFrame(function () { item.classList.add('abierto'); });
-        }
+        if (!item.open || item.classList.contains('abierto')) return;
+        cerrarOtras(item);
+        requestAnimationFrame(function () { item.classList.add('abierto'); });
       });
 
       item.querySelector('summary').addEventListener('click', function (evento) {
-        if (!item.open) return; // abrir: lo hace el navegador
+        if (!item.open) return; // abrir: lo hace el navegador (y "toggle" cierra las demás)
         evento.preventDefault();
-        if (!item.classList.contains('abierto')) { item.classList.add('abierto'); return; } // se estaba cerrando: vuelve a abrir
-        item.classList.remove('abierto');
-        var terminar = function () {
-          clearTimeout(espera);
-          respuesta.removeEventListener('transitionend', alTerminar);
-          if (!item.classList.contains('abierto')) item.open = false;
-        };
-        var alTerminar = function (e) { if (e.target === respuesta && e.propertyName === 'grid-template-rows') terminar(); };
-        if (reducido) { terminar(); return; }
-        respuesta.addEventListener('transitionend', alTerminar);
-        espera = setTimeout(terminar, 600); // por si el navegador no anima grid-template-rows
+        if (!item.classList.contains('abierto')) { // se estaba cerrando: vuelve a abrir
+          cerrarOtras(item);
+          item.classList.add('abierto');
+          return;
+        }
+        cerrar(item);
       });
     });
   });
