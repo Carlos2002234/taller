@@ -17,18 +17,28 @@
     });
   }
 
-  // Animaciones al bajar: las secciones .aparecer y las grillas .escalonado se muestran al entrar en pantalla
-  var animables = document.querySelectorAll('.aparecer, .escalonado');
+  // Animaciones al bajar: las secciones .aparecer, las grillas .escalonado y el bloque racing del inicio se muestran UNA vez,
+  // cuando el 15% entra en pantalla (los estilos están en "Movimiento", resources/css/app.css)
+  var animables = document.querySelectorAll('.aparecer, .escalonado, .revelar, .portada-racing');
   if ('IntersectionObserver' in window) {
+    // Un .revelar empieza recortado por completo (clip-path) y el navegador no lo cuenta como "visible":
+    // se observa su contenedor y, al entrar, se destapa el elemento.
+    var destinos = new Map();
     var observador = new IntersectionObserver(function (entradas) {
       entradas.forEach(function (entrada) {
         if (entrada.isIntersecting) {
-          entrada.target.classList.add('visible');
+          (destinos.get(entrada.target) || []).forEach(function (el) { el.classList.add('visible'); });
+          destinos.delete(entrada.target);
           observador.unobserve(entrada.target);
         }
       });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
-    animables.forEach(function (el) { observador.observe(el); });
+    }, { threshold: 0.15 });
+    animables.forEach(function (el) {
+      var mirar = el.classList.contains('revelar') ? el.parentElement : el;
+      if (!destinos.has(mirar)) destinos.set(mirar, []);
+      destinos.get(mirar).push(el);
+      observador.observe(mirar);
+    });
   } else {
     animables.forEach(function (el) { el.classList.add('visible'); });
   }
@@ -76,6 +86,222 @@
       }, { threshold: 0.35 }).observe(video);
     }
   });
+
+  // Testimonios del inicio: un testimonio a la vez que cambia SOLO cada N segundos.
+  // Por qué antes "no cambiaban" (revisado 2026-11-21):
+  //   1) con "Reducir movimiento" (macOS/iOS) la rotación se apagaba por completo;
+  //   2) se pausaba con el cursor en CUALQUIER parte de la tarjeta o de la lista;
+  //   3) solo corría si se veía el 35% de toda la rejilla, que en el celular mide más
+  //      que la pantalla: en teléfonos bajos nunca arrancaba.
+  // Ahora: rota siempre (con "reducir movimiento" solo con fundido), pausa con el cursor
+  // sobre la tarjeta activa, con el foco del teclado o con el botón Pausar/Reanudar, y
+  // mira si se ve la tarjeta (no toda la rejilla). El tiempo lo lleva un temporizador
+  // propio que recuerda cuánto faltaba al pausar; la barra roja solo lo muestra.
+  // También: deslizar con el dedo y flechas ← → del teclado cuando el carrusel tiene foco.
+  // Mientras cambia solo, la zona no se anuncia (aria-live="off"); al elegir a mano sí ("polite").
+  // Sin JavaScript, el CSS muestra los 3 testimonios completos y oculta los controles.
+  document.querySelectorAll('[data-testimonios]').forEach(function (raiz) {
+    var paneles = raiz.querySelectorAll('[data-testimonio]');
+    var opciones = raiz.querySelectorAll('[data-testimonio-opcion]');
+    var zona = raiz.querySelector('[data-testimonios-paneles]');
+    var botonPausa = raiz.querySelector('[data-testimonios-pausa]');
+    if (paneles.length < 2 || paneles.length !== opciones.length) return;
+
+    var segundos = parseInt(raiz.getAttribute('data-segundos'), 10) || 8;
+    var duracion = segundos * 1000;
+    var activo = 0;
+    var pausa = { mouse: false, foco: false, usuario: false, fuera: true };
+    var temporizador = null, inicio = 0, restante = duracion;
+
+    raiz.style.setProperty('--testimonio-duracion', segundos + 's');
+
+    var detenido = function () { return pausa.mouse || pausa.foco || pausa.usuario || pausa.fuera; };
+
+    // Temporizador que se puede pausar y reanudar sin perder lo que ya avanzó
+    var parar = function () {
+      if (temporizador === null) return;
+      clearTimeout(temporizador);
+      temporizador = null;
+      restante = Math.max(0, restante - (Date.now() - inicio));
+    };
+    var seguir = function () {
+      if (temporizador !== null || detenido()) return;
+      inicio = Date.now();
+      temporizador = setTimeout(function () { temporizador = null; restante = duracion; ir(activo + 1, false, false); }, restante);
+    };
+
+    var mostrarEstado = function () {
+      if (detenido()) parar(); else seguir();
+      raiz.classList.toggle('testimonios-en-pausa', detenido());
+      // Sin texto de estado visible (pedido del dueño): el botón dice qué hará y su
+      // aria-label (que empieza con el texto visible) explica el estado a los lectores de pantalla.
+      botonPausa.textContent = pausa.usuario ? 'Reanudar' : 'Pausar';
+      botonPausa.setAttribute('aria-label', pausa.usuario
+        ? 'Reanudar: los testimonios están en pausa'
+        : 'Pausar: los testimonios cambian solos cada ' + segundos + ' segundos');
+    };
+
+    // Reinicia la barra del activo (quitar la clase, forzar el redibujo y volver a ponerla)
+    var arrancarBarra = function () {
+      opciones.forEach(function (opcion) { opcion.querySelector('[data-testimonio-barra]').classList.remove('corriendo'); });
+      var barra = opciones[activo].querySelector('[data-testimonio-barra]');
+      void barra.offsetWidth;
+      barra.classList.add('corriendo');
+    };
+
+    var ir = function (indice, manual, atras) {
+      var nuevo = (indice + paneles.length) % paneles.length;
+      if (nuevo === activo) return;
+      var anterior = paneles[activo];
+      activo = nuevo;
+      zona.setAttribute('aria-live', manual ? 'polite' : 'off');
+
+      paneles.forEach(function (panel) { panel.classList.remove('saliendo', 'animar', 'atras'); });
+      // El saliente se queda visible mientras se va (la clase se quita al terminar su animación)
+      anterior.classList.remove('activo');
+      anterior.classList.toggle('atras', !!atras);
+      anterior.classList.add('saliendo');
+      setTimeout(function () { anterior.classList.remove('saliendo', 'atras'); }, 600);
+
+      var entrante = paneles[activo];
+      entrante.classList.add('activo');
+      entrante.classList.toggle('atras', !!atras);
+      void entrante.offsetWidth;
+      entrante.classList.add('animar');
+
+      opciones.forEach(function (opcion, i) { opcion.setAttribute('aria-pressed', i === activo ? 'true' : 'false'); });
+      parar();
+      restante = duracion;
+      arrancarBarra();
+      mostrarEstado();
+    };
+
+    opciones.forEach(function (opcion, i) {
+      opcion.addEventListener('click', function () { ir(i, true, i < activo); });
+    });
+    raiz.querySelector('[data-testimonio-anterior]').addEventListener('click', function () { ir(activo - 1, true, true); });
+    raiz.querySelector('[data-testimonio-siguiente]').addEventListener('click', function () { ir(activo + 1, true, false); });
+    botonPausa.addEventListener('click', function () { pausa.usuario = !pausa.usuario; mostrarEstado(); });
+
+    // Pausa solo con el cursor sobre la tarjeta activa (no sobre la lista ni los botones)
+    zona.addEventListener('pointerenter', function (evento) { if (evento.pointerType === 'mouse') { pausa.mouse = true; mostrarEstado(); } });
+    zona.addEventListener('pointerleave', function (evento) { if (evento.pointerType === 'mouse') { pausa.mouse = false; mostrarEstado(); } });
+
+    // Pausa con el foco del teclado (el foco que deja un clic no cuenta)
+    raiz.addEventListener('focusin', function (evento) {
+      var conTeclado = true;
+      try { conTeclado = evento.target.matches(':focus-visible'); } catch (e) { /* navegador viejo: se asume teclado */ }
+      pausa.foco = conTeclado;
+      mostrarEstado();
+    });
+    raiz.addEventListener('focusout', function (evento) {
+      if (!raiz.contains(evento.relatedTarget)) { pausa.foco = false; mostrarEstado(); }
+    });
+
+    // Flechas del teclado cuando el foco está dentro del carrusel
+    raiz.addEventListener('keydown', function (evento) {
+      if (evento.key === 'ArrowRight') { evento.preventDefault(); ir(activo + 1, true, false); }
+      if (evento.key === 'ArrowLeft') { evento.preventDefault(); ir(activo - 1, true, true); }
+    });
+
+    // Deslizar con el dedo sobre la tarjeta (horizontal; el scroll vertical no se toca)
+    var toque = null;
+    zona.addEventListener('pointerdown', function (evento) {
+      if (evento.pointerType !== 'mouse') toque = { x: evento.clientX, y: evento.clientY };
+    });
+    zona.addEventListener('pointerup', function (evento) {
+      if (!toque) return;
+      var dx = evento.clientX - toque.x, dy = evento.clientY - toque.y;
+      toque = null;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3) ir(activo + (dx < 0 ? 1 : -1), true, dx > 0);
+    });
+    zona.addEventListener('pointercancel', function () { toque = null; });
+
+    // Solo corre mientras la tarjeta se ve (no hace falta ver toda la rejilla)
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entradas) {
+        pausa.fuera = !entradas[0].isIntersecting;
+        mostrarEstado();
+      }, { threshold: 0.25 }).observe(zona);
+    } else {
+      pausa.fuera = false;
+    }
+    // Pestaña oculta: se congela y al volver sigue donde iba
+    document.addEventListener('visibilitychange', function () {
+      pausa.fuera = document.hidden || pausa.fuera;
+      if (!document.hidden && 'IntersectionObserver' in window) {
+        var caja = zona.getBoundingClientRect();
+        pausa.fuera = caja.bottom < 0 || caja.top > window.innerHeight;
+      }
+      mostrarEstado();
+    });
+
+    arrancarBarra();
+    mostrarEstado();
+  });
+
+  // Horario: "Abierto ahora" / "Cerrado · abre …" y el día de hoy, con la hora de Costa Rica.
+  // Misma regla que horario_estado() en PHP (que ya dejó el texto correcto); aquí se actualiza cada minuto.
+  (function () {
+    var bloques = document.querySelectorAll('[data-horario]');
+    if (!bloques.length || !window.Intl) return;
+    var DIAS = ['', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
+    var NUM = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7 };
+    var hora12 = function (h) {
+      var p = h.split(':'), hh = parseInt(p[0], 10);
+      return (hh % 12 === 0 ? 12 : hh % 12) + ':' + p[1] + ' ' + (hh >= 12 && hh < 24 ? 'p.m.' : 'a.m.');
+    };
+    var minutos = function (h) { var p = h.split(':'); return parseInt(p[0], 10) * 60 + parseInt(p[1], 10); };
+    var ahoraCR = function () {
+      var partes = {};
+      new Intl.DateTimeFormat('en-US', { timeZone: 'America/Costa_Rica', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
+        .formatToParts(new Date()).forEach(function (p) { partes[p.type] = p.value; });
+      return { dia: NUM[partes.weekday], minuto: (parseInt(partes.hour, 10) % 24) * 60 + parseInt(partes.minute, 10) };
+    };
+    var duracion = function (m) { var h = Math.floor(m / 60), r = m % 60; return ((h ? h + ' h ' : '') + (r || !h ? r + ' min' : '')).trim(); };
+    var actualizar = function () {
+      var ahora;
+      try { ahora = ahoraCR(); } catch (e) { return; }
+      bloques.forEach(function (bloque) {
+        var semana;
+        try { semana = JSON.parse(bloque.getAttribute('data-horario')); } catch (e) { return; }
+        var hoy = semana[ahora.dia], abierto = false, texto = 'Cerrado', cuenta = '', progreso = 0, simple = 'Cerrado';
+        if (hoy && ahora.minuto >= minutos(hoy[0]) && ahora.minuto < minutos(hoy[1])) {
+          abierto = true;
+          texto = 'Abierto ahora · cierra a las ' + hora12(hoy[1]);
+          simple = 'Abierto hoy hasta las ' + hora12(hoy[1]);
+          cuenta = 'Cierra en ' + duracion(minutos(hoy[1]) - ahora.minuto);
+          progreso = Math.round((ahora.minuto - minutos(hoy[0])) * 100 / (minutos(hoy[1]) - minutos(hoy[0])));
+        } else {
+          for (var i = 0; i <= 7; i++) {
+            var d = (ahora.dia - 1 + i) % 7 + 1, h = semana[d];
+            if (!h || (i === 0 && ahora.minuto >= minutos(h[0]))) continue;
+            var cuando = i === 0 ? 'hoy' : i === 1 ? 'mañana' : 'el ' + DIAS[d];
+            var faltan = i * 1440 + minutos(h[0]) - ahora.minuto;
+            texto = 'Cerrado · abre ' + cuando + ' a las ' + hora12(h[0]);
+            simple = 'Cerrado · abrimos ' + cuando + ' a las ' + hora12(h[0]);
+            cuenta = faltan < 1440 ? 'Abre en ' + duracion(faltan) : 'Abre ' + cuando + ' a las ' + hora12(h[0]);
+            break;
+          }
+        }
+        var poner = function (selector, valor) { var el = bloque.querySelector(selector); if (el) el.textContent = valor; };
+        bloque.querySelectorAll('[data-horario-estado]').forEach(function (el) { el.classList.toggle('abierto', abierto); });
+        poner('[data-horario-texto]', texto);
+        poner('[data-horario-titulo]', abierto ? 'Abierto ahora' : 'Cerrado');
+        poner('[data-horario-cuenta]', cuenta);
+        poner('[data-horario-simple]', simple);
+        var barra = bloque.querySelector('[data-horario-progreso]');
+        if (barra) barra.style.width = progreso + '%'; // CSSOM (permitido por la CSP)
+        bloque.querySelectorAll('[data-dia]').forEach(function (fila) {
+          var esHoy = parseInt(fila.getAttribute('data-dia'), 10) === ahora.dia;
+          fila.classList.toggle('hoy', esHoy);
+          if (esHoy) fila.setAttribute('aria-current', 'date'); else fila.removeAttribute('aria-current');
+        });
+      });
+    };
+    actualizar();
+    setInterval(actualizar, 60000);
+  })();
 
   // Encabezado transparente sobre la portada: se vuelve sólido al bajar o al abrir el menú
   var cuerpo = document.querySelector('[data-encabezado]');
@@ -181,9 +407,11 @@
     var boton = evento.target.closest('[data-copiar]');
     if (!boton || !navigator.clipboard) return;
     navigator.clipboard.writeText(boton.getAttribute('data-copiar')).then(function () {
-      var texto = boton.textContent;
-      boton.textContent = '¡Copiado!';
-      setTimeout(function () { boton.textContent = texto; }, 1500);
+      var etiqueta = boton.querySelector('[data-copiar-etiqueta]') || boton;
+      var texto = etiqueta.textContent;
+      etiqueta.textContent = boton.getAttribute('data-copiar-texto') || '¡Copiado!';
+      boton.classList.add('copiado');
+      setTimeout(function () { etiqueta.textContent = texto; boton.classList.remove('copiado'); }, 1800);
     });
   });
 

@@ -10,6 +10,7 @@ $urls = [
     ['', null, '1.0'],
     ['tienda', null, '0.9'],
     ['servicios', null, '0.7'],
+    ['ubicacion', null, '0.6'],
     ['contacto', null, '0.6'],
     ['terminos', null, '0.2'],
     ['privacidad', null, '0.2'],

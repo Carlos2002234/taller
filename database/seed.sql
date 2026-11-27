@@ -16,9 +16,10 @@ INSERT INTO settings (clave, valor) VALUES
     ('whatsapp',                '50687026760'),   -- formato internacional para enlaces wa.me
     ('correo_avisos',           ''),              -- PENDIENTE
     ('direccion',               '150 m oeste de la plaza de deportes de La Puebla, antes de llegar a los semáforos.'),
-    ('mapa_url',                ''),              -- PENDIENTE: enlace de Google Maps
+    ('mapa_url',                'https://maps.app.goo.gl/g6znBf7wzHhGyhdEA'),  -- enlace de Google Maps (dado por el dueño 2026-11-21)
     ('waze_url',                'https://ul.waze.com/ul?ll=9.99491900%2C-84.11160700&navigate=yes'),  -- sin parámetros de rastreo
-    ('horario',                 'Lunes a sábado, 8:00 a.m. – 5:00 p.m.'),
+    ('horario',                 'Lunes a sábado, 8:00 a.m. – 5:00 p.m.'),  -- texto anterior (ya no se usa: ver horario_semana)
+    ('horario_semana',          'Lunes a sábado: 8:00-17:00\nDomingo: cerrado'),
 
     -- Pagos (nunca se aprueban automáticamente)
     ('sinpe_numero',            '8702-6760'),

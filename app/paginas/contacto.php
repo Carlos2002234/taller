@@ -9,7 +9,7 @@ require_once RAIZ . '/app/modelos/consultas.php';
 require_once RAIZ . '/app/servicios/notificaciones.php';
 
 $meta['titulo'] = 'Contacto y ubicación';
-$meta['descripcion'] = 'Visítanos: ' . ajuste('direccion') . ' Horario: ' . ajuste('horario') . '. Teléfono y WhatsApp ' . ajuste('telefono') . '.';
+$meta['descripcion'] = 'Visítanos: ' . ajuste('direccion') . ' Horario: ' . horario_resumen() . '. Teléfono y WhatsApp ' . ajuste('telefono') . '.';
 
 $meta['datos'][] = datos_negocio();
 
@@ -69,9 +69,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="tarjeta flex gap-4 p-5">
                 <span class="text-rivera-rojo"><?= icono('reloj', 'h-7 w-7') ?></span>
-                <div>
+                <div class="min-w-0 flex-1">
                     <h2 class="font-sans text-base font-semibold">Horario</h2>
-                    <p class="mt-1 text-neutral-300"><?= e(ajuste('horario')) ?></p>
+                    <!-- Mismo horario que Visítanos y el pie (Configuración → "Horario por día") -->
+                    <div class="mt-3"><?php componente('horario-semana', ['titulo' => false]); ?></div>
                 </div>
             </div>
             <div class="tarjeta flex gap-4 p-5">

@@ -69,7 +69,7 @@
   }
 
   // --- Agregar al carrito -----------------------------------------------------
-  function agregar(id, cantidad, stock) {
+  function agregar(id, cantidad, stock, boton) {
     var carrito = leer();
     var item = carrito.find(function (i) { return i.id === id; });
     var actual = item ? item.cantidad : 0;
@@ -82,6 +82,8 @@
     if (item) item.cantidad = nueva;
     else carrito.push({ id: id, cantidad: nueva });
     guardar(carrito);
+    // Aviso para las animaciones (miniatura que vuela al carrito, rebote del ícono: movimiento.js)
+    document.dispatchEvent(new CustomEvent('carrito:agregado', { detail: { boton: boton } }));
     mostrarAviso(nueva < actual + cantidad ? 'Agregamos las unidades disponibles.' : 'Producto agregado al carrito', true);
   }
 
@@ -93,7 +95,7 @@
     var stock = parseInt(boton.getAttribute('data-stock'), 10) || 0;
     var campo = boton.closest('[data-producto]') && boton.closest('[data-producto]').querySelector('[data-cantidad-campo]');
     var cantidad = campo ? Math.max(1, parseInt(campo.value, 10) || 1) : 1;
-    if (id > 0 && stock > 0) agregar(id, cantidad, stock);
+    if (id > 0 && stock > 0) agregar(id, cantidad, stock, boton);
   });
 
   // --- Selector de cantidad (− / +) ------------------------------------------

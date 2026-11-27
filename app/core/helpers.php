@@ -79,14 +79,219 @@ function mapa_url(): string
     if ($configurado !== '') {
         return $configurado;
     }
-    // Waze trae las coordenadas en "ll=lat,lng" (la coma puede venir como %2C)
-    parse_str((string) parse_url(ajuste('waze_url'), PHP_URL_QUERY), $waze);
-    if (isset($waze['ll']) && is_string($waze['ll'])
-        && preg_match('/^(-?\d{1,2}(?:\.\d+)?),(-?\d{1,3}(?:\.\d+)?)$/', $waze['ll'], $m)) {
-        return 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode((float) $m[1] . ',' . (float) $m[2]);
+    if ($punto = coordenadas_negocio()) {
+        return 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($punto[0] . ',' . $punto[1]);
     }
     $busqueda = ajuste('negocio_nombre', 'Rivera Grupo Automotriz') . ', ' . ajuste('direccion') . ', Costa Rica';
     return 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($busqueda);
+}
+
+/**
+ * Coordenadas exactas del taller [lat, lng], tomadas del enlace de Waze de Configuración ("ll=lat,lng";
+ * la coma puede venir como %2C). null si no hay enlace o no trae coordenadas.
+ */
+function coordenadas_negocio(): ?array
+{
+    parse_str((string) parse_url(ajuste('waze_url'), PHP_URL_QUERY), $waze);
+    if (isset($waze['ll']) && is_string($waze['ll'])
+        && preg_match('/^(-?\d{1,2}(?:\.\d+)?),(-?\d{1,3}(?:\.\d+)?)$/', $waze['ll'], $m)) {
+        return [(float) $m[1], (float) $m[2]];
+    }
+    return null;
+}
+
+/* =====================================================================
+   Horario de atención: UNA sola fuente para toda la web (Visítanos, Contacto, pie, checkout,
+   textos legales y datos para Google). Se edita en Admin → Configuración → "Horario por día"
+   (setting horario_semana), con una línea por día o rango de días, por ejemplo:
+       Lunes a sábado: 8:00-17:00
+       Domingo: cerrado
+   Si el campo está vacío se usa HORARIO_PREDETERMINADO (el horario confirmado por el dueño).
+   La hora "de ahora" siempre es la de Costa Rica.
+   ===================================================================== */
+
+const HORARIO_ZONA = 'America/Costa_Rica';
+const HORARIO_PREDETERMINADO = "Lunes a sábado: 8:00-17:00\nDomingo: cerrado";
+const DIAS_SEMANA = [1 => 'lunes', 2 => 'martes', 3 => 'miércoles', 4 => 'jueves', 5 => 'viernes', 6 => 'sábado', 7 => 'domingo'];
+
+/**
+ * Lee el texto del horario. Devuelve [1..7 => ['08:00', '17:00'] | null] o null si alguna línea no se entiende.
+ * Acepta "Lunes a viernes", "lunes-viernes", "Sábado", horas "8:00-17:00", "8-17" o "7:30 – 12:00", y "cerrado".
+ */
+function horario_parsear(string $texto): ?array
+{
+    $sinTildes = fn (string $t) => strtr(mb_strtolower(trim($t)), ['á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u']);
+    $indice = [];
+    foreach (DIAS_SEMANA as $n => $dia) {
+        $indice[$sinTildes($dia)] = $n;
+    }
+    $semana = array_fill(1, 7, null);
+    $lineas = array_filter(array_map('trim', preg_split('/\R|;/', $texto)), 'strlen');
+    if (!$lineas) {
+        return null;
+    }
+    foreach ($lineas as $linea) {
+        $l = $sinTildes($linea);
+        if (!preg_match('/^([a-z]+)(?:\s*(?:a|-|–|al)\s*([a-z]+))?\s*:?\s*(.+)$/u', $l, $m)
+            || !isset($indice[$m[1]]) || ($m[2] !== '' && !isset($indice[$m[2]]))) {
+            return null;
+        }
+        $desde = $indice[$m[1]];
+        $hasta = $m[2] !== '' ? $indice[$m[2]] : $desde;
+        if (trim($m[3]) === 'cerrado') {
+            $horas = null;
+        } elseif (preg_match('/^(\d{1,2})(?::(\d{2}))?\s*(?:-|–|a)\s*(\d{1,2})(?::(\d{2}))?$/u', trim($m[3]), $h)
+            && (int) $h[1] < 24 && (int) $h[3] <= 24 && ((int) $h[1] * 60 + (int) (($h[2] ?? 0) ?: 0)) < ((int) $h[3] * 60 + (int) (($h[4] ?? 0) ?: 0))) {
+            $horas = [sprintf('%02d:%02d', $h[1], ($h[2] ?? 0) ?: 0), sprintf('%02d:%02d', $h[3], ($h[4] ?? 0) ?: 0)];
+        } else {
+            return null;
+        }
+        for ($d = $desde; ; $d = $d % 7 + 1) {
+            $semana[$d] = $horas;
+            if ($d === $hasta) {
+                break;
+            }
+        }
+    }
+    return $semana;
+}
+
+/** Horario de la semana [1 = lunes … 7 = domingo => ['08:00', '17:00'] | null (cerrado)]. */
+function horario_semana(): array
+{
+    static $semana = null;
+    if ($semana === null) {
+        $semana = horario_parsear(ajuste('horario_semana')) ?? horario_parsear(HORARIO_PREDETERMINADO);
+    }
+    return $semana;
+}
+
+/** "17:00" → "5:00 p.m." */
+function hora_12(string $hora): string
+{
+    [$h, $m] = array_map('intval', explode(':', $hora));
+    $sufijo = $h >= 12 && $h < 24 ? 'p.m.' : 'a.m.';
+    $h12 = $h % 12 === 0 ? 12 : $h % 12;
+    return $h12 . ':' . sprintf('%02d', $m) . ' ' . $sufijo;
+}
+
+/** Resumen en una línea, ej. "Lunes a sábado, 8:00 a.m. – 5:00 p.m." (agrupa días seguidos con el mismo horario). */
+function horario_resumen(): string
+{
+    $grupos = [];
+    foreach (horario_semana() as $dia => $horas) {
+        $ultimo = count($grupos) - 1;
+        if ($ultimo >= 0 && $grupos[$ultimo]['horas'] === $horas && $grupos[$ultimo]['hasta'] === $dia - 1) {
+            $grupos[$ultimo]['hasta'] = $dia;
+        } else {
+            $grupos[] = ['desde' => $dia, 'hasta' => $dia, 'horas' => $horas];
+        }
+    }
+    $partes = [];
+    foreach ($grupos as $g) {
+        if ($g['horas'] === null) {
+            continue;
+        }
+        $dias = DIAS_SEMANA[$g['desde']] . ($g['hasta'] !== $g['desde'] ? ($g['hasta'] - $g['desde'] > 1 ? ' a ' : ' y ') . DIAS_SEMANA[$g['hasta']] : '');
+        $partes[] = mb_strtoupper(mb_substr($dias, 0, 1)) . mb_substr($dias, 1) . ', ' . hora_12($g['horas'][0]) . ' – ' . hora_12($g['horas'][1]);
+    }
+    return $partes ? implode(' · ', $partes) : 'Escríbenos para coordinar tu visita';
+}
+
+/**
+ * El horario en pocas líneas, incluidos los días cerrados, ej.
+ * ["Lunes a sábado 8:00 a.m. – 5:00 p.m.", "Domingo cerrado"] (agrupa días seguidos iguales).
+ */
+function horario_lineas(): array
+{
+    $grupos = [];
+    foreach (horario_semana() as $dia => $horas) {
+        $ultimo = count($grupos) - 1;
+        if ($ultimo >= 0 && $grupos[$ultimo]['horas'] === $horas && $grupos[$ultimo]['hasta'] === $dia - 1) {
+            $grupos[$ultimo]['hasta'] = $dia;
+        } else {
+            $grupos[] = ['desde' => $dia, 'hasta' => $dia, 'horas' => $horas];
+        }
+    }
+    $lineas = [];
+    foreach ($grupos as $g) {
+        $dias = DIAS_SEMANA[$g['desde']] . ($g['hasta'] !== $g['desde'] ? ($g['hasta'] - $g['desde'] > 1 ? ' a ' : ' y ') . DIAS_SEMANA[$g['hasta']] : '');
+        $dias = mb_strtoupper(mb_substr($dias, 0, 1)) . mb_substr($dias, 1);
+        $lineas[] = $dias . ' ' . ($g['horas'] ? hora_12($g['horas'][0]) . ' – ' . hora_12($g['horas'][1]) : 'cerrado');
+    }
+    return $lineas;
+}
+
+/** Fecha y hora actual en Costa Rica. */
+function ahora_costa_rica(): DateTimeImmutable
+{
+    return new DateTimeImmutable('now', new DateTimeZone(HORARIO_ZONA));
+}
+
+/** 135 → "2 h 15 min"; 45 → "45 min"; 120 → "2 h". */
+function duracion_corta(int $minutos): string
+{
+    $h = intdiv($minutos, 60);
+    $m = $minutos % 60;
+    return trim(($h ? $h . ' h ' : '') . ($m || !$h ? $m . ' min' : ''));
+}
+
+/**
+ * ¿Está abierto ahora? (hora de Costa Rica). Devuelve:
+ *   abierto  bool
+ *   titulo   "Abierto ahora" | "Cerrado"
+ *   texto    "Abierto ahora · cierra a las 5:00 p.m." | "Cerrado · abre mañana a las 8:00 a.m."
+ *   cuenta   "Cierra en 2 h 15 min" | "Abre en 9 h 30 min" | "Abre el lunes a las 8:00 a.m." (si falta más de un día)
+ *   progreso 0–100: cuánto va de la jornada de hoy (null si está cerrado)
+ *   simple   "Abierto hoy hasta las 5:00 p.m." | "Cerrado · abrimos el lunes a las 8:00 a.m." (texto sobrio de /ubicacion)
+ *   hoy      1–7 (1 = lunes)
+ * app.js (bloque "Horario") lo recalcula cada minuto con la misma regla.
+ */
+function horario_estado(?DateTimeImmutable $ahora = null): array
+{
+    $ahora ??= ahora_costa_rica();
+    $semana = horario_semana();
+    $hoy = (int) $ahora->format('N');
+    $minuto = (int) $ahora->format('G') * 60 + (int) $ahora->format('i');
+    $enMinutos = fn (string $h) => (int) substr($h, 0, 2) * 60 + (int) substr($h, 3, 2);
+
+    if ($semana[$hoy] && $minuto >= ($abre = $enMinutos($semana[$hoy][0])) && $minuto < ($cierra = $enMinutos($semana[$hoy][1]))) {
+        return [
+            'abierto'  => true,
+            'titulo'   => 'Abierto ahora',
+            'texto'    => 'Abierto ahora · cierra a las ' . hora_12($semana[$hoy][1]),
+            'simple'   => 'Abierto hoy hasta las ' . hora_12($semana[$hoy][1]),
+            'cuenta'   => 'Cierra en ' . duracion_corta($cierra - $minuto),
+            'progreso' => (int) round(($minuto - $abre) * 100 / ($cierra - $abre)),
+            'hoy'      => $hoy,
+        ];
+    }
+    for ($i = 0; $i <= 7; $i++) {
+        $dia = ($hoy - 1 + $i) % 7 + 1;
+        $horas = $semana[$dia];
+        if (!$horas || ($i === 0 && $minuto >= $enMinutos($horas[0]))) {
+            continue;
+        }
+        $faltan = $i * 1440 + $enMinutos($horas[0]) - $minuto;
+        $cuando = $i === 0 ? 'hoy' : ($i === 1 ? 'mañana' : 'el ' . DIAS_SEMANA[$dia]);
+        return [
+            'abierto'  => false,
+            'titulo'   => 'Cerrado',
+            'texto'    => 'Cerrado · abre ' . $cuando . ' a las ' . hora_12($horas[0]),
+            'simple'   => 'Cerrado · abrimos ' . $cuando . ' a las ' . hora_12($horas[0]),
+            'cuenta'   => $faltan < 1440 ? 'Abre en ' . duracion_corta($faltan) : 'Abre ' . $cuando . ' a las ' . hora_12($horas[0]),
+            'progreso' => null,
+            'hoy'      => $hoy,
+        ];
+    }
+    return ['abierto' => false, 'titulo' => 'Cerrado', 'texto' => 'Cerrado', 'cuenta' => '', 'progreso' => null, 'simple' => 'Cerrado', 'hoy' => $hoy];
+}
+
+/** Enlace para incrustar el mapa en el punto exacto del taller (se carga solo si la persona lo pide). */
+function mapa_embed_url(): ?string
+{
+    $punto = coordenadas_negocio();
+    return $punto ? 'https://maps.google.com/maps?q=' . rawurlencode($punto[0] . ',' . $punto[1]) . '&z=17&output=embed' : null;
 }
 
 /**
@@ -102,7 +307,7 @@ function texto_legal_html(string $texto): string
         '{negocio}'     => ajuste('negocio_nombre', 'Rivera Grupo Automotriz'),
         '{telefono}'    => ajuste('telefono'),
         '{direccion}'   => ajuste('direccion'),
-        '{horario}'     => ajuste('horario'),
+        '{horario}'     => horario_resumen(),
         '{horas_pago}'  => ajuste('horas_expiracion_pedido', '48'),
         '{envio_plazo}' => ajuste('envio_plazo', '48 horas'),
     ]);
@@ -145,12 +350,20 @@ function texto_legal_html(string $texto): string
 }
 
 /**
- * Datos del negocio para Google (schema.org AutoRepair = taller mecánico).
- * El horario no se incluye porque es texto libre en Configuración y podría quedar desactualizado.
+ * Datos del negocio para Google (schema.org AutoRepair = taller mecánico, un tipo de LocalBusiness):
+ * dirección, coordenadas (del enlace de Waze) y horario por día (de horario_semana()).
  */
 function datos_negocio(): array
 {
     $redes = array_values(array_filter([ajuste('facebook_url'), ajuste('instagram_url'), ajuste('tiktok_url')]));
+    $nombresSchema = [1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday', 7 => 'Sunday'];
+    $horario = [];
+    foreach (horario_semana() as $dia => $horas) {
+        if ($horas) {
+            $horario[] = ['@type' => 'OpeningHoursSpecification', 'dayOfWeek' => 'https://schema.org/' . $nombresSchema[$dia], 'opens' => $horas[0], 'closes' => $horas[1]];
+        }
+    }
+    $punto = coordenadas_negocio();
     return array_filter([
         '@context'           => 'https://schema.org',
         '@type'              => 'AutoRepair',
@@ -159,7 +372,10 @@ function datos_negocio(): array
         'image'              => url('img/og-imagen.jpg'),
         'logo'               => url('img/logo.png'),
         'telephone'          => '+506 ' . ajuste('telefono'),
-        'address'            => ['@type' => 'PostalAddress', 'streetAddress' => ajuste('direccion'), 'addressCountry' => 'CR'],
+        'address'            => ['@type' => 'PostalAddress', 'streetAddress' => ajuste('direccion'), 'addressLocality' => 'La Puebla', 'addressCountry' => 'CR'],
+        'geo'                => $punto ? ['@type' => 'GeoCoordinates', 'latitude' => $punto[0], 'longitude' => $punto[1]] : null,
+        'hasMap'             => mapa_url(),
+        'openingHoursSpecification' => $horario ?: null,
         'currenciesAccepted' => 'CRC',
         'paymentAccepted'    => 'SINPE Móvil, transferencia bancaria',
         'sameAs'             => $redes ?: null,
