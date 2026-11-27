@@ -89,6 +89,7 @@
   .texto-legal h2 { @apply mb-3 mt-8 text-xl first:mt-0; }
   .texto-legal p { @apply mb-4 leading-relaxed text-neutral-700; }
   .texto-legal ul { @apply mb-4 list-disc space-y-1.5 pl-6 text-neutral-700; }
+  .texto-legal a { @apply font-semibold text-rivera-rojo underline underline-offset-2 hover:text-rivera-rojo-oscuro; }
 
   /* Enlaces del menú: línea roja que crece al pasar el mouse */
   .enlace-menu { @apply relative py-1 text-sm font-medium text-neutral-300 transition-colors duration-rapida ease-suave after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-rivera-rojo after:transition-transform after:duration-rapida after:ease-suave after:content-[''] hover:text-white hover:after:scale-x-100; }

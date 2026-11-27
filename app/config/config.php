@@ -42,6 +42,9 @@ function config(string $clave, mixed $porDefecto = null): mixed
         'telegram.token' => env('TELEGRAM_BOT_TOKEN', ''),
         'telegram.chat'  => env('TELEGRAM_CHAT_ID', ''),
 
+        // Microsoft Clarity (mapas de calor y grabaciones). Solo se carga con APP_ENV=produccion. Ver clarity_id()
+        'clarity.id'     => trim((string) env('CLARITY_ID', '')),
+
         // Rutas de archivos
         'ruta.uploads'      => PUBLICO . '/uploads',           // fotos de productos (públicas)
         'ruta.comprobantes' => RAIZ . '/storage/comprobantes', // comprobantes de pago (privados)

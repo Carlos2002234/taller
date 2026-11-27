@@ -50,6 +50,10 @@ if (http_response_code() === 200 && !in_array(explode('/', ruta_actual())[0], $s
     <script src="<?= e(asset('js/app.js')) ?>" defer></script>
     <script src="<?= e(asset('js/carrito.js')) ?>" defer></script>
     <script src="<?= e(asset('js/movimiento.js')) ?>" defer></script>
+    <?php if ($clarityId = clarity_id()): ?>
+        <!-- Microsoft Clarity (solo producción; ver clarity_id()) -->
+        <script src="<?= e(asset('js/clarity.js')) ?>" data-clarity="<?= e($clarityId) ?>" async></script>
+    <?php endif; ?>
     <?php if ($meta['datos']) { componente('datos-estructurados', ['bloques' => $meta['datos']]); } ?>
 </head>
 <body class="flex min-h-screen flex-col bg-rivera-negro font-sans text-white antialiased <?= $meta['portada'] ? 'encabezado-flotante' : '' ?>" data-encabezado>
