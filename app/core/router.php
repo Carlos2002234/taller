@@ -74,6 +74,7 @@ function rutas(): array
         'admin/configuracion'    => ['admin/configuracion', false, 'html'],
         'admin/reportes'         => ['admin/reportes', false, 'html'],
         'admin/visitas'          => ['admin/visitas', false, 'html'],
+        'admin/monitoreo'        => ['admin/monitoreo', false, 'html'],
         'admin/consultas'        => ['admin/consultas', false, 'html'],
         'admin/consultas/{id}'   => ['admin/consulta', false, 'html'],
         'admin/api/novedades'    => ['admin/api-novedades', false, 'json'],

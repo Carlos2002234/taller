@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Estado del servidor para Admin → Monitoreo: corre app/tareas/estado-servidor.php cada minuto.
+  Instalar (Mac de producción):
+    cp scripts/launchd/com.rivera.taller.estado.plist ~/Library/LaunchAgents/
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.rivera.taller.estado.plist
+  Si el proyecto está en otra carpeta, cambia las rutas de abajo.
+-->
+<plist version="1.0">
+<dict>
+	<key>Label</key><string>com.rivera.taller.estado</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/opt/homebrew/bin/php</string>
+		<string>/Users/carlosrivera/taller-produccion/app/tareas/estado-servidor.php</string>
+	</array>
+	<key>StartInterval</key><integer>60</integer>
+	<key>RunAtLoad</key><true/>
+	<key>StandardOutPath</key><string>/Users/carlosrivera/taller-local/produccion/logs/estado-servidor.log</string>
+	<key>StandardErrorPath</key><string>/Users/carlosrivera/taller-local/produccion/logs/estado-servidor.log</string>
+</dict>
+</plist>

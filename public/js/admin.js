@@ -183,4 +183,17 @@
       Notification.requestPermission().then(mostrar);
     });
   });
+
+  // Monitoreo: recarga la página sola cada N segundos (data-recargar-cada), solo si la pestaña se ve.
+  // Si estaba oculta, recarga apenas se vuelve a mirar.
+  var recargar = document.querySelector('[data-recargar-cada]');
+  if (recargar) {
+    var cada = (parseInt(recargar.getAttribute('data-recargar-cada'), 10) || 60) * 1000;
+    var cargada = Date.now();
+    var recargarAhora = function () { window.location.replace(window.location.pathname); };
+    setInterval(function () { if (!document.hidden) recargarAhora(); }, cada);
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden && Date.now() - cargada > cada) recargarAhora();
+    });
+  }
 })();

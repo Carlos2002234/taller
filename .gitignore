@@ -15,6 +15,9 @@
 !/storage/comprobantes/.gitkeep
 /storage/logs/*
 !/storage/logs/.gitkeep
+# Estado del servidor y caché del monitoreo (se generan solos)
+/storage/estado/
+/storage/cache/
 
 # Dependencias y compilados
 /vendor/

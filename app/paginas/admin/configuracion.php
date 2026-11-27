@@ -30,6 +30,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nuevos = [];
         foreach (CONFIGURACION_CAMPOS as $campos) {
             foreach ($campos as $clave => [$etiqueta, $tipo]) {
+                // Claves secretas: vacío = dejar la guardada; casilla "quitar" = borrarla
+                if ($tipo === 'secreto') {
+                    $nueva = is_string($_POST[$clave] ?? null) ? trim($_POST[$clave]) : '';
+                    if (isset($_POST['quitar_' . $clave])) {
+                        $nuevos[$clave] = '';
+                    } elseif ($nueva === '') {
+                        $nuevos[$clave] = ajuste($clave);
+                    } else {
+                        [$valor, $error] = configuracion_validar($tipo, mb_substr($nueva, 0, 4000), $etiqueta);
+                        if ($error) {
+                            $errores[] = $error;
+                        }
+                        $nuevos[$clave] = $valor;
+                    }
+                    $valores[$clave] = '';
+                    continue;
+                }
                 [$valor, $error] = configuracion_validar($tipo, $texto($clave), $etiqueta);
                 $valores[$clave] = $valor;
                 if ($error) {
@@ -82,7 +99,7 @@ $zonas = zonas_admin_listar();
     <input type="hidden" name="accion" value="ajustes">
 
     <?php foreach (CONFIGURACION_CAMPOS as $seccion => $campos): ?>
-        <fieldset class="tarjeta-clara p-5 sm:p-6">
+        <fieldset class="tarjeta-clara p-5 sm:p-6" <?= $seccion === 'Monitoreo' ? 'id="monitoreo"' : '' ?>>
             <legend class="sr-only"><?= e($seccion) ?></legend>
             <h2 class="text-lg"><?= e($seccion) ?></h2>
             <div class="mt-4 grid gap-4 sm:grid-cols-2">
@@ -99,6 +116,17 @@ $zonas = zonas_admin_listar();
                             <textarea id="<?= e($clave) ?>" name="<?= e($clave) ?>" rows="3" maxlength="500" class="campo-claro font-mono text-sm"
                                       placeholder="<?= e(HORARIO_PREDETERMINADO) ?>"><?= e($valores[$clave]) ?></textarea>
                             <p class="mt-1 text-xs text-neutral-600">Así se ve en la web: <strong><?= e(horario_resumen()) ?></strong></p>
+                        <?php elseif ($tipo === 'secreto'): ?>
+                            <?php $guardada = ajuste($clave); ?>
+                            <input id="<?= e($clave) ?>" name="<?= e($clave) ?>" class="campo-claro font-mono" type="password"
+                                   autocomplete="off" spellcheck="false" value=""
+                                   placeholder="<?= $guardada !== '' ? 'Guardada · escribe solo para reemplazarla' : 'Sin configurar' ?>">
+                            <?php if ($guardada !== ''): ?>
+                                <p class="mt-1 text-xs text-neutral-600">
+                                    Guardada (termina en <span class="font-mono">…<?= e(substr($guardada, -4)) ?></span>).
+                                    <label class="ml-2 inline-flex items-center gap-1.5"><input type="checkbox" name="quitar_<?= e($clave) ?>" class="h-3.5 w-3.5 accent-rivera-rojo"> Quitarla</label>
+                                </p>
+                            <?php endif; ?>
                         <?php elseif ($tipo === 'largo'): ?>
                             <textarea id="<?= e($clave) ?>" name="<?= e($clave) ?>" rows="2" maxlength="500" class="campo-claro"><?= e($valores[$clave]) ?></textarea>
                         <?php else: ?>

@@ -7,7 +7,8 @@ declare(strict_types=1);
 
 /**
  * Campos editables agrupados por sección: clave => [etiqueta, tipo, ayuda]
- * tipo: texto | telefono | iban | url | entero | prefijo | correo | largo | horario
+ * tipo: texto | telefono | iban | url | entero | prefijo | correo | largo | horario | secreto
+ * secreto: clave de un servicio externo; nunca se muestra (solo sus últimos 4 caracteres) y vacío = no cambiar.
  */
 const CONFIGURACION_CAMPOS = [
     'Pagos' => [
@@ -42,6 +43,10 @@ const CONFIGURACION_CAMPOS = [
         'facebook_url'  => ['Facebook', 'url', 'Enlace completo. Vacío = no se muestra.'],
         'instagram_url' => ['Instagram', 'url', ''],
         'tiktok_url'    => ['TikTok', 'url', ''],
+    ],
+    'Monitoreo' => [
+        'uptimerobot_api_key' => ['Clave de UptimeRobot (solo lectura)', 'secreto', 'UptimeRobot → Integrations & API → Read-only API key (empieza con «ur»). Se usa en Admin → Monitoreo.'],
+        'clarity_api_token'   => ['Token de Microsoft Clarity (Data Export)', 'secreto', 'Clarity → Settings → Data Export → Generate new API token. Muestra sesiones y personas de los últimos 3 días en Monitoreo.'],
     ],
     'Textos legales' => [
         'terminos_texto'   => ['Términos y condiciones', 'legal', ''],
@@ -78,6 +83,11 @@ function configuracion_validar(string $tipo, string $valor, string $etiqueta): a
                         ? [$valor, null] : [$valor, "«{$etiqueta}» debe ser un número entre 1 y 168."],
         'prefijo'  => preg_match('/^[A-Z0-9]{2,5}$/', $p = strtoupper($valor)) ? [$p, null] : [$valor, "«{$etiqueta}» debe tener de 2 a 5 letras o números."],
         'legal'    => [mb_substr(str_replace("\r\n", "\n", $valor), 0, 20000), null],
+        'secreto'  => !preg_match('/^[A-Za-z0-9._\-]{10,4000}$/', $valor)
+                        ? ['', "«{$etiqueta}» no parece una clave válida (sin espacios, solo letras, números, puntos y guiones)."]
+                        : (str_contains($etiqueta, 'UptimeRobot') && !str_starts_with($valor, 'ur')
+                            ? ['', '«' . $etiqueta . '»: usa la clave de SOLO LECTURA (empieza con «ur»), nunca la principal.']
+                            : [$valor, null]),
         'horario'  => horario_parsear($valor) !== null
                         ? [mb_substr(str_replace("\r\n", "\n", $valor), 0, 500), null]
                         : [$valor, "«{$etiqueta}» no se entiende. Usa una línea por día, ej. «Lunes a sábado: 8:00-17:00» y «Domingo: cerrado»."],
