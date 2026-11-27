@@ -8,6 +8,7 @@ $menu = [
     'tienda'    => 'Tienda',
     'servicios' => 'Servicios',
     'ubicacion' => 'Ubicación',
+    'preguntas-frecuentes' => 'Preguntas',
     'contacto'  => 'Contacto',
     'mi-pedido' => 'Mi pedido',
 ];
@@ -16,14 +17,14 @@ $menu = [
 <div class="barra-lectura" data-barra-lectura aria-hidden="true"></div>
 <!-- Barra negra sólida con el logo completo del manual de marca (se compacta al bajar) -->
 <header class="sticky top-0 z-40 border-b border-white/10 bg-rivera-negro">
-    <div class="contenedor flex h-20 items-center gap-6 lg:h-24">
+    <div class="contenedor flex h-20 items-center gap-6 lg:h-24 lg:gap-5 xl:gap-6">
         <!-- Logo -->
         <a href="<?= e(url()) ?>" class="flex shrink-0 items-center" aria-label="<?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?> — Inicio">
             <img src="<?= e(asset('img/logo-completo.webp')) ?>" alt="" width="816" height="480" class="h-14 w-auto lg:h-[4.5rem]">
         </a>
 
         <!-- Menú de escritorio -->
-        <nav class="hidden flex-1 items-center justify-center gap-7 lg:flex" aria-label="Principal">
+        <nav class="hidden flex-1 items-center justify-center gap-5 lg:flex xl:gap-7" aria-label="Principal">
             <?php foreach ($menu as $ruta => $texto): ?>
                 <a href="<?= e(url($ruta)) ?>"
                    class="enlace-menu <?= ruta_actual() === $ruta ? 'enlace-menu-activo' : '' ?>"
@@ -36,7 +37,7 @@ $menu = [
             <form action="<?= e(url('tienda')) ?>" method="get" role="search" class="relative hidden md:block">
                 <label for="buscar-escritorio" class="sr-only">Buscar productos</label>
                 <input id="buscar-escritorio" type="search" name="q" placeholder="Buscar productos…"
-                       class="campo w-56 py-2 pl-9 xl:w-64">
+                       class="campo w-56 py-2 pl-9 lg:w-48 xl:w-64">
                 <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500"><?= icono('buscar', 'h-4 w-4') ?></span>
             </form>
 

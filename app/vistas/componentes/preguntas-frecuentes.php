@@ -1,17 +1,17 @@
 <?php
 /**
- * Preguntas frecuentes (Inicio y página /preguntas-frecuentes). Pedido del dueño 2026-11-27.
+ * Preguntas frecuentes: contenido de la pestaña "Preguntas" (/preguntas-frecuentes). Pedido del dueño 2026-11-27;
+ * desde entonces ya NO va en el Inicio (pedido del dueño: "en su propia pestaña, igual que Ubicación").
  *
  * - Textos: app/datos/preguntas-frecuentes.php (este HTML no se toca para editarlas).
+ * - Encabezado de página coherente con Servicios: etiqueta con línea que se dibuja (.etiqueta-dibuja),
+ *   h1 por líneas con máscara (.titulo-lineas) y entrada .portada-entrar. En escritorio queda fijo a la
+ *   izquierda (sticky) mientras se leen las respuestas a la derecha.
  * - Acordeón con <details>/<summary>: funciona sin JavaScript (se abre y cierra al instante).
  *   Con JavaScript (app.js [data-faq]) la respuesta se despliega con grid-template-rows 0fr → 1fr
  *   y el "+" gira a "×". Con "reducir movimiento" cambia sin animación.
- * - Encabezado igual al resto de secciones: etiqueta roja pequeña + título grande en dos líneas.
  * - Debajo, un llamado corto a WhatsApp para las dudas que no estén.
- * - El JSON-LD FAQPage lo agrega SOLO la página /preguntas-frecuentes (Google pide marcar una sola vez
- *   el mismo contenido); lo arma preguntas_frecuentes_schema() con el mismo texto que se ve aquí.
- *
- * Datos opcionales: 'nivel' => 'h1' (en la página propia) | 'h2' (por defecto, en el Inicio).
+ * - El JSON-LD FAQPage lo agrega la página (preguntas_frecuentes_schema(), mismo texto que se ve aquí).
  */
 
 require_once RAIZ . '/app/modelos/preguntas.php';
@@ -20,15 +20,17 @@ $preguntas = preguntas_frecuentes();
 if (!$preguntas) {
     return;
 }
-$nivel = ($nivel ?? 'h2') === 'h1' ? 'h1' : 'h2';
 ?>
-<section id="preguntas-frecuentes" class="contenedor pt-20 sm:pt-28" aria-labelledby="titulo-preguntas" data-faq>
+<section id="preguntas-frecuentes" class="contenedor pt-12 sm:pt-16 lg:pt-20" aria-labelledby="titulo-preguntas" data-faq>
     <div class="grid gap-10 lg:grid-cols-12 lg:gap-14">
-        <div class="aparecer lg:col-span-5">
+        <div class="lg:col-span-5">
             <div class="lg:sticky lg:top-32">
-                <p class="etiqueta-seccion">Preguntas frecuentes</p>
-                <<?= $nivel ?> id="titulo-preguntas" class="mt-3 text-4xl font-extrabold leading-none tracking-tight sm:text-5xl">Resolvemos<br><span class="text-rivera-rojo">tus dudas</span></<?= $nivel ?>>
-                <p class="mt-5 max-w-sm text-neutral-300">Pagos, envíos, horario y ubicación: lo que más nos preguntan, en pocas palabras.</p>
+                <p class="etiqueta-seccion etiqueta-dibuja portada-entrar portada-entrar-1">Preguntas frecuentes</p>
+                <h1 id="titulo-preguntas" class="titulo-lineas mt-3 font-display text-4xl font-extrabold leading-[1.02] tracking-tight sm:text-5xl xl:text-[3.6rem]">
+                    <span class="linea"><span>Resolvemos</span></span>
+                    <span class="linea"><span class="text-rivera-rojo">tus dudas.</span></span>
+                </h1>
+                <p class="portada-entrar portada-entrar-3 mt-6 max-w-sm text-lg leading-relaxed text-neutral-300">Pagos, envíos, horario y ubicación: lo que más nos preguntan, en pocas palabras.</p>
             </div>
         </div>
 
