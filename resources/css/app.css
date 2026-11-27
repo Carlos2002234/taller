@@ -479,6 +479,26 @@ header, header > .contenedor { transition: transform var(--dur-media) var(--curv
 }
 
 /* ---------------------------------------------------------------------
+   Preguntas frecuentes (componente preguntas-frecuentes.php + app.js [data-faq]; pedido del dueño 2026-11-27)
+   <details> nativo: sin JavaScript abre y cierra al instante. Con JavaScript la sección recibe "faq-js"
+   y la respuesta se despliega con grid-template-rows 0fr → 1fr (sin medir alturas en JS);
+   el "+" gira 45° hasta quedar como "×". Misma curva y duraciones del sitio.
+   --------------------------------------------------------------------- */
+.faq-pregunta { list-style: none; }
+.faq-pregunta::-webkit-details-marker { display: none; }
+.faq-pregunta:focus-visible { --tw-ring-shadow: 0 0 #0000; box-shadow: none; outline: 2px solid #fff; outline-offset: 2px; border-radius: .25rem; }
+.faq-icono { transition: transform var(--dur-media) var(--curva), background-color var(--dur-rapida) var(--curva), border-color var(--dur-rapida) var(--curva); }
+.faq-pregunta:hover .faq-icono { border-color: #D11A21; }
+.faq-respuesta { display: grid; grid-template-rows: 1fr; }
+.faq-respuesta-interior { min-height: 0; overflow: hidden; }
+/* Abierta: sin JS basta el atributo [open]; con JS manda la clase "abierto" (así también se anima al cerrar) */
+[data-faq]:not(.faq-js) .faq-item[open] .faq-icono, .faq-js .faq-item.abierto .faq-icono { transform: rotate(45deg); background-color: #D11A21; border-color: #D11A21; }
+.faq-js .faq-respuesta { grid-template-rows: 0fr; transition: grid-template-rows var(--dur-media) var(--curva); }
+.faq-js .faq-respuesta-interior { opacity: 0; transition: opacity var(--dur-rapida) var(--curva); }
+.faq-js .faq-item.abierto .faq-respuesta { grid-template-rows: 1fr; }
+.faq-js .faq-item.abierto .faq-respuesta-interior { opacity: 1; transition-delay: 80ms; }
+
+/* ---------------------------------------------------------------------
    "Reducir movimiento": todo aparece y cambia sin animación.
    Va al FINAL del archivo para ganarle a los :hover anteriores (misma especificidad).
    --------------------------------------------------------------------- */
@@ -521,4 +541,6 @@ header, header > .contenedor { transition: transform var(--dur-media) var(--curv
   .tarjeta-interactiva::after { display: none; }
   .btn-sesgo-rojo:hover { transform: skewX(-12deg); }
   .btn-sesgo-rojo:hover .flechita { transform: none; }
+  /* Preguntas frecuentes: abren y cierran sin desplegarse */
+  .faq-icono, .faq-js .faq-respuesta, .faq-js .faq-respuesta-interior { transition: none; }
 }

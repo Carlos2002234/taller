@@ -48,6 +48,9 @@ $redes = array_filter([
                         WhatsApp
                     </a>
                 </li>
+                <li>
+                    <a href="<?= e(url('preguntas-frecuentes')) ?>" class="flex gap-2.5 hover:text-white">Preguntas frecuentes</a>
+                </li>
             </ul>
         </div>
 
