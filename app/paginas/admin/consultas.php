@@ -10,7 +10,7 @@ require_once RAIZ . '/app/servicios/notificaciones.php';
 
 $usuario = requerir_admin();
 
-// Mensaje de prueba por Telegram (solo el dueño)
+// Mensaje de prueba por Telegram o por correo (solo el dueño)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verificar_csrf();
     if (!es_duenio($usuario)) {
@@ -22,6 +22,17 @@ Así te llegará el aviso cada vez que alguien deje una consulta en la página."
         avisar($error === null ? 'exito' : 'error', $error === null
             ? 'Mensaje de prueba enviado. Revisa Telegram.'
             : 'No se pudo enviar por Telegram: ' . $error);
+    }
+    if (($_POST['accion'] ?? '') === 'probar_correo') {
+        $prueba = correo_consulta([
+            'id' => 0, 'nombre' => 'Prueba del aviso por correo', 'telefono' => ajuste('telefono', '8702-6760'),
+            'email' => '', 'mensaje' => 'Así te llegará el aviso cada vez que alguien deje una consulta en la página.',
+            'pagina' => 'contacto', 'utm_source' => null, 'utm_campaign' => null, 'creado_en' => date('Y-m-d H:i:s'),
+        ]);
+        $error = enviar_correo('[Prueba] ' . $prueba['asunto'], $prueba['html'], $prueba['texto']);
+        avisar($error === null ? 'exito' : 'error', $error === null
+            ? 'Correo de prueba enviado. Revisa la bandeja (y Spam la primera vez).'
+            : 'No se pudo enviar el correo: ' . $error);
     }
     redirigir('admin/consultas');
 }
@@ -47,7 +58,7 @@ $colores = [
 <p class="mt-1 text-sm text-neutral-600">Personas que dejaron sus datos en la página para que las contacten.</p>
 
 <!-- Alertas cuando entra una consulta -->
-<section class="tarjeta-clara mt-5 grid gap-4 p-4 sm:grid-cols-2 sm:p-5" aria-labelledby="titulo-alertas">
+<section class="tarjeta-clara mt-5 grid gap-4 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-3" aria-labelledby="titulo-alertas">
     <h2 id="titulo-alertas" class="sr-only">Alertas</h2>
     <div>
         <p class="flex items-center gap-2 text-sm font-semibold"><?= icono('alerta', 'h-4 w-4 text-rivera-rojo') ?> Aviso en este dispositivo</p>
@@ -69,6 +80,22 @@ $colores = [
         <?php else: ?>
             <p class="mt-1 text-xs text-neutral-600">Todavía no está configurado. Sigue la guía <code>docs/alertas-telegram.md</code>
                 (5 minutos) para recibir cada consulta al instante en tu celular.</p>
+        <?php endif; ?>
+    </div>
+    <div>
+        <p class="flex items-center gap-2 text-sm font-semibold"><?= icono('buzon', 'h-4 w-4 text-rivera-rojo') ?> Aviso por correo (Gmail)</p>
+        <?php if (correo_configurado()): ?>
+            <p class="mt-1 text-xs text-emerald-800">Activo: cada consulta nueva llega por correo a <?= e(correo_config()['para']) ?>.</p>
+            <?php if (es_duenio($usuario)): ?>
+                <form method="post" action="<?= e(url('admin/consultas')) ?>" class="mt-2">
+                    <?= csrf_campo() ?>
+                    <input type="hidden" name="accion" value="probar_correo">
+                    <button type="submit" class="btn-claro btn-pequeno bg-white">Enviar correo de prueba</button>
+                </form>
+            <?php endif; ?>
+        <?php else: ?>
+            <p class="mt-1 text-xs text-neutral-600">Todavía no está configurado. Sigue la guía <code>docs/alertas-correo.md</code>
+                para recibir cada consulta también por correo.</p>
         <?php endif; ?>
     </div>
 </section>

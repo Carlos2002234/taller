@@ -42,6 +42,11 @@ function config(string $clave, mixed $porDefecto = null): mixed
         'telegram.token' => env('TELEGRAM_BOT_TOKEN', ''),
         'telegram.chat'  => env('TELEGRAM_CHAT_ID', ''),
 
+        // Aviso por correo de consultas nuevas desde Gmail (vacío = desactivado). Ver docs/alertas-correo.md
+        'correo.usuario' => trim((string) env('GMAIL_USUARIO', '')),
+        'correo.clave'   => trim((string) env('GMAIL_CLAVE_APP', '')),
+        'correo.para'    => trim((string) env('AVISOS_CORREO_A', '')),   // vacío = el mismo GMAIL_USUARIO
+
         // Microsoft Clarity (mapas de calor y grabaciones). Solo se carga con APP_ENV=produccion. Ver clarity_id()
         'clarity.id'     => trim((string) env('CLARITY_ID', '')),
 
