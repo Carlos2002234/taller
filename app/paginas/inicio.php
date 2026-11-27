@@ -2,7 +2,7 @@
 /**
  * Inicio: fachada del taller completa (sin nada encima) y debajo el bloque racing (título grande, botones,
  * beneficios y cinta de categorías sobre fondo oscuro liso),
- * categorías, destacados, marcas, taller, testimonios y preguntas frecuentes (app/datos/preguntas-frecuentes.php). Todo sale de la base de datos (editable desde el admin).
+ * categorías, destacados, marcas, taller, testimonios y video del taller (las preguntas frecuentes tienen su pestaña: /preguntas-frecuentes). Todo sale de la base de datos (editable desde el admin).
  *
  * Decisiones del dueño: la foto del inicio se ve COMPLETA, sin texto ni sombras encima (2026-11-08, ratificado
  * 2026-11-21: "salía la imagen principal del taller"); el bloque de debajo, estilo racing (2026-11-21).
@@ -161,8 +161,6 @@ $marcas = ['Havoline', 'Castrol', 'Chevron', 'Delo', 'Vonixx', 'Malco'];
 <?php componente('testimonios'); ?>
 
 <?php componente('video-taller'); ?>
-
-<?php componente('preguntas-frecuentes'); ?>
 
 <?php componente('cta-consulta'); ?>
 
