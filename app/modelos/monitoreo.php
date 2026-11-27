@@ -453,7 +453,8 @@ function monitoreo_tunel(): array
     }
     $conexiones = (int) ($datos['readyConnections'] ?? 0);
     $metricas = monitoreo_http($base . '/metrics', ['timeout' => 2])['cuerpo'];
-    preg_match_all('/edge_location="([a-z0-9]+)"/', $metricas, $m);
+    // Solo las ubicaciones actuales (valor 1); cloudflared deja en 0 las de conexiones anteriores
+    preg_match_all('/edge_location="([a-z0-9]+)"\} 1\b/', $metricas, $m);
     $peticiones = preg_match('/^cloudflared_tunnel_total_requests (\d+)/m', $metricas, $t) ? (int) $t[1] : null;
     $errores = preg_match('/^cloudflared_tunnel_request_errors (\d+)/m', $metricas, $t) ? (int) $t[1] : null;
     $version = preg_match('/build_info\{[^}]*version="([^"]+)"/', $metricas, $t) ? $t[1] : null;
