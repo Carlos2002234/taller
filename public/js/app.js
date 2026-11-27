@@ -43,6 +43,42 @@
     animables.forEach(function (el) { el.classList.add('visible'); });
   }
 
+  // Preguntas frecuentes: <details> nativo (sin JS abre al instante). Aquí solo se anima:
+  // al abrir, el navegador pone [open] y en el cuadro siguiente se agrega "abierto" (0fr → 1fr en CSS);
+  // al cerrar, se quita "abierto" y [open] se retira cuando termina la transición.
+  document.querySelectorAll('[data-faq]').forEach(function (seccion) {
+    var reducido = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    seccion.classList.add('faq-js');
+    seccion.querySelectorAll('[data-faq-item]').forEach(function (item) {
+      var respuesta = item.querySelector('.faq-respuesta');
+      var espera = null;
+      if (item.open) item.classList.add('abierto');
+
+      // Abre por clic, teclado o "buscar en la página" (Chrome abre el <details> solo): todo pasa por "toggle"
+      item.addEventListener('toggle', function () {
+        if (item.open && !item.classList.contains('abierto')) {
+          requestAnimationFrame(function () { item.classList.add('abierto'); });
+        }
+      });
+
+      item.querySelector('summary').addEventListener('click', function (evento) {
+        if (!item.open) return; // abrir: lo hace el navegador
+        evento.preventDefault();
+        if (!item.classList.contains('abierto')) { item.classList.add('abierto'); return; } // se estaba cerrando: vuelve a abrir
+        item.classList.remove('abierto');
+        var terminar = function () {
+          clearTimeout(espera);
+          respuesta.removeEventListener('transitionend', alTerminar);
+          if (!item.classList.contains('abierto')) item.open = false;
+        };
+        var alTerminar = function (e) { if (e.target === respuesta && e.propertyName === 'grid-template-rows') terminar(); };
+        if (reducido) { terminar(); return; }
+        respuesta.addEventListener('transitionend', alTerminar);
+        espera = setTimeout(terminar, 600); // por si el navegador no anima grid-template-rows
+      });
+    });
+  });
+
   // Video del taller: se descarga y reproduce solo cuando está en pantalla, y se pausa al salir.
   // Con "reducir movimiento" o "ahorro de datos" no arranca solo (queda la portada con el botón ▶).
   document.querySelectorAll('[data-video]').forEach(function (contenedor) {

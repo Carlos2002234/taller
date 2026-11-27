@@ -49,6 +49,7 @@ function rutas(): array
         'servicios'          => ['servicios', false, 'html'],
         'ubicacion'          => ['ubicacion', false, 'html'],
         'contacto'           => ['contacto', false, 'html'],
+        'preguntas-frecuentes' => ['preguntas-frecuentes', false, 'html'],
         'terminos'           => ['legal', false, 'html'],
         'privacidad'         => ['legal', false, 'html'],
         'mi-pedido'          => ['mi-pedido', false, 'html'],
