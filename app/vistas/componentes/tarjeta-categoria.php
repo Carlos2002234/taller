@@ -7,7 +7,7 @@
 <a href="<?= e(url('tienda?categoria=' . rawurlencode($categoria['slug']))) ?>" class="tarjeta tarjeta-interactiva group flex flex-col rounded">
     <span class="relative block aspect-[4/3] overflow-hidden bg-[#1B1B1B]">
         <?php if (!empty($categoria['imagen'])): ?>
-            <img src="<?= e(url_foto($categoria['imagen'], true)) ?>" alt="" loading="lazy"
+            <img src="<?= e(url_foto($categoria['imagen'], true)) ?>" alt="" width="400" height="400" loading="lazy" decoding="async"
                  class="h-full w-full object-cover transition-transform duration-lenta ease-suave motion-safe:group-hover:scale-105">
         <?php else: ?>
             <span class="flex h-full w-full items-center justify-center text-[11px] uppercase tracking-[0.14em] text-neutral-500">Foto pendiente</span>

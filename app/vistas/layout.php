@@ -5,8 +5,10 @@
  */
 
 $negocio = ajuste('negocio_nombre', 'Rivera Grupo Automotriz');
-$tituloCompleto = $meta['titulo'] ? $meta['titulo'] . ' | ' . $negocio : $negocio;
-$urlActual = url(ruta_actual());
+$tituloCompleto = $meta['titulo_completo'] ?? ($meta['titulo'] ? $meta['titulo'] . ' | ' . $negocio : $negocio);
+$descripcion = texto_meta($meta['descripcion']);
+$urlActual = $meta['canonical'] ?? url(ruta_actual());
+$imagenCompartir = $meta['imagen'] ?? url('img/og-imagen.jpg');
 
 // Ventana de consulta: en todas las páginas públicas menos el proceso de compra, Contacto
 // (ya tiene el formulario) y las legales; tampoco en errores (404, formularios con errores).
@@ -18,32 +20,57 @@ if (http_response_code() === 200 && !in_array(explode('/', ruta_actual())[0], $s
     componente('ventana-consulta');
     $ventanaConsulta = ob_get_clean();
 }
+
+// Va DESPUÉS de preparar la ventana de consulta (abre la sesión, que pone "no-store").
+// Páginas públicas que se pueden indexar: sin "no-store" para que el navegador pueda guardarlas al ir
+// atrás/adelante (bfcache = vuelta instantánea). Siguen sin guardarse en Cloudflare ni en cachés compartidas.
+if (http_response_code() === 200 && !$meta['noindex']) {
+    header('Cache-Control: private, no-cache');
+    header_remove('Pragma');
+    header_remove('Expires');
+}
 ?>
 <!doctype html>
-<html lang="es">
+<html lang="es-CR">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($tituloCompleto) ?></title>
-    <meta name="description" content="<?= e($meta['descripcion']) ?>">
+    <meta name="description" content="<?= e($descripcion) ?>">
     <?php if ($meta['noindex']): ?>
-        <meta name="robots" content="noindex, nofollow">
+        <meta name="robots" content="noindex, follow">
     <?php else: ?>
+        <meta name="robots" content="index, follow, max-image-preview:large">
         <link rel="canonical" href="<?= e($urlActual) ?>">
     <?php endif; ?>
     <meta name="theme-color" content="#0B0B0B">
+    <?php if ($meta['precargar']): ?>
+        <!-- Imagen principal (LCP): el navegador la pide junto con el CSS, sin esperar a leer el <body> -->
+        <link rel="preload" as="image" href="<?= e($meta['precargar']['src']) ?>" imagesrcset="<?= e($meta['precargar']['srcset']) ?>" imagesizes="<?= e($meta['precargar']['sizes']) ?>" fetchpriority="high">
+    <?php endif; ?>
 
-    <!-- Vista previa al compartir en redes (Open Graph) -->
-    <meta property="og:type" content="website">
+    <!-- Vista previa al compartir en redes (Open Graph y X/Twitter) -->
+    <meta property="og:type" content="<?= e($meta['tipo_og']) ?>">
     <meta property="og:locale" content="es_CR">
     <meta property="og:site_name" content="<?= e($negocio) ?>">
     <meta property="og:title" content="<?= e($tituloCompleto) ?>">
-    <meta property="og:description" content="<?= e($meta['descripcion']) ?>">
+    <meta property="og:description" content="<?= e($descripcion) ?>">
     <meta property="og:url" content="<?= e($urlActual) ?>">
-    <meta property="og:image" content="<?= e($meta['imagen'] ?? url('img/og-imagen.jpg')) ?>">
+    <meta property="og:image" content="<?= e($imagenCompartir) ?>">
+    <?php if (!$meta['imagen']): ?>
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        <meta property="og:image:alt" content="Fachada de <?= e($negocio) ?> en La Puebla, Heredia">
+    <?php endif; ?>
+    <?php foreach ($meta['og_extra'] as $propiedad => $valor): ?>
+        <meta property="<?= e($propiedad) ?>" content="<?= e($valor) ?>">
+    <?php endforeach; ?>
+    <meta name="twitter:card" content="summary_large_image">
 
+    <link rel="icon" href="<?= e(url('favicon.ico')) ?>" sizes="48x48">
     <link rel="icon" type="image/png" sizes="32x32" href="<?= e(asset('img/favicon-32.png')) ?>">
     <link rel="apple-touch-icon" href="<?= e(asset('img/apple-touch-icon.png')) ?>">
+    <link rel="manifest" href="<?= e(asset('site.webmanifest')) ?>">
     <link rel="preload" href="<?= e(url('fonts/saira-latin-800-italic.woff2')) ?>" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="<?= e(asset('css/app.css')) ?>">
     <script src="<?= e(asset('js/precarga.js')) ?>"></script>

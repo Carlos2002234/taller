@@ -355,7 +355,7 @@ function texto_legal_html(string $texto): string
  * (aggregateRating, de app/datos/resenas-google.php). Es el ÚNICO bloque AutoRepair del sitio:
  * teléfono, dirección y horario salen de Configuración; la URL, de APP_URL (en producción https://riveraautomotriz.com).
  */
-function datos_negocio(): array
+function datos_negocio(array $servicios = []): array
 {
     require_once RAIZ . '/app/modelos/resenas.php';
     $redes = array_values(array_filter([ajuste('facebook_url'), ajuste('instagram_url'), ajuste('tiktok_url')]));
@@ -374,15 +374,35 @@ function datos_negocio(): array
     }
     $resenas = resenas_google();
     $punto = coordenadas_negocio();
+    // Servicios del taller (solo en /servicios): los mismos nombres y textos que se ven en la página
+    $catalogo = null;
+    if ($servicios) {
+        $catalogo = [
+            '@type'           => 'OfferCatalog',
+            'name'            => 'Servicios del taller',
+            'itemListElement' => array_map(fn ($s) => [
+                '@type'       => 'Offer',
+                'itemOffered' => array_filter([
+                    '@type'       => 'Service',
+                    'name'        => $s['nombre'],
+                    'description' => $s['descripcion'] ?: null,
+                ]),
+            ], $servicios),
+        ];
+    }
     return array_filter([
         '@context'           => 'https://schema.org',
         '@type'              => 'AutoRepair',
+        // @id: el mismo negocio en todas las páginas (los productos y el sitio web lo citan como vendedor/editor)
+        '@id'                => id_negocio(),
         'name'               => ajuste('negocio_nombre', 'Rivera Grupo Automotriz'),
+        'description'        => 'Taller mecánico, lavado y detallado, y tienda de accesorios y repuestos para autos en La Puebla, Heredia.',
         'url'                => url(),
         'image'              => url('img/og-imagen.jpg'),
         'logo'               => url('img/logo.png'),
         'telephone'          => '+506 ' . ajuste('telefono'),
         'address'            => ['@type' => 'PostalAddress', 'streetAddress' => ajuste('direccion'), 'addressLocality' => 'La Puebla', 'addressRegion' => 'Heredia', 'addressCountry' => 'CR'],
+        'hasOfferCatalog'    => $catalogo,
         'geo'                => $punto ? ['@type' => 'GeoCoordinates', 'latitude' => $punto[0], 'longitude' => $punto[1]] : null,
         'hasMap'             => mapa_url(),
         'openingHoursSpecification' => $horario ?: null,
@@ -397,6 +417,73 @@ function datos_negocio(): array
             'worstRating' => 1,
         ] : null,
     ]);
+}
+
+/** Identificador único del negocio en los datos estructurados (mismo valor en todas las páginas). */
+function id_negocio(): string
+{
+    return url('#negocio');
+}
+
+/**
+ * Dirección completa para mostrar (nombre, dirección y teléfono iguales en todo el sitio y en Google):
+ * la de Configuración + "Heredia, Costa Rica" si no lo dice ya.
+ */
+function direccion_completa(): string
+{
+    $direccion = trim(ajuste('direccion'));
+    if ($direccion === '' || stripos($direccion, 'heredia') !== false) {
+        return $direccion;
+    }
+    return rtrim($direccion, '. ') . '. Heredia, Costa Rica.';
+}
+
+/**
+ * Texto para la meta descripción: una sola línea, sin dobles puntos ("p.m.." → "p.m.") y cortado
+ * en una palabra completa (Google muestra ~155–160 caracteres).
+ */
+function texto_meta(string $texto, int $largo = 158): string
+{
+    $texto = trim(preg_replace('/\s+/u', ' ', $texto));
+    $texto = preg_replace('/\.{2,}(?=\s|$)/u', '.', $texto);
+    if (mb_strlen($texto) <= $largo) {
+        return $texto;
+    }
+    $corto = mb_substr($texto, 0, $largo - 1);
+    $espacio = mb_strrpos($corto, ' ');
+    return rtrim($espacio > $largo * 0.6 ? mb_substr($corto, 0, $espacio) : $corto, ' ,.;:–—-') . '…';
+}
+
+/**
+ * Migas de pan para Google (BreadcrumbList), iguales a las que se ven en la página.
+ * $migas: [['Inicio', url()], ['Tienda', url('tienda')], ['Nombre del producto', null]] (la última puede no tener URL).
+ */
+function migas_schema(array $migas): array
+{
+    $lista = [];
+    foreach (array_values($migas) as $i => [$nombre, $enlace]) {
+        $lista[] = array_filter([
+            '@type'    => 'ListItem',
+            'position' => $i + 1,
+            'name'     => $nombre,
+            'item'     => $enlace,
+        ]);
+    }
+    return ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => $lista];
+}
+
+/** El sitio web (solo en el Inicio): nombre del sitio en los resultados de Google. */
+function sitio_web_schema(): array
+{
+    return [
+        '@context'   => 'https://schema.org',
+        '@type'      => 'WebSite',
+        '@id'        => url('#sitio'),
+        'name'       => ajuste('negocio_nombre', 'Rivera Grupo Automotriz'),
+        'url'        => url(),
+        'inLanguage' => 'es-CR',
+        'publisher'  => ['@id' => id_negocio()],
+    ];
 }
 
 /**

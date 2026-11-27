@@ -14,8 +14,8 @@ $descuento = $oferta ? (int) round(100 - $producto['precio'] * 100 / $producto['
 <article class="<?= $tono === 'claro' ? 'tarjeta-clara' : 'tarjeta' ?> tarjeta-interactiva group flex flex-col">
     <a href="<?= e($enlace) ?>" tabindex="-1" aria-hidden="true" class="relative block aspect-square overflow-hidden <?= $tono === 'claro' ? 'bg-white' : 'bg-rivera-gris' ?>">
         <?php if (!empty($producto['imagen'])): ?>
-            <img src="<?= e(url_foto($producto['imagen'], true)) ?>" alt=""
-                 loading="lazy" class="h-full w-full object-contain p-4 transition-transform duration-lenta ease-suave motion-safe:group-hover:scale-105">
+            <img src="<?= e(url_foto($producto['imagen'], true)) ?>" alt="" width="400" height="400"
+                 loading="lazy" decoding="async" class="h-full w-full object-contain p-4 transition-transform duration-lenta ease-suave motion-safe:group-hover:scale-105">
         <?php else: ?>
             <span class="flex h-full w-full items-center justify-center text-[11px] uppercase tracking-[0.14em] text-neutral-500">
                 Foto próximamente

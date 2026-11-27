@@ -1,0 +1,99 @@
+# Caddy — tienda Rivera Grupo Automotriz en PRODUCCIÓN (Mac del dueño).
+# PROPUESTA (rama seo-rendimiento): copia del Caddyfile real con la caché de archivos mejorada.
+# Cómo aplicarla: ver docs/seo-rendimiento.md → "Despliegue". El archivo real es /opt/homebrew/etc/Caddyfile.
+# Sirve /Users/carlosrivera/taller-produccion/public SOLO en 127.0.0.1:8080.
+# Desde internet se llega por Cloudflare Tunnel (cloudflared → http://127.0.0.1:8080);
+# Cloudflare pone el HTTPS. Reiniciar tras editar: brew services restart caddy
+# Equivale al .htaccess de public/ (rutas, bloqueos, encabezados, caché).
+{
+	admin localhost:2019
+	auto_https off
+	servers {
+		# Todo llega por cloudflared desde esta misma Mac: la IP real del visitante
+		# viene en CF-Connecting-IP (sin esto todos serían 127.0.0.1 y los límites
+		# por IP de login, pedidos y consultas bloquearían a todos a la vez).
+		trusted_proxies static 127.0.0.1/32 ::1/128
+		client_ip_headers CF-Connecting-IP X-Forwarded-For
+	}
+}
+
+http://:8080 {
+	bind 127.0.0.1
+
+	root * /Users/carlosrivera/taller-produccion/public
+
+	log {
+		output file /opt/homebrew/var/log/caddy-taller-acceso.log {
+			roll_size 20MiB
+			roll_keep 10
+			roll_keep_for 720h
+		}
+		format console
+	}
+
+	# Fotos de productos (hasta 5 x 10 MB) y comprobantes (5 MB)
+	request_body {
+		max_size 64MB
+	}
+
+	encode zstd gzip
+
+	# Forzar HTTPS cuando la visita llegó por http:// a Cloudflare
+	@http header X-Forwarded-Proto http
+	redir @http https://{host}{uri} 301
+
+	# www.riveraautomotriz.com → riveraautomotriz.com (una sola dirección para Google)
+	@www host www.riveraautomotriz.com
+	redir @www https://riveraautomotriz.com{uri} 301
+
+	# Bloquear archivos ocultos (.env, .git...) excepto .well-known
+	@oculto {
+		path_regexp oculto /\.
+		not path /.well-known/*
+	}
+	respond @oculto 403
+
+	# Nunca servir configuración, respaldos o bases de datos
+	@prohibido path_regexp prohibido \.(env|sql|log|ini|bak|md|sh|lock|json|dist|gz)$
+	respond @prohibido 403
+
+	header -Server
+
+	# Encabezados de seguridad y caché de archivos estáticos (las páginas los reciben desde PHP)
+	@estatico path_regexp estatico \.(css|js|webp|png|jpe?g|woff2|ico|svg|txt|mp4|webmanifest)$
+	header @estatico {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+	# Caché de archivos (PROPUESTA seo-rendimiento):
+	# - Con versión (?v=…, la pone asset() en PHP): 1 año e "immutable"; al cambiar el archivo cambia la URL.
+	# - Fotos de productos: nombre aleatorio que nunca se reutiliza → 1 año.
+	# - Resto (og-imagen, logo de Google, favicon.ico): 7 días.
+	@versionado {
+		path_regexp versionado \.(css|js|woff2|webp|png|jpe?g|ico|mp4|webmanifest)$
+		query v=*
+	}
+	header @versionado Cache-Control "public, max-age=31536000, immutable"
+	@fuentes path_regexp fuentes \.woff2$
+	header @fuentes Cache-Control "public, max-age=31536000, immutable"
+	@subidas path /uploads/*
+	header @subidas Cache-Control "public, max-age=31536000"
+	@sinversion {
+		path_regexp sinversion \.(css|js|webp|png|jpe?g|ico|mp4|webmanifest)$
+		not query v=*
+		not path /uploads/*
+	}
+	header @sinversion Cache-Control "public, max-age=604800"
+	# Manifest de la app (íconos de Android/Chrome)
+	@manifest path_regexp manifest \.webmanifest$
+	header @manifest Content-Type "application/manifest+json"
+
+	# Todo lo que no sea un archivo real pasa por index.php (router de la app).
+	# REMOTE_ADDR = IP real del visitante (ver trusted_proxies arriba).
+	php_fastcgi 127.0.0.1:9081 {
+		env REMOTE_ADDR {client_ip}
+	}
+
+	file_server
+}

@@ -17,32 +17,53 @@ $relacionados = productos_relacionados((int) $producto['id'], (int) $producto['c
 $oferta = $producto['precio_anterior'] !== null && (float) $producto['precio_anterior'] > (float) $producto['precio'];
 $agotado = $tipoStock === 'agotado';
 
+$negocio = ajuste('negocio_nombre', 'Rivera Grupo Automotriz');
+$urlProducto = url('producto/' . $producto['slug']);
+$precio = (string) (int) round((float) $producto['precio']);
+
 $meta['titulo'] = $producto['nombre'];
+// Descripción: el texto del producto; si no tiene, precio + categoría + cómo se compra (datos reales)
 $meta['descripcion'] = $producto['descripcion']
-    ? mb_strimwidth(preg_replace('/\s+/', ' ', $producto['descripcion']), 0, 155, '…')
-    : $producto['nombre'] . ' — ' . colones($producto['precio']) . '. Paga por SINPE Móvil o transferencia.';
+    ? $producto['descripcion']
+    : $producto['nombre'] . ' a ' . colones($producto['precio']) . ' en ' . $negocio . ' (' . $producto['categoria_nombre']
+        . '). Retira en el taller en La Puebla, Heredia, o recibe en la GAM. Paga por SINPE Móvil o transferencia.';
 if ($imagenes) {
     $meta['imagen'] = url_foto($imagenes[0]);
 }
 $meta['fondo_claro'] = true;
+$meta['tipo_og'] = 'product';
+$meta['og_extra'] = [
+    'product:price:amount'   => $precio,
+    'product:price:currency' => 'CRC',
+    'product:availability'   => $agotado ? 'out of stock' : 'in stock',
+];
 
-// Datos del producto para Google (precio en colones y disponibilidad)
+// Datos del producto para Google (precio en colones y disponibilidad reales, de la base de datos)
 $meta['datos'][] = array_filter([
     '@context'    => 'https://schema.org',
     '@type'       => 'Product',
+    '@id'         => $urlProducto . '#producto',
     'name'        => $producto['nombre'],
+    'url'         => $urlProducto,
     'sku'         => (string) $producto['id'],
+    'category'    => $producto['categoria_nombre'],
     'description' => $producto['descripcion'] ?: null,
     'image'       => array_map(fn ($ruta) => url_foto($ruta), $imagenes) ?: null,
     'brand'       => $producto['marca'] ? ['@type' => 'Brand', 'name' => $producto['marca']] : null,
     'offers'      => [
         '@type'         => 'Offer',
-        'url'           => url('producto/' . $producto['slug']),
+        'url'           => $urlProducto,
         'priceCurrency' => 'CRC',
-        'price'         => (string) (int) round((float) $producto['precio']),
+        'price'         => $precio,
         'availability'  => $agotado ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
-        'seller'        => ['@type' => 'Organization', 'name' => ajuste('negocio_nombre', 'Rivera Grupo Automotriz')],
+        'seller'        => ['@type' => 'AutoRepair', '@id' => id_negocio(), 'name' => $negocio],
     ],
+]);
+// Migas de pan (las mismas que se ven arriba de la foto)
+$meta['datos'][] = migas_schema([
+    ['Tienda', url('tienda')],
+    [$producto['categoria_nombre'], url('tienda?categoria=' . rawurlencode($producto['categoria_slug']))],
+    [$producto['nombre'], $urlProducto],
 ]);
 
 $coloresStock = [

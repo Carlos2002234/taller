@@ -20,7 +20,8 @@ $menu = [
     <div class="contenedor flex h-20 items-center gap-6 lg:h-24 lg:gap-5 xl:gap-6">
         <!-- Logo -->
         <a href="<?= e(url()) ?>" class="flex shrink-0 items-center" aria-label="<?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?> — Inicio">
-            <img src="<?= e(asset('img/logo-completo.webp')) ?>" alt="" width="816" height="480" class="h-14 w-auto lg:h-[4.5rem]">
+            <img src="<?= e(asset('img/logo-completo-400.webp')) ?>" srcset="<?= e(asset('img/logo-completo-400.webp')) ?> 400w, <?= e(asset('img/logo-completo.webp')) ?> 816w"
+                 sizes="(min-width: 1024px) 123px, 96px" alt="" width="816" height="480" class="h-14 w-auto lg:h-[4.5rem]">
         </a>
 
         <!-- Menú de escritorio -->

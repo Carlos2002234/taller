@@ -132,8 +132,10 @@
 }
 
 /* Entrada común: opacidad 0→1, sube 14px y se enfoca desde 6px de desenfoque */
-@keyframes entrar { from { opacity: 0; transform: translate3d(0, 14px, 0); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
-@keyframes foto-aparecer { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: none; } }
+/* Las entradas empiezan en opacidad .01 (no 0): a la vista es igual, pero el navegador ya cuenta la foto o el
+   título como pintado y la métrica LCP de Google no espera a que termine la animación. */
+@keyframes entrar { from { opacity: .01; transform: translate3d(0, 14px, 0); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes foto-aparecer { from { opacity: .01; transform: scale(1.04); } to { opacity: 1; transform: none; } }
 @keyframes acercamiento-lento { from { transform: scale(1.08); } to { transform: scale(1); } }
 @keyframes llenar-barra { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes fundir { from { opacity: 0; } }

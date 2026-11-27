@@ -139,6 +139,10 @@ function encabezados_seguridad(): void
     $clarity = clarity_id() !== '';
     $scripts  = $clarity ? " https://www.clarity.ms https://*.clarity.ms" : '';
     $conexion = $clarity ? " https://*.clarity.ms https://c.bing.com" : '';
+    // Cloudflare Web Analytics: Cloudflare inserta su script (beacon) en producción; sin permitirlo aquí
+    // el navegador lo bloquea y deja un error en la consola. Mide la velocidad real (Core Web Vitals) sin cookies.
+    $scripts  .= ' https://static.cloudflareinsights.com';
+    $conexion .= ' https://cloudflareinsights.com';
     $imagenes = $clarity ? " https://*.clarity.ms https://c.bing.com" : '';
 
     header("Content-Security-Policy: default-src 'self'; script-src 'self'{$scripts}; style-src 'self'; img-src 'self' data:{$imagenes}; "
@@ -157,6 +161,14 @@ function encabezados_seguridad(): void
 function despachar(): void
 {
     encabezados_seguridad();
+
+    // Una sola dirección por página para Google: "/tienda/" → 301 a "/tienda" (se conserva ?categoria=…)
+    $ruta = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+    if ($ruta !== '/' && str_ends_with($ruta, '/') && in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)) {
+        $consulta = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
+        header('Location: ' . url(ruta_actual()) . ($consulta ? '?' . $consulta : ''), true, 301);
+        return;
+    }
 
     $encontrada = buscar_ruta(ruta_actual());
 
@@ -198,7 +210,12 @@ function mostrar_pagina(string $pagina, int $codigo = 200, array $parametros = [
 {
     $meta = [
         'titulo'      => null,
-        'descripcion' => 'Taller mecánico y tienda de accesorios y repuestos para tu auto. Paga por SINPE Móvil o transferencia.',
+        'titulo_completo' => null,   // título exacto del <title> (sin agregar " | negocio"), ej. el Inicio
+        'descripcion' => 'Taller mecánico y tienda de accesorios y repuestos para tu auto en La Puebla, Heredia. Paga por SINPE Móvil o transferencia.',
+        'canonical'   => null,       // URL canónica si no es la ruta sin parámetros (ej. /tienda?categoria=…)
+        'tipo_og'     => 'website',  // 'product' en las fichas de producto
+        'og_extra'    => [],         // metas Open Graph adicionales: ['product:price:amount' => '15000', …]
+        'precargar'   => null,       // imagen principal (LCP): ['srcset' => …, 'sizes' => …, 'src' => …]
         'imagen'      => null,
         'fondo_claro' => false,
         'noindex'     => false,
