@@ -12,8 +12,8 @@
  *   para Google (JSON-LD aggregateRating) se calculan desde este archivo.
  *
  * POR QUÉ HAY UN 'resumen' APARTE DE LA LISTA
- *   Google cuenta 7 reseñas pero solo 6 tienen texto (la otra es solo de estrellas y no se
- *   puede mostrar como tarjeta). Si el total se contara solo con la lista, diría "6 reseñas"
+ *   Google cuenta 11 reseñas pero solo 10 tienen texto (la otra es solo de estrellas y no se
+ *   puede mostrar como tarjeta). Si el total se contara solo con la lista, diría "10 reseñas"
  *   y no coincidiría con Google. Por eso:
  *     - "N reseñas en Google" y reviewCount usan resumen.total;
  *     - si un día la lista tiene MÁS reseñas que resumen.total (se agregó una y se olvidó
@@ -25,10 +25,30 @@
 return [
     'resumen' => [
         'calificacion' => 5.0,
-        'total'        => 7,
+        'total'        => 11,
         'url'          => 'https://g.page/r/CV_ftd9wTRbwEBM/review', // ver y dejar reseñas
     ],
     'resenas' => [
+        [
+            'nombre'    => 'Ian Chacón',
+            'estrellas' => 5,
+            'texto'     => 'Llevé mi carro para mantenimiento y tuve un excelente servicio. Me solucionaron las dudas y fueron transparentes con todo el proceso, estoy muy contento con el recibí y lo recomiendo por completo!!',
+        ],
+        [
+            'nombre'    => 'Josue Fernández',
+            'estrellas' => 5,
+            'texto'     => 'Excelente servicio, desde el inicio me dieron claridad y transparencia con la situación de mi carro, el trato por parte de todo el equipo, 100% recomendado',
+        ],
+        [
+            'nombre'    => 'kendall Ocampo Castillo',
+            'estrellas' => 5,
+            'texto'     => 'Excelente servicio, el lugar tiene una sala de espera súper cómoda y el servicio del personal es impecable, precios justos, súper recomendado!',
+        ],
+        [
+            'nombre'    => 'Kattya Rivera solorzano',
+            'estrellas' => 5,
+            'texto'     => 'Excelente servicio!! Detallado y cuidadoso. Un muy buen trato por parte de los funcionarios',
+        ],
         [
             'nombre'    => 'Julián Cerdas Paniagua',
             'estrellas' => 5,
