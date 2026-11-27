@@ -132,8 +132,15 @@ function buscar_ruta(string $url): ?array
  */
 function encabezados_seguridad(): void
 {
-    header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; "
-        . "font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; "
+    // Microsoft Clarity (solo producción y fuera del panel): su script viene de www/scripts.clarity.ms,
+    // envía datos a *.clarity.ms y sincroniza su cookie con c.bing.com (imagen). Nada más se abre.
+    $clarity = clarity_id() !== '';
+    $scripts  = $clarity ? " https://www.clarity.ms https://*.clarity.ms" : '';
+    $conexion = $clarity ? " https://*.clarity.ms https://c.bing.com" : '';
+    $imagenes = $clarity ? " https://*.clarity.ms https://c.bing.com" : '';
+
+    header("Content-Security-Policy: default-src 'self'; script-src 'self'{$scripts}; style-src 'self'; img-src 'self' data:{$imagenes}; "
+        . "font-src 'self'; connect-src 'self'{$conexion}; form-action 'self'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; "
         // Solo el mapa de Google de "Visítanos" (se carga cuando la persona toca "Ver mapa interactivo")
         . "frame-src 'self' https://maps.google.com https://www.google.com");
     header('X-Content-Type-Options: nosniff');

@@ -18,5 +18,15 @@ $meta['fondo_claro'] = true;
     <h1 class="font-display text-3xl font-extrabold sm:text-4xl"><?= e($titulo) ?></h1>
     <div class="texto-legal tarjeta-clara mt-6 p-6 sm:p-8">
         <?= texto_legal_html(ajuste($clave)) ?: '<p>Pronto publicaremos este texto. Si tienes dudas, escríbenos por WhatsApp.</p>' ?>
+        <?php if ($clave === 'privacidad_texto' && config('clarity.id') !== ''): ?>
+            <h2>Análisis de uso del sitio (Microsoft Clarity)</h2>
+            <p>
+                Usamos Microsoft Clarity para entender cómo se usa este sitio y mejorarlo: registra clics,
+                desplazamiento y movimientos dentro de las páginas, y graba sesiones de navegación de forma anónima.
+                Clarity oculta lo que escribes en los formularios y usa cookies propias para agrupar las visitas.
+                Microsoft trata estos datos según su
+                <a href="https://privacy.microsoft.com/es-es/privacystatement" rel="noopener" target="_blank">declaración de privacidad</a>.
+            </p>
+        <?php endif; ?>
     </div>
 </article>

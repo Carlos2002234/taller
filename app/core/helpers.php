@@ -490,6 +490,37 @@ function normalizar_telefono(string $telefono): ?string
 }
 
 /**
+ * ID de Microsoft Clarity si debe cargarse en esta petición, o '' si no.
+ * Solo en producción (APP_ENV=produccion) con un CLARITY_ID válido en .env, y nunca en el
+ * panel /admin ni para quien tiene sesión en el panel (no se graba al dueño ni a empleados).
+ * Lo usan el layout público (script) y encabezados_seguridad() (dominios en la CSP).
+ */
+function clarity_id(): string
+{
+    static $id = null;
+    if ($id !== null) {
+        return $id;
+    }
+    $id = '';
+
+    $configurado = (string) config('clarity.id', '');
+    if ($configurado === '' || config('app.entorno') !== 'produccion' || !preg_match('/^[a-z0-9]{6,20}$/i', $configurado)) {
+        return $id;
+    }
+    $ruta = ruta_actual();
+    if ($ruta === 'admin' || str_starts_with($ruta, 'admin/')) {
+        return $id;
+    }
+    if (isset($_COOKIE[config('sesion.nombre')])) {
+        iniciar_sesion();
+        if (!empty($_SESSION['admin_id'])) {
+            return $id;
+        }
+    }
+    return $id = $configurado;
+}
+
+/**
  * Indica si la petición actual llegó por HTTPS (también detrás de proxy).
  */
 function es_https(): bool
