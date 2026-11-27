@@ -31,7 +31,7 @@ if (!$preguntas) {
                     <span class="linea"><span>Resolvemos</span></span>
                     <span class="linea"><span class="text-rivera-rojo">tus dudas.</span></span>
                 </h1>
-                <p class="portada-entrar portada-entrar-3 mt-6 max-w-sm text-lg leading-relaxed text-neutral-300">Pagos, envíos, horario y ubicación: lo que más nos preguntan, en pocas palabras.</p>
+                <p class="portada-entrar portada-entrar-3 mt-6 max-w-sm text-lg leading-relaxed text-neutral-300">Pagos, envíos, horario y citas: lo que más nos preguntan, en pocas palabras.</p>
             </div>
         </div>
 
