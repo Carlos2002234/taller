@@ -46,10 +46,6 @@ return [
         'enlace'    => ['texto' => 'Consultar mi pedido', 'ruta' => 'mi-pedido'],
     ],
     [
-        'pregunta'  => '¿Cuál es el horario?',
-        'respuesta' => '{horario}',
-    ],
-    [
         'pregunta'  => '¿Tengo que sacar cita?',
         'respuesta' => 'Depende del servicio. El detailing, los polarizados y la instalación de productos son con cita. Para el mantenimiento, los cambios de aceite y los demás servicios no necesitas cita.',
         'enlace'    => ['texto' => 'Pedir cita por WhatsApp', 'whatsapp' => 'Hola, quiero sacar una cita.'],
