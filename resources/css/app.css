@@ -136,6 +136,7 @@
 @keyframes foto-aparecer { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: none; } }
 @keyframes acercamiento-lento { from { transform: scale(1.08); } to { transform: scale(1); } }
 @keyframes llenar-barra { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes fundir { from { opacity: 0; } }
 
 /* Cambio de página: fundido corto entre páginas (navegadores que lo soportan; los demás cambian normal).
    El encabezado tiene nombre propio para quedarse fijo y no parpadear. */
@@ -177,50 +178,83 @@ header { view-transition-name: encabezado; }
 .ventana-consulta[open] { animation: entrar var(--dur-media) var(--curva); }
 
 /* ---------------------------------------------------------------------
-   Testimonios (componente testimonios.php + app.js)
-   Sin JavaScript se ven los 3 testimonios uno debajo del otro y no hay controles.
-   Con JavaScript: los paneles se apilan en la misma celda (la tarjeta toma la altura
-   del más largo y no "salta" al cambiar) y solo se ve el activo.
+   Reseñas de Google (componente testimonios.php + app.js [data-resenas]; pedido del dueño 2026-11-27)
+   Misma curva (--curva) y duraciones del sitio. Solo se animan transform y opacity.
+   Sin JavaScript (o mientras carga) todo se ve: el carrusel se desliza de forma nativa (scroll-snap)
+   y los controles no se muestran. app.js pone "listo" en la sección y "por-entrar" SOLO en las partes
+   que todavía están debajo de la pantalla, así nada queda oculto si el JavaScript falla.
    --------------------------------------------------------------------- */
-.testimonios-controles { display: none; }
-.js .testimonios-controles { display: flex; }
-.js .testimonios-paneles { display: grid; gap: 0; }
-.js .testimonio { grid-area: 1 / 1; }
-.js .testimonio:not(.activo):not(.saliendo) { visibility: hidden; }
-.js .testimonio.saliendo { pointer-events: none; }
-@media (min-width: 1024px) {
-  .js .testimonios-rejilla { grid-template-columns: minmax(0, 1fr) 21rem; }
+.resenas-rejilla { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1280px) { .resenas-rejilla { grid-template-columns: 19rem minmax(0, 1fr); } }
+.resenas-numero { font-variant-numeric: tabular-nums; }
+
+/* Carrusel: 1 tarjeta (con un pedazo de la siguiente) en celular, 2 en tablet, 3 en escritorio.
+   En celular la ventana llega al borde de la pantalla para que el pedazo de la siguiente se note. */
+.resenas-ventana { overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: thin; margin: -.5rem -1rem 0; padding: .5rem 1rem 1rem; scroll-padding-inline: 1rem; }
+@media (min-width: 640px) { .resenas-ventana { margin-inline: -1.5rem; padding-inline: 1.5rem; scroll-padding-inline: 1.5rem; } }
+@media (min-width: 768px) { .resenas-ventana { margin-inline: 0; padding-inline: 0; scroll-padding-inline: 0; } }
+.resenas-pista { position: relative; display: flex; gap: 1.25rem; }
+.resena { flex: 0 0 86%; scroll-snap-align: start; }
+@media (min-width: 768px) { .resena { flex-basis: calc((100% - 1.25rem) / 2); } }
+@media (min-width: 1024px) { .resena { flex-basis: calc((100% - 2.5rem) / 3); } }
+/* Con JavaScript: se mueve la pista con transform (el dedo la arrastra; al soltar se acomoda) */
+.resenas.listo .resenas-ventana { overflow-x: clip; overflow-y: visible; scroll-snap-type: none; touch-action: pan-y; }
+.resenas.listo .resenas-pista { transition: transform 650ms var(--curva); will-change: transform; }
+.resenas.listo .resenas-pista.arrastrando { transition: none; }
+.resenas-ventana:focus-visible { outline: 2px solid #fff; outline-offset: 2px; border-radius: .75rem; box-shadow: none; }
+html:not(.js) .resenas-controles { display: none; }
+.resenas:not(.listo) .resenas-controles { visibility: hidden; } /* reserva su lugar: no salta nada al activarse */
+
+/* Tarjeta: corte rojo diagonal en la esquina, comillas grandes semitransparentes y,
+   al pasar el mouse, sube 5px con borde rojo suave y un leve brillo rojo (capa ::after que solo cambia opacidad) */
+.resena { transition: transform var(--dur-rapida) var(--curva); }
+.resena::before { content: ''; position: absolute; top: 0; right: 0; width: 3.25rem; height: 3.25rem; pointer-events: none; border-top-right-radius: calc(.75rem - 1px);
+  background: linear-gradient(225deg, theme('colors.rivera.rojo') 0 1.3rem, transparent 1.3rem 1.65rem, rgb(209 26 33 / .45) 1.65rem 1.85rem, transparent 1.85rem); }
+.resena::after { content: ''; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity var(--dur-rapida) var(--curva);
+  box-shadow: 0 0 0 1px rgb(209 26 33 / .55), 0 24px 44px -22px rgb(0 0 0 / .95), 0 0 34px -8px rgb(209 26 33 / .45); }
+.resena-comillas { position: absolute; top: 2.75rem; right: 1.25rem; font-family: theme('fontFamily.display'); font-size: 6rem; font-weight: 900; font-style: italic; line-height: 1; color: theme('colors.rivera.rojo'); opacity: .18; pointer-events: none; transition: transform var(--dur-rapida) var(--curva), opacity var(--dur-rapida) var(--curva); }
+.resena-avatar { background-image: linear-gradient(140deg, #D11A21 0%, #6b1216 55%, #262626 100%); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .14); }
+@media (hover: hover) and (pointer: fine) {
+  .resena:hover { transform: translate3d(0, -5px, 0); }
+  .resena:hover::after { opacity: 1; }
+  .resena:hover .resena-comillas { transform: translate3d(-6px, 4px, 0) rotate(-6deg); opacity: .28; }
 }
-/* Se puede deslizar con el dedo (el scroll vertical sigue funcionando) */
-.js .testimonios-paneles { touch-action: pan-y; }
-.testimonios-paneles:focus-visible { outline: 2px solid #fff; outline-offset: 4px; border-radius: .75rem; box-shadow: none; }
 
-/* Cambio de testimonio (app.js pone las clases; "atras" invierte la dirección):
-   - el saliente se desliza y se desvanece con un leve desenfoque;
-   - el entrante se revela con una máscara (clip-path) de lado a lado,
-     su texto entra escalonado y la captura gira un poco en 3D hasta quedar de frente. */
-@keyframes testimonio-salir { to { opacity: 0; transform: translate3d(-40px, 0, 0) scale(.98); filter: blur(4px); } }
-@keyframes testimonio-salir-atras { to { opacity: 0; transform: translate3d(40px, 0, 0) scale(.98); filter: blur(4px); } }
-@keyframes testimonio-mascara { from { clip-path: inset(0 0 0 100% round .75rem); } to { clip-path: inset(0 0 0 0 round .75rem); } }
-@keyframes testimonio-mascara-atras { from { clip-path: inset(0 100% 0 0 round .75rem); } to { clip-path: inset(0 0 0 0 round .75rem); } }
-@keyframes captura-girar { from { opacity: 0; transform: perspective(900px) rotateY(-18deg) rotateZ(2deg) scale(.92); } to { opacity: 1; transform: perspective(900px) rotateY(0) rotateZ(0) scale(1); } }
-@keyframes fundir { from { opacity: 0; } }
-@keyframes desfundir { to { opacity: 0; } }
+/* Flechas y puntos. El punto activo tiene una barra roja que se llena en los 6 s del autoplay
+   (el tiempo lo lleva app.js; la barra solo lo muestra). Sin autoplay, el activo queda lleno. */
+.resenas-flecha { @apply flex h-11 w-11 items-center justify-center rounded-full border border-neutral-600 text-white transition hover:border-white hover:bg-white hover:text-rivera-negro; }
+.resenas-barra { transform: scaleX(0); transform-origin: left center; }
+.resenas-punto[aria-pressed='true'] .resenas-barra { transform: none; }
+.resenas-punto[aria-pressed='true'] .resenas-barra.corriendo { transform: scaleX(0); animation: llenar-barra var(--resenas-duracion, 6s) linear forwards; }
+.resenas.en-pausa .resenas-barra.corriendo { animation-play-state: paused; }
 
-.testimonio.saliendo { animation: testimonio-salir var(--dur-media) var(--curva) forwards; }
-.testimonio.saliendo.atras { animation-name: testimonio-salir-atras; }
-.testimonio.animar { animation: testimonio-mascara var(--dur-lenta) var(--curva) both; }
-.testimonio.animar.atras { animation-name: testimonio-mascara-atras; }
-.testimonio.animar .testimonio-entra { animation: entrar var(--dur-lenta) var(--curva) both; animation-delay: 120ms; }
-.testimonio.animar .testimonio-retraso-1 { animation-delay: calc(120ms + var(--escalon) * 1); }
-.testimonio.animar .testimonio-retraso-2 { animation-delay: calc(120ms + var(--escalon) * 2); }
-.testimonio.animar .testimonio-retraso-3 { animation-delay: calc(120ms + var(--escalon) * 3); }
-.testimonio.animar .testimonio-foto { animation: captura-girar 900ms var(--curva) 160ms both; }
+/* Entrada al bajar (una sola vez): encabezado, bloque de confianza, tarjetas en cascada (90 ms) y llamada final */
+@keyframes resena-entrar { from { opacity: 0; transform: translate3d(0, 24px, 0); } }
+@keyframes estrella-llenar { from { opacity: 0; transform: scale(.6); } }
+.resenas-entra.por-entrar { opacity: 0; transform: translate3d(0, 24px, 0); }
+.resenas-entra.entrando { transition: opacity var(--dur-lenta) var(--curva), transform var(--dur-lenta) var(--curva); }
+.resenas-confianza.entrando { transition-delay: 90ms; }
+.resenas-carrusel.por-entrar .resena { opacity: 0; }
+.resenas-carrusel.entrando .resena { animation: resena-entrar var(--dur-lenta) var(--curva) backwards; animation-delay: 180ms; }
+.resenas-carrusel.entrando .resena:nth-child(2) { animation-delay: 270ms; }
+.resenas-carrusel.entrando .resena:nth-child(3) { animation-delay: 360ms; }
+.resenas-carrusel.entrando .resena:nth-child(n+4) { animation-delay: 450ms; }
+/* Estrellas del bloque de confianza: se llenan una por una después del contador */
+.resenas-confianza.por-contar .resenas-estrella { opacity: 0; transform: scale(.6); }
+.resenas-estrellas.llenas .resenas-estrella { animation: estrella-llenar var(--dur-media) var(--curva) backwards; }
+.resenas-estrellas.llenas .resenas-estrella:nth-child(2) { animation-delay: 100ms; }
+.resenas-estrellas.llenas .resenas-estrella:nth-child(3) { animation-delay: 200ms; }
+.resenas-estrellas.llenas .resenas-estrella:nth-child(4) { animation-delay: 300ms; }
+.resenas-estrellas.llenas .resenas-estrella:nth-child(5) { animation-delay: 400ms; }
 
-/* Barra de progreso del testimonio activo (el tiempo lo lleva app.js; la barra lo muestra) */
-.testimonio-barra { transform: scaleX(0); transform-origin: left center; }
-.testimonio-barra.corriendo { animation: llenar-barra var(--testimonio-duracion, 8s) linear forwards; }
-.testimonios-en-pausa .testimonio-barra.corriendo { animation-play-state: paused; }
+/* Botones con reflejo: un brillo diagonal cruza el botón al pasar el mouse y la flecha avanza 4px */
+.btn-brillo { position: relative; overflow: hidden; isolation: isolate; }
+.btn-brillo::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / .3) 50%, transparent 70%); transform: translateX(-120%); }
+.btn-brillo .flechita { transition: transform var(--dur-rapida) var(--curva); }
+@media (hover: hover) and (pointer: fine) {
+  .btn-brillo:hover::after { transform: translateX(120%); transition: transform 800ms var(--curva); }
+  .btn-brillo:hover .flechita { transform: translateX(4px); }
+}
 
 /* ---------------------------------------------------------------------
    Bloque racing del inicio, debajo de la fachada (diseño 2026-11-21; app/paginas/inicio.php)
@@ -468,10 +502,16 @@ header, header > .contenedor { transition: transform var(--dur-media) var(--curv
   .js .revelar:not(.visible) { clip-path: none; opacity: 0; }
   .js .revelar.visible { clip-path: none; opacity: 1; transition: opacity var(--dur-lenta) linear; }
   .js .revelar:not(.visible) img, .js .revelar:not(.visible) video { transform: none; }
-  /* Testimonios: siguen rotando solos (se pueden pausar con el botón), pero con un fundido simple */
-  .testimonio.saliendo, .testimonio.saliendo.atras { animation: desfundir var(--dur-media) linear forwards; }
-  .testimonio.animar, .testimonio.animar.atras { animation: fundir var(--dur-media) linear both; }
-  .testimonio.animar .testimonio-entra, .testimonio.animar .testimonio-foto { animation: none; }
+  /* Reseñas: sin autoplay (app.js) ni desplazamientos; la pista cambia de golpe con un fundido corto */
+  .resenas-entra.por-entrar { transform: none; }
+  .resenas-entra.entrando { transition: opacity var(--dur-rapida) linear; }
+  .resenas-carrusel.entrando .resena, .resenas-estrellas.llenas .resenas-estrella { animation: fundir var(--dur-rapida) linear backwards; animation-delay: 0s; }
+  .resenas-confianza.por-contar .resenas-estrella { transform: none; }
+  .resenas.listo .resenas-pista { transition: none; }
+  .resenas-pista.cambio-fundido { animation: fundir 250ms linear; }
+  .resena, .resena-comillas, .btn-brillo .flechita { transition: none; }
+  .resena:hover, .resena:hover .resena-comillas, .btn-brillo:hover .flechita { transform: none; }
+  .btn-brillo::after { display: none; }
   header, header > .contenedor, header > .contenedor img, .btn, .btn-primario, .btn-secundario, .btn-claro, .tarjeta-interactiva,
   .btn-sesgo, .btn-sesgo-rojo .flechita, .beneficio::before, .beneficio-numero, .beneficio-texto { transition: none; }
   .encabezado-compacto, .encabezado-compacto > .contenedor, .encabezado-compacto > .contenedor img { transform: none; }
