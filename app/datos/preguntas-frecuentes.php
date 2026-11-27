@@ -55,6 +55,11 @@ return [
         'enlace'    => ['texto' => 'Ver el mapa y cómo llegar', 'ruta' => 'ubicacion'],
     ],
     [
+        'pregunta'  => '¿Tengo que sacar cita?',
+        'respuesta' => 'Depende del servicio. El detailing, los polarizados y la instalación de productos son con cita. Para el mantenimiento, los cambios de aceite y los demás servicios no necesitas cita.',
+        'enlace'    => ['texto' => 'Pedir cita por WhatsApp', 'whatsapp' => 'Hola, quiero sacar una cita.'],
+    ],
+    [
         'pregunta'  => '¿Me pueden asesorar antes de comprar?',
         'respuesta' => 'Sí, escríbenos por WhatsApp al {telefono} y te ayudamos a elegir.',
         'enlace'    => ['texto' => 'Escribir por WhatsApp', 'whatsapp' => 'Hola, quiero asesoría para elegir un producto.'],
