@@ -9,7 +9,7 @@ require_once RAIZ . '/app/modelos/preguntas.php';
 
 $meta['titulo'] = 'Preguntas frecuentes';
 $meta['descripcion'] = 'Preguntas frecuentes de ' . ajuste('negocio_nombre', 'Rivera Grupo Automotriz')
-    . ': formas de pago, envíos en la GAM, tiempo de entrega, horario y citas en el taller.';
+    . ': formas de pago, envíos en la GAM, tiempo de entrega y citas en el taller.';
 $meta['datos'][] = preguntas_frecuentes_schema();
 ?>
 <?php componente('preguntas-frecuentes'); ?>
