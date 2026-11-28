@@ -13,9 +13,17 @@ require_once RAIZ . '/app/modelos/productos.php';
 require_once RAIZ . '/app/modelos/categorias.php';
 require_once RAIZ . '/app/modelos/servicios.php';
 
-$meta['descripcion'] = ajuste('negocio_nombre', 'Rivera Grupo Automotriz')
-    . ': taller mecánico y tienda de accesorios y repuestos. Paga por SINPE Móvil o transferencia y retira en el taller o recibe en la GAM.';
+// SEO local: lo que la gente busca en Google ("taller mecánico Heredia") + el nombre del negocio
+$meta['titulo_completo'] = 'Taller mecánico y accesorios en Heredia | ' . ajuste('negocio_nombre', 'Rivera Grupo Automotriz');
+$meta['descripcion'] = 'Taller mecánico en La Puebla, Heredia: cambio de aceite, diagnóstico, frenos y lavado. '
+    . 'Accesorios y repuestos con envío en la GAM. WhatsApp ' . ajuste('telefono') . '.';
 $meta['datos'][] = datos_negocio();
+$meta['datos'][] = sitio_web_schema();
+
+// Foto de portada = imagen más grande al cargar (LCP): se precarga con los mismos tamaños que el <img>
+$portadaSrcset = asset('img/fotos/rivera-14-800.webp') . ' 800w, ' . asset('img/fotos/rivera-14-960.webp') . ' 960w, '
+    . asset('img/fotos/rivera-14-1600.webp') . ' 1600w, ' . asset('img/fotos/rivera-14-1920.webp') . ' 1920w';
+$meta['precargar'] = ['src' => asset('img/fotos/rivera-14-1920.webp'), 'srcset' => $portadaSrcset, 'sizes' => '100vw'];
 
 $categorias = array_slice(array_filter(categorias_activas(), fn ($c) => (int) $c['total_productos'] > 0), 0, 6);
 $destacados = productos_destacados(8);
@@ -39,10 +47,7 @@ $marcas = ['Havoline', 'Castrol', 'Chevron', 'Delo', 'Vonixx', 'Malco'];
 <!-- Portada: la fachada completa, sin texto encima -->
 <section aria-labelledby="titulo-portada">
     <picture class="block overflow-hidden bg-rivera-carbon">
-        <source type="image/webp"
-                srcset="<?= e(url('img/fotos/rivera-14-960.webp')) ?> 960w, <?= e(url('img/fotos/rivera-14-1920.webp')) ?> 1920w"
-                sizes="100vw">
-        <img src="<?= e(url('img/fotos/rivera-14-1920.webp')) ?>" width="1920" height="1080"
+        <img src="<?= e($meta['precargar']['src']) ?>" srcset="<?= e($portadaSrcset) ?>" sizes="100vw" width="1920" height="1080"
              alt="Fachada de <?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?> vista de frente"
              class="foto-entrar block aspect-video h-auto w-full object-cover" fetchpriority="high">
     </picture>
@@ -134,13 +139,13 @@ $marcas = ['Havoline', 'Castrol', 'Chevron', 'Delo', 'Vonixx', 'Malco'];
     <!-- Taller: foto + lista numerada -->
     <section class="contenedor grid items-stretch gap-10 pt-16 sm:pt-24 lg:grid-cols-2 lg:gap-14" aria-labelledby="taller">
         <figure class="revelar relative min-h-[18rem] overflow-hidden rounded bg-rivera-carbon sm:min-h-[26rem]">
-            <img src="<?= e(url('img/fotos/rivera-08-1600.webp')) ?>"
-                 srcset="<?= e(url('img/fotos/rivera-08-800.webp')) ?> 800w, <?= e(url('img/fotos/rivera-08-1600.webp')) ?> 1600w"
-                 sizes="(min-width: 1024px) 50vw, 100vw" loading="lazy"
+            <img src="<?= e(asset('img/fotos/rivera-08-1600.webp')) ?>"
+                 srcset="<?= e(asset('img/fotos/rivera-08-800.webp')) ?> 800w, <?= e(asset('img/fotos/rivera-08-1600.webp')) ?> 1600w"
+                 sizes="(min-width: 1024px) 50vw, 100vw" loading="lazy" decoding="async" width="1600" height="900"
                  alt="Zona de lavado del taller con un sedán gris" class="absolute inset-0 h-full w-full object-cover">
         </figure>
         <div class="aparecer desde-der flex flex-col justify-center">
-            <p class="etiqueta-seccion">Taller de servicio</p>
+            <p class="etiqueta-seccion">Taller de servicio · La Puebla, Heredia</p>
             <h2 id="taller" class="mt-3 text-3xl font-extrabold leading-[1.02] tracking-tight sm:text-4xl xl:text-5xl">Cuidamos tu auto<br><span class="text-rivera-rojo">como si fuera nuestro</span></h2>
             <ol class="escalonado mt-7 border-t border-white/10">
                 <?php foreach ($servicios as $i => $servicio): ?>

@@ -11,8 +11,8 @@ $nombre = ajuste('negocio_nombre', 'Rivera Grupo Automotriz');
 $estado = horario_estado();
 $embed = mapa_embed_url();
 
-$meta['titulo'] = 'Ubicación y horario';
-$meta['descripcion'] = $nombre . ' en La Puebla: ' . ajuste('direccion') . ' Horario: ' . horario_resumen() . '. Cómo llegar con Google Maps o Waze.';
+$meta['titulo'] = 'Ubicación y horario en La Puebla, Heredia';
+$meta['descripcion'] = 'Cómo llegar: ' . rtrim(ajuste('direccion'), '. ') . ', Heredia. ' . horario_resumen() . '.';
 $meta['datos'][] = datos_negocio();
 ?>
 <section class="ubicacion" aria-labelledby="titulo-ubicacion">
@@ -26,7 +26,7 @@ $meta['datos'][] = datos_negocio();
             <h1 id="titulo-ubicacion" class="font-display text-2xl font-bold italic leading-tight">
                 <span class="sr-only">Ubicación y horario de </span><?= e($nombre) ?>
             </h1>
-            <p class="mt-2 text-[0.95rem] leading-relaxed text-neutral-300"><?= e(ajuste('direccion')) ?></p>
+            <p class="mt-2 text-[0.95rem] leading-relaxed text-neutral-300"><?= e(direccion_completa()) ?></p>
 
             <p class="mt-4 text-sm leading-relaxed text-neutral-300">
                 <?php foreach (horario_lineas() as $linea): ?><?= e($linea) ?><br><?php endforeach; ?>

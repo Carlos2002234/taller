@@ -12,9 +12,11 @@
 require_once RAIZ . '/app/modelos/servicios.php';
 
 $servicios = servicios_activos();
-$meta['titulo'] = 'Servicios del taller';
-$meta['descripcion'] = 'Servicios de taller mecánico en ' . ajuste('negocio_nombre', 'Rivera Grupo Automotriz') . ': '
+$meta['titulo'] = 'Servicios de taller mecánico en Heredia';
+$meta['descripcion'] = 'En La Puebla, Heredia: '
     . implode(', ', array_map(fn ($s) => mb_strtolower($s['nombre']), array_slice($servicios, 0, 5))) . '. Cotiza por WhatsApp.';
+// Servicios para Google: los mismos nombres y descripciones de la lista (Admin → Servicios)
+$meta['datos'][] = datos_negocio($servicios);
 
 $horario = horario_resumen();
 
@@ -39,13 +41,13 @@ $galeria = [
 <!-- Portada: texto y foto lado a lado -->
 <section class="contenedor grid items-stretch gap-10 py-12 sm:py-16 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-14 lg:py-20">
     <div class="flex flex-col justify-center">
-        <p class="etiqueta-seccion etiqueta-dibuja portada-entrar portada-entrar-1">Centro de servicio automotriz · La Puebla</p>
+        <p class="etiqueta-seccion etiqueta-dibuja portada-entrar portada-entrar-1">Centro de servicio automotriz · La Puebla, Heredia</p>
         <h1 class="titulo-lineas mt-3 font-display text-4xl font-extrabold leading-[1.02] tracking-tight sm:text-5xl xl:text-[3.6rem]">
             <span class="linea"><span>Servicio para tu auto,</span></span>
             <span class="linea"><span class="text-rivera-rojo">sin vueltas.</span></span>
         </h1>
         <p class="portada-entrar portada-entrar-3 mt-6 max-w-lg text-lg leading-relaxed text-neutral-300">
-            Cambio de aceite, diagnóstico, frenos, lavado y preparación para la RTV. Cada trabajo se cotiza
+            Cambio de aceite, diagnóstico, frenos, lavado y preparación para la RTV en La Puebla de Heredia. Cada trabajo se cotiza
             por WhatsApp antes de empezar, para que sepas el precio desde el inicio.
         </p>
         <div class="portada-entrar portada-entrar-4 mt-8 flex flex-wrap gap-3">
@@ -56,8 +58,8 @@ $galeria = [
         </div>
     </div>
     <figure class="foto-mascara relative min-h-[18rem] overflow-hidden rounded-lg bg-rivera-carbon sm:min-h-[26rem]">
-        <img src="<?= e(url('img/fotos/rivera-01-1600.webp')) ?>"
-             srcset="<?= e(url('img/fotos/rivera-01-800.webp')) ?> 800w, <?= e(url('img/fotos/rivera-01-1600.webp')) ?> 1600w"
+        <img src="<?= e(asset('img/fotos/rivera-01-1600.webp')) ?>"
+             srcset="<?= e(asset('img/fotos/rivera-01-800.webp')) ?> 800w, <?= e(asset('img/fotos/rivera-01-1600.webp')) ?> 1600w"
              sizes="(min-width: 1024px) 50vw, 100vw"
              alt="Rótulo del Centro de Servicio Automotriz Rivera" fetchpriority="high"
              class="portada-foto absolute inset-0 h-full w-full object-cover object-[30%_50%]">
@@ -108,8 +110,8 @@ $galeria = [
         <div class="mt-14 grid gap-5 sm:mt-20 lg:grid-cols-5">
             <figure class="lg:col-span-3">
                 <div class="revelar tarjeta-interactiva tarjeta-foto overflow-hidden rounded-lg">
-                <img src="<?= e(url('img/fotos/rivera-08-1600.webp')) ?>"
-                     srcset="<?= e(url('img/fotos/rivera-08-800.webp')) ?> 800w, <?= e(url('img/fotos/rivera-08-1600.webp')) ?> 1600w"
+                <img src="<?= e(asset('img/fotos/rivera-08-1600.webp')) ?>"
+                     srcset="<?= e(asset('img/fotos/rivera-08-800.webp')) ?> 800w, <?= e(asset('img/fotos/rivera-08-1600.webp')) ?> 1600w"
                      sizes="(min-width: 1024px) 60vw, 100vw" loading="lazy"
                      alt="Zona de lavado del taller con un sedán gris" class="aspect-[4/3] w-full object-cover lg:aspect-auto lg:h-[28rem]">
                 </div>
@@ -119,8 +121,8 @@ $galeria = [
             </figure>
             <figure class="lg:col-span-2">
                 <div class="revelar revelar-retraso tarjeta-interactiva tarjeta-foto overflow-hidden rounded-lg">
-                <img src="<?= e(url('img/fotos/rivera-25-1600.webp')) ?>"
-                     srcset="<?= e(url('img/fotos/rivera-25-800.webp')) ?> 800w, <?= e(url('img/fotos/rivera-25-1600.webp')) ?> 1600w"
+                <img src="<?= e(asset('img/fotos/rivera-25-1600.webp')) ?>"
+                     srcset="<?= e(asset('img/fotos/rivera-25-800.webp')) ?> 800w, <?= e(asset('img/fotos/rivera-25-1600.webp')) ?> 1600w"
                      sizes="(min-width: 1024px) 40vw, 100vw" loading="lazy"
                      alt="Aceites Havoline y Castrol en exhibición" class="aspect-[4/3] w-full object-cover lg:aspect-auto lg:h-[28rem]">
                 </div>
@@ -172,8 +174,8 @@ $galeria = [
         <?php foreach ($galeria as $foto => [$alt, $texto, $chico, $grande]): ?>
             <figure class="group">
                 <div class="revelar tarjeta-interactiva tarjeta-foto overflow-hidden rounded-lg">
-                    <img src="<?= e(url("img/fotos/{$foto}-{$chico}.webp")) ?>"
-                         srcset="<?= e(url("img/fotos/{$foto}-{$chico}.webp")) ?> <?= $chico ?>w, <?= e(url("img/fotos/{$foto}-{$grande}.webp")) ?> <?= $grande ?>w"
+                    <img src="<?= e(asset("img/fotos/{$foto}-{$chico}.webp")) ?>"
+                         srcset="<?= e(asset("img/fotos/{$foto}-{$chico}.webp")) ?> <?= $chico ?>w, <?= e(asset("img/fotos/{$foto}-{$grande}.webp")) ?> <?= $grande ?>w"
                          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" loading="lazy" alt="<?= e($alt) ?>"
                          class="aspect-[4/3] w-full object-cover transition-transform duration-lenta ease-suave motion-safe:group-hover:scale-105">
                 </div>

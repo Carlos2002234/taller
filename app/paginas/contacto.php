@@ -8,8 +8,8 @@
 require_once RAIZ . '/app/modelos/consultas.php';
 require_once RAIZ . '/app/servicios/notificaciones.php';
 
-$meta['titulo'] = 'Contacto y ubicación';
-$meta['descripcion'] = 'Visítanos: ' . ajuste('direccion') . ' Horario: ' . horario_resumen() . '. Teléfono y WhatsApp ' . ajuste('telefono') . '.';
+$meta['titulo'] = 'Contacto y WhatsApp ' . ajuste('telefono');
+$meta['descripcion'] = 'WhatsApp y teléfono ' . ajuste('telefono') . '. Visítanos en La Puebla, Heredia: ' . ajuste('direccion') . '';
 
 $meta['datos'][] = datos_negocio();
 
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <span class="text-rivera-rojo"><?= icono('ubicacion', 'h-7 w-7') ?></span>
                 <div>
                     <h2 class="font-sans text-base font-semibold">Dirección</h2>
-                    <p class="mt-1 text-neutral-300"><?= e(ajuste('direccion')) ?></p>
+                    <p class="mt-1 text-neutral-300"><?= e(direccion_completa()) ?></p>
                     <a href="<?= e(mapa_url()) ?>" target="_blank" rel="noopener" class="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-rivera-rojo-claro hover:underline">
                         Cómo llegar (Google Maps) <?= icono('flecha', 'h-4 w-4') ?>
                     </a>
@@ -104,8 +104,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="aparecer space-y-3">
             <p class="text-sm text-neutral-400">Así nos encuentras:</p>
-            <img src="<?= e(url('img/fotos/rivera-14-1600.webp')) ?>" alt="Fachada de <?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?>" class="aspect-[16/9] w-full rounded-lg object-cover">
-            <img src="<?= e(url('img/fotos/rivera-18-800.webp')) ?>" alt="Entrada al taller con los rótulos de servicios" loading="lazy" class="aspect-[16/9] w-full rounded-lg object-cover">
+            <img src="<?= e(asset('img/fotos/rivera-14-1600.webp')) ?>"
+                 srcset="<?= e(asset('img/fotos/rivera-14-800.webp')) ?> 800w, <?= e(asset('img/fotos/rivera-14-1600.webp')) ?> 1600w"
+                 sizes="(min-width: 1024px) 40vw, 100vw" width="1600" height="900"
+                 alt="Fachada de <?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?> en La Puebla, Heredia" class="aspect-[16/9] w-full rounded-lg object-cover">
+            <img src="<?= e(asset('img/fotos/rivera-18-800.webp')) ?>" width="800" height="450" decoding="async"
+                 alt="Entrada al taller con los rótulos de servicios" loading="lazy" class="aspect-[16/9] w-full rounded-lg object-cover">
         </div>
     </div>
 

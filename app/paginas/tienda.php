@@ -55,13 +55,23 @@ $filtrosActivos = count($marcasElegidas) + ($categoria ? 1 : 0) + ($min !== null
 
 // --- Título y metadatos ------------------------------------------------------
 $titulo = $categoria['nombre'] ?? ($q !== '' ? 'Resultados de búsqueda' : 'Tienda');
-$meta['titulo'] = $titulo;
+$negocio = ajuste('negocio_nombre', 'Rivera Grupo Automotriz');
+$meta['titulo'] = $categoria ? $categoria['nombre'] . ' para tu auto' : ($q !== '' ? $titulo : 'Tienda de accesorios y repuestos para autos');
 $meta['descripcion'] = $categoria
-    ? $categoria['nombre'] . ' para tu auto en Rivera Grupo Automotriz. Paga por SINPE Móvil o transferencia.'
-    : 'Accesorios y repuestos para tu auto. Paga por SINPE Móvil o transferencia y retira en el taller o recibe en la GAM.';
+    ? $categoria['nombre'] . ' para tu auto en ' . $negocio . ', La Puebla, Heredia. Retira en el taller o recibe en la GAM. Paga por SINPE Móvil o transferencia.'
+    : 'Accesorios y repuestos para tu auto en La Puebla, Heredia. Retira en el taller o recibe en la GAM. Paga por SINPE Móvil o transferencia.';
 $meta['fondo_claro'] = true;
 // Las combinaciones de filtros no deben indexarse como páginas distintas
 $meta['noindex'] = $q !== '' || $marcasElegidas || $min !== null || $max !== null || $pagina > 1;
+// Cada categoría es su propia página (está en el sitemap): su canonical lleva ?categoria=… (el orden no cuenta)
+if ($categoria) {
+    $meta['canonical'] = url('tienda?categoria=' . rawurlencode($categoria['slug']));
+}
+$meta['datos'][] = migas_schema(array_filter([
+    ['Inicio', url()],
+    ['Tienda', url('tienda')],
+    $categoria ? [$categoria['nombre'], $meta['canonical']] : null,
+]));
 ?>
 <section class="bg-rivera-negro text-white">
     <div class="contenedor flex flex-wrap items-stretch gap-x-12">
@@ -86,7 +96,7 @@ $meta['noindex'] = $q !== '' || $marcasElegidas || $min !== null || $max !== nul
     </div>
     <!-- Foto del taller al lado (sin texto encima) -->
     <figure class="relative hidden min-h-[13rem] flex-[0_1_28rem] overflow-hidden md:block">
-        <img src="<?= e(url('img/fotos/rivera-25-800.webp')) ?>" alt="Aceites Havoline y Castrol en exhibición en el taller"
+        <img src="<?= e(asset('img/fotos/rivera-25-800.webp')) ?>" alt="Aceites Havoline y Castrol en exhibición en el taller"
              class="absolute inset-0 h-full w-full object-cover" fetchpriority="high">
     </figure>
     </div>

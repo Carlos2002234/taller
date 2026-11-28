@@ -12,7 +12,7 @@ $redes = array_filter([
 <footer class="border-t-[3px] border-rivera-rojo bg-black pb-16 lg:pb-0">
     <div class="contenedor grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-            <img src="<?= e(asset('img/logo-completo.webp')) ?>" alt="<?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?>" width="816" height="480" class="h-auto w-44" loading="lazy">
+            <img src="<?= e(asset('img/logo-completo-400.webp')) ?>" alt="<?= e(ajuste('negocio_nombre', 'Rivera Grupo Automotriz')) ?>" width="816" height="480" class="h-auto w-44" loading="lazy" decoding="async">
             <p class="mt-4 text-sm text-neutral-400">Taller mecánico y tienda de accesorios. Tu auto, nuestra pasión.</p>
             <?php if ($redes): ?>
                 <div class="mt-5 flex gap-2.5">
@@ -29,7 +29,7 @@ $redes = array_filter([
         <div>
             <h2 class="text-sm font-semibold uppercase tracking-wider">Visítanos</h2>
             <ul class="mt-4 space-y-3 text-sm text-neutral-300">
-                <li class="flex gap-2.5"><?= e(ajuste('direccion')) ?></li>
+                <li class="flex gap-2.5"><?= e(direccion_completa()) ?></li>
                 <li class="flex gap-2.5"><?= e(horario_resumen()) ?></li>
                 <li><a href="<?= e(mapa_url()) ?>" target="_blank" rel="noopener" class="font-semibold text-white hover:text-rivera-rojo-claro">Cómo llegar (Google Maps)</a></li>
             </ul>
