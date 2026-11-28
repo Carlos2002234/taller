@@ -61,7 +61,6 @@ $marcas = ['Havoline', 'Castrol', 'Chevron', 'Delo', 'Vonixx', 'Malco'];
             <div class="portada-franja portada-franja-1" aria-hidden="true"></div>
             <div class="portada-franja portada-franja-2" aria-hidden="true"></div>
             <div class="racing-entra flex flex-wrap items-center gap-x-3.5 gap-y-2">
-                <span class="inline-flex h-[30px] -skew-x-12 items-center bg-rivera-rojo px-3 font-display text-[0.8rem] font-extrabold italic tracking-[0.12em]"><span class="skew-x-12">RIVERA</span></span>
                 <span class="text-xs font-semibold uppercase tracking-[0.22em] text-neutral-300"><?= e(ajuste('banner_etiqueta', 'Accesorios y repuestos para tu auto')) ?></span>
             </div>
 
